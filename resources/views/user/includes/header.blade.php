@@ -4,17 +4,17 @@
                 <!-- Logo -->
                 <div class="flex items-center logo-container">
                     <div class="flex items-center space-x-2">
-                        <img src="img/dotbitz-logo.png" alt="DotBitz Logo" width="150">
+                        <img src="{{asset('assets/images/logo/dotbitz-logo.png')}}" alt="DotBitz Logo" width="150">
                     </div>
                 </div>
 
                 <!-- Desktop Navigation (Center) -->
                 <nav class="hidden md:flex items-center space-x-8">
                     <a href="{{route('user.home')}}" class="nav-link font-medium" style="color: #1d1d1d;">Home</a>
-                    <a href="#" class="nav-link font-medium" style="color: #1d1d1d;">Courses</a>
-                    <a href="#" class="nav-link font-medium" style="color: #1d1d1d;">About</a>
+                    <a href="{{route('user.courses')}}" class="nav-link font-medium" style="color: #1d1d1d;">Courses</a>
+                    <a href="{{route('user.about')}}" class="nav-link font-medium" style="color: #1d1d1d;">About</a>
                     <a href="{{route('user.faq')}}" class="nav-link font-medium" style="color: #1d1d1d;">FAQ</a>
-                    <a href="" class="nav-link font-medium" style="color: #1d1d1d;">Contact</a>
+                    <a href="{{route('user.contact')}}" class="nav-link font-medium" style="color: #1d1d1d;">Contact</a>
                 </nav>
 
                 <!-- Right Side Buttons -->
@@ -22,7 +22,7 @@
                     <button class="hidden md:block font-medium px-4 py-2" style="color: #073a89;">
                         Login
                     </button>
-                    <button class="hidden md:block font-medium px-4 py-2 rounded-lg text-white bg-[#FF6500]">
+                    <button class="open-consultation-modal consultation-btn hidden md:block font-medium px-4 py-2 rounded-lg text-white bg-[#FF6500]">
                         Book Free Consultation
                     </button>
                     
@@ -40,7 +40,7 @@
         <div class="p-6 h-full flex flex-col">
             <!-- Mobile Menu Header -->
             <div class="flex justify-between items-center mb-8">
-                <img src="img/dotbitz-logo.png" alt="DotBitz Logo" width="120">
+                <img src="{{asset('assets/images/logo/dotbitz-logo.png')}}" alt="DotBitz Logo" width="120">
                 <button class="p-2" id="closeMobileMenu">
                     <svg class="w-6 h-6" style="color: #073a89;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
@@ -51,19 +51,23 @@
             <!-- Mobile Navigation -->
             <nav class="flex-1">
                 <div class="space-y-4">
-                    <a href="#" class="block py-3 px-4 rounded-lg font-medium text-lg hover:bg-gray-100 transition-colors" style="color: #1d1d1d;">
+                    <a href="{{route('user.home')}}" class="block py-3 px-4 rounded-lg font-medium text-lg hover:bg-gray-100 transition-colors" style="color: #1d1d1d;">
                         <i class="fas fa-home mr-3" style="color: #0091B9;"></i>
                         Home
                     </a>
-                    <a href="#" class="block py-3 px-4 rounded-lg font-medium text-lg hover:bg-gray-100 transition-colors" style="color: #1d1d1d;">
+                    <a href="{{route('user.courses')}}" class="block py-3 px-4 rounded-lg font-medium text-lg hover:bg-gray-100 transition-colors" style="color: #1d1d1d;">
                         <i class="fas fa-book-open mr-3" style="color: #0091B9;"></i>
                         Courses
                     </a>
-                    <a href="#" class="block py-3 px-4 rounded-lg font-medium text-lg hover:bg-gray-100 transition-colors" style="color: #1d1d1d;">
+                    <a href="{{route('user.about')}}" class="block py-3 px-4 rounded-lg font-medium text-lg hover:bg-gray-100 transition-colors" style="color: #1d1d1d;">
                         <i class="fas fa-info-circle mr-3" style="color: #0091B9;"></i>
                         About
                     </a>
-                    <a href="#" class="block py-3 px-4 rounded-lg font-medium text-lg hover:bg-gray-100 transition-colors" style="color: #1d1d1d;">
+                    <a href="{{route('user.faq')}}" class="block py-3 px-4 rounded-lg font-medium text-lg hover:bg-gray-100 transition-colors" style="color: #1d1d1d;">
+                        <i class="fas fa-info-circle mr-3" style="color: #0091B9;"></i>
+                        FAQ
+                    </a>
+                    <a href="{{route('user.contact')}}" class="block py-3 px-4 rounded-lg font-medium text-lg hover:bg-gray-100 transition-colors" style="color: #1d1d1d;">
                         <i class="fas fa-envelope mr-3" style="color: #0091B9;"></i>
                         Contact
                     </a>
@@ -74,7 +78,7 @@
                     <button class="w-full py-3 px-4 rounded-lg font-medium" style="color: #073a89; border: 2px solid #073a89;">
                         Login
                     </button>
-                    <button class="w-full py-3 px-4 rounded-lg font-medium text-white" style="background-color: #FF6500;">
+                    <button class="open-consultation-modal consultation-button w-full py-3 px-4 rounded-lg font-medium text-white" style="background-color: #FF6500;">
                         Book Free Consultation
                     </button>
                 </div>

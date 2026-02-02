@@ -1,4 +1,5 @@
 @extends('user.layouts.app')
+
 @section('content')
 <section class="bg-gradient-to-br from-[#073a89] to-[#0091b9] text-white py-16 relative">
     <div class="container mx-auto px-6">
@@ -42,61 +43,21 @@
 
         <!-- Accordion -->
         <div class="space-y-6">
-
-            <!-- Item -->
-            <div class="bg-white rounded-2xl shadow-lg overflow-hidden">
-                <button onclick="toggleFaq(1)"
-                        class="w-full flex justify-between items-center p-6 text-left font-semibold text-lg text-gray-900">
-                    What age groups can enroll in the program?
-                    <span id="icon-1" class="text-[#073a89] text-xl">+</span>
-                </button>
-                <div id="faq-1" class="hidden px-6 pb-6 text-gray-600 leading-relaxed">
-                    Our programs are designed for students aged **9 years and above**, including beginners and advanced learners.
+            @foreach($faqs as $index => $faq)
+                <div class="bg-white rounded-2xl shadow-lg overflow-hidden">
+                    <button onclick="toggleFaq({{ $index + 1 }})"
+                            class="w-full flex justify-between items-center p-6 text-left font-semibold text-lg text-gray-900">
+                        {{ $faq->question }}
+                        <span id="icon-{{ $index + 1 }}" class="text-[#073a89] text-xl">+</span>
+                    </button>
+                    <div id="faq-{{ $index + 1 }}" class="hidden px-6 pb-6 text-gray-600 leading-relaxed">
+                        {!! nl2br(e($faq->answer)) !!}
+                    </div>
                 </div>
-            </div>
-
-            <!-- Item -->
-            <div class="bg-white rounded-2xl shadow-lg overflow-hidden">
-                <button onclick="toggleFaq(2)"
-                        class="w-full flex justify-between items-center p-6 text-left font-semibold text-lg text-gray-900">
-                    Do students need prior coding experience?
-                    <span id="icon-2" class="text-[#073a89] text-xl">+</span>
-                </button>
-                <div id="faq-2" class="hidden px-6 pb-6 text-gray-600 leading-relaxed">
-                    No prior experience is required. We start from basics and gradually move to advanced concepts.
-                </div>
-            </div>
-
-            <!-- Item -->
-            <div class="bg-white rounded-2xl shadow-lg overflow-hidden">
-                <button onclick="toggleFaq(3)"
-                        class="w-full flex justify-between items-center p-6 text-left font-semibold text-lg text-gray-900">
-                    Is learning online or in-person?
-                    <span id="icon-3" class="text-[#073a89] text-xl">+</span>
-                </button>
-                <div id="faq-3" class="hidden px-6 pb-6 text-gray-600 leading-relaxed">
-                    We offer **interactive online sessions** with live instructors and real-time coding practice.
-                </div>
-            </div>
-
-            <!-- Item -->
-            <div class="bg-white rounded-2xl shadow-lg overflow-hidden">
-                <button onclick="toggleFaq(4)"
-                        class="w-full flex justify-between items-center p-6 text-left font-semibold text-lg text-gray-900">
-                    Can I request a demo class?
-                    <span id="icon-4" class="text-[#073a89] text-xl">+</span>
-                </button>
-                <div id="faq-4" class="hidden px-6 pb-6 text-gray-600 leading-relaxed">
-                    Yes! You can request a demo class from our website to experience our teaching style.
-                </div>
-            </div>
-
+            @endforeach
         </div>
     </div>
 </section>
-
-
-
 @endsection
 
 @section('scripts')
@@ -114,5 +75,4 @@
         }
     }
 </script>
-
 @endsection

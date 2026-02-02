@@ -19,6 +19,7 @@ class Course extends Model
         'course_duration',
         'course_fee',
         'course_level',
+        'age_limit',
         'start_date',
         'end_date',
         'status',

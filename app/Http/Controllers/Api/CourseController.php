@@ -13,23 +13,26 @@ class CourseController extends Controller
     /**
      * List all courses
      */
-    public function index(Request $request)
-    {
-        $query = Course::with('instructor');
+public function index(Request $request)
+{
+    $query = Course::with('instructor');
 
-        // Optional search by course_name or course_code
-        if ($request->has('search') && $request->search != '') {
-            $search = $request->search;
-            $query->where(function ($q) use ($search) {
-                $q->where('course_name', 'like', "%{$search}%")
-                  ->orWhere('course_code', 'like', "%{$search}%");
-            });
-        }
-
-        $courses = $query->orderBy('id', 'desc')->paginate(10);
-
-        return response()->json($courses);
+    if ($request->has('search') && $request->search != '') {
+        $search = $request->search;
+        $query->where(function ($q) use ($search) {
+            $q->where('course_name', 'like', "%{$search}%")
+              ->orWhere('course_code', 'like', "%{$search}%");
+        });
     }
+
+    $courses = $query->orderBy('id', 'desc');
+
+    if ($request->wantsJson()) { // Angular/API call
+        return response()->json($courses->paginate(10));
+    } else { // Blade view
+        return view('user.pages.course', ['courses' => $courses->get()]);
+    }
+}
 
     /**
      * Store a new course
@@ -43,16 +46,25 @@ class CourseController extends Controller
             'course_duration' => 'nullable|integer',
             'course_fee' => 'nullable|numeric',
             'course_level' => 'nullable|string|max:100',
+            'age_limit' => 'nullable|string|max:100',
             'start_date' => 'nullable|date',
             'end_date' => 'nullable|date|after_or_equal:start_date',
             'status' => 'nullable',
             'is_featured' => 'boolean',
             'instructor_id' => 'required|exists:instructors,id',
-            'thumbnail_image' => 'nullable|string|max:255',
+            'thumbnail_image' => 'required|image|mimes:jpeg,png,jpg|max:2048',
         ]);
 
         // Generate slug automatically
         $validated['slug'] = Str::slug($validated['course_name']);
+        if($request->hasFile('thumbnail_image')){
+
+    		$featuredfile = $request->file('thumbnail_image');
+	    	$thumbnail_image = uniqid().'.'.$featuredfile->guessExtension();
+	    	$image_path = $featuredfile->move(public_path().'/assets/images/courses/',$thumbnail_image);
+	    	$validated['thumbnail_image'] = $thumbnail_image;
+
+        }
 
         $course = Course::create($validated);
 
@@ -104,16 +116,25 @@ class CourseController extends Controller
             'course_duration' => 'nullable|integer',
             'course_fee' => 'nullable|numeric',
             'course_level' => 'nullable|string|max:100',
+            'age_limit' => 'nullable|string|max:100',
             'start_date' => 'nullable|date',
             'end_date' => 'nullable|date|after_or_equal:start_date',
             'status' => 'nullable',
             'is_featured' => 'boolean',
             'instructor_id' => 'required|exists:instructors,id',
-            'thumbnail_image' => 'nullable|string|max:255',
+            'thumbnail_image' => 'nullable|image|mimes:jpeg,png,jpg|max:2048',
         ]);
 
         // Update slug if course_name changes
         $validated['slug'] = Str::slug($validated['course_name']);
+        if($request->hasFile('thumbnail_image')){
+
+    		$featuredfile = $request->file('thumbnail_image');
+	    	$thumbnail_image = uniqid().'.'.$featuredfile->guessExtension();
+	    	$image_path = $featuredfile->move(public_path().'/assets/images/courses/',$thumbnail_image);
+	    	$validated['thumbnail_image'] = $thumbnail_image;
+
+        }
 
         $course->update($validated);
 
