@@ -53,6 +53,8 @@ public function index(Request $request)
             'is_featured' => 'boolean',
             'instructor_id' => 'required|exists:instructors,id',
             'thumbnail_image' => 'required|image|mimes:jpeg,png,jpg|max:2048',
+            'benefits'         => 'nullable|string',
+            'short_description' => 'nullable|string'
         ]);
 
         // Generate slug automatically
@@ -123,6 +125,8 @@ public function index(Request $request)
             'is_featured' => 'boolean',
             'instructor_id' => 'required|exists:instructors,id',
             'thumbnail_image' => 'nullable|image|mimes:jpeg,png,jpg|max:2048',
+            'benefits'         => 'nullable|string',
+            'short_description' => 'nullable|string'
         ]);
 
         // Update slug if course_name changes

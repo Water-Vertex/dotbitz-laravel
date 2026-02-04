@@ -12,4 +12,9 @@ Route::get('/faq', [HomeController::class, 'faq'])->name('user.faq');
 Route::get('/courses', [HomeController::class, 'courses'])->name('user.courses');
 Route::get('/course/{slug}', [HomeController::class, 'courseDetails'])->name('user.course.details');
 Route::post('/store-appointment', [HomeController::class, 'storeAppointment'])->name('appointment.store');
+Route::post('/store-assessment', [HomeController::class, 'storeAssessmentQuery'])->name('assessment.store');
+Route::view('/privacy-policy','user.pages.privacy-policy')->name('privacy-policy');
+Route::view('/terms-of-service','user.pages.terms-of-service')->name('terms-of-service');
+Route::view('/cookie-policy','user.pages.cookie-policy')->name('cookie-policy');
+Route::get('/policy/{slug}', [HomeController::class, 'Policy'])->name('user.policy');
 

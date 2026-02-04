@@ -15,14 +15,14 @@ use Flasher\Prime\Configuration;
  */
 return Configuration::from([
     // Default notification library (e.g., 'flasher', 'toastr', 'noty', 'notyf', 'sweetalert')
-    'default' => 'theme.ios',
+    'default' => 'flasher',
 
     // Path to the main PHPFlasher JavaScript file
-    'main_script' => '/public/vendor/flasher/themes/ios/ios.min.js',
+    'main_script' => '/public/vendor/flasher/flasher.min.js',
 
     // List of CSS files to style your notifications
     'styles' => [
-        '/public/vendor/flasher/themes/ios/ios.min.css',
+        '/public/vendor/flasher/flasher.min.css',
     ],
 
     // Set global options for all notifications (optional)
@@ -61,5 +61,5 @@ return Configuration::from([
     //         'message' => 'Entity saved successfully',
     //     ],
     // ],
-
+    
 ]);

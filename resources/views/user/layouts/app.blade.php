@@ -170,6 +170,97 @@
         </div>
     </div>
 </div>
+
+<!-- Assessment Modal -->
+<div id="assessmentModal" class="fixed inset-0 hidden z-50">
+
+    <!-- Overlay -->
+    <div class="absolute inset-0 bg-black/60"></div>
+
+    <!-- Modal Wrapper (Scrollable Area) -->
+    <div class="flex items-center justify-center h-screen p-4 overflow-hidden">
+
+        <!-- Modal Content -->
+        <div class="modal-scroll bg-white rounded-2xl shadow-2xl w-full max-w-4xl relative max-h-[90vh] overflow-y-auto">
+
+            <!-- Close Button -->
+            <button id="closeAssessmentModal"
+                class="absolute top-4 right-4 text-gray-400 hover:text-gray-700 transition z-20">
+                <i class="fas fa-times text-xl"></i>
+            </button>
+
+            <div class="p-6 md:p-8">
+                <h2 class="text-2xl font-bold mb-6 text-center text-gray-800">
+                    Book Assessment
+                </h2>
+
+                <form action="{{ route('assessment.store') }}" method="POST" class="space-y-6">
+                    @csrf
+
+                    <input type="hidden" id="assessment_course_id" name="course_id">
+
+                    <!-- Row 1 -->
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Full Name *</label>
+                            <input type="text" name="full_name"  placeholder="Enter your full name" required
+                                class="w-full px-2 py-2 text-sm border border-gray-300 rounded-lg
+                                focus:outline-none focus:ring-2 focus:ring-orange-400 focus:border-orange-400"
+                                value="{{ old('full_name') }}">
+                        </div>
+
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Email *</label>
+                            <input type="email" name="email"  placeholder="Enter your email" required
+                                class="w-full px-2 py-2 text-sm border border-gray-300 rounded-lg
+                                focus:outline-none focus:ring-2 focus:ring-orange-400 focus:border-orange-400"
+                                value="{{ old('email') }}">
+                        </div>
+                    </div>
+
+                    <!-- Row 2 -->
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Phone *</label>
+                            <input type="text" name="phone"  placeholder="Enter your phone number " required
+                                class="w-full px-2 py-2 text-sm border border-gray-300 rounded-lg
+                                focus:outline-none focus:ring-2 focus:ring-orange-400 focus:border-orange-400"
+                                value="{{ old('phone') }}">
+                        </div>
+
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Course *</label>
+                            <input type="text" id="assessment_course_name" disabled
+                                class="w-full px-2 py-2 text-sm border border-gray-300 rounded-lg
+                                bg-gray-100">
+                        </div>
+                    </div>
+
+                    <!-- Row 3 -->
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Message</label>
+                        <textarea name="message"  placeholder="Enter your message" rows="3"
+                            class="w-full px-2 py-2 text-sm border border-gray-300 rounded-lg
+                            focus:outline-none focus:ring-2 focus:ring-orange-400 focus:border-orange-400">{{ old('message') }}</textarea>
+                    </div>
+
+                    <!-- Submit -->
+                    <div class="pt-4">
+                        <button type="submit"
+                            class="w-full bg-[#FF6500] hover:bg-[#e65c00]
+                            text-white px-4 sm:px-6 py-2 sm:py-2 rounded-lg font-semibold text-base transition duration-200
+                            focus:outline-none focus:ring-2 focus:ring-orange-400 focus:ring-offset-2">
+                            Submit Assessment
+                        </button>
+                    </div>
+
+                </form>
+            </div>
+
+        </div>
+    </div>
+</div>
+
      <!-- Footer -->
 
     @include('user.includes.footer')

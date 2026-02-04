@@ -119,12 +119,12 @@
                 <div class="p-5 sm:p-6 md:p-8 flex flex-col">
                     <!-- Course Name -->
                     <div class="mb-4">
-                         <a href="{{route('user.course.details',$course->slug)}}"> <h3 class="text-xl md:text-2xl font-bold" style="color: #073a89;">{{$course->course_name}}</h3></a>
+                         <a href="{{route('user.course.details',$course->slug)}}"> <h3 class="text-lg md:text-lg font-bold" style="color: #073a89;">{{$course->course_name}}</h3></a>
                     </div>
 
                     <!-- Description -->
                     <p class="text-gray-700 mb-6 text-sm sm:text-base line-clamp-3 md:line-clamp-4 flex-grow">
-                        {{$course->course_description}}
+                        {{$course->short_description}}
                     </p>
 
                     <!-- Age and Button -->
@@ -139,11 +139,12 @@
                         </div>
 
                         <!-- Book Assessment Button -->
-                        <button class="book-assessment-btn px-4 py-2 sm:px-5 sm:py-2.5 md:px-6 md:py-3 rounded-lg sm:rounded-xl font-bold text-white whitespace-nowrap transition-all duration-300 hover:scale-105 text-xs sm:text-sm md:text-base w-full sm:w-auto"
-                                style="background: #FF6500">
-                            <i class="fas fa-calendar-check mr-1 sm:mr-2"></i>
-                            Book Assessment
-                        </button>
+                         <button class="open-assessment-modal px-4 py-2 rounded-xl font-bold text-white"
+                                                style="background: #FF6500"
+                                                data-course-id="{{ $course->id }}"
+                                                data-course-name="{{ $course->course_name }}">
+                                            <i class="fas fa-calendar-check mr-2"></i> Book Assessment
+                                        </button>
                     </div>
                 </div>
             </div>

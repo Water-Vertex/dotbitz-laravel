@@ -19,9 +19,9 @@
 
                 <!-- Right Side Buttons -->
                 <div class="flex items-center space-x-4 header-buttons">
-                    <button class="hidden md:block font-medium px-4 py-2" style="color: #073a89;">
+                    <a href="https://portal.dotbitz.com" class="hidden md:block font-medium px-4 py-2" style="color: #073a89;">
                         Login
-                    </button>
+                    </a>
                     <button class="open-consultation-modal consultation-btn hidden md:block font-medium px-4 py-2 rounded-lg text-white bg-[#FF6500]">
                         Book Free Consultation
                     </button>
@@ -75,9 +75,9 @@
                 
                 <!-- Mobile Buttons -->
                 <div class="mt-8 space-y-4">
-                    <button class="w-full py-3 px-4 rounded-lg font-medium" style="color: #073a89; border: 2px solid #073a89;">
+                    <a href="https://portal.dotbitz.com" class="w-full block py-3 px-4 rounded-lg font-medium text-center" style="color: #073a89; border: 2px solid #073a89;">
                         Login
-                    </button>
+                    </a>
                     <button class="open-consultation-modal consultation-button w-full py-3 px-4 rounded-lg font-medium text-white" style="background-color: #FF6500;">
                         Book Free Consultation
                     </button>

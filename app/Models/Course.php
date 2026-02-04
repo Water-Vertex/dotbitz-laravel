@@ -26,6 +26,8 @@ class Course extends Model
         'is_featured',
         'instructor_id',
         'thumbnail_image',
+        'benefits',
+        'short_description'
     ];
 
     /**

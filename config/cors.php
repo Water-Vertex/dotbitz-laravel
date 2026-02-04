@@ -2,7 +2,8 @@
 return [
   'paths' => ['api/*', 'sanctum/csrf-cookie'],
     'allowed_methods' => ['*'],
-    'allowed_origins' => ['http://localhost:4200'], // Angular default port
+    'allowed_origins' => ['https://portal.dotbitz.com'], // Angular default port
+    // 'allowed_origins' => ['*'], // Angular default port
     'allowed_origins_patterns' => [],
     'allowed_headers' => ['*'],
     'exposed_headers' => [],

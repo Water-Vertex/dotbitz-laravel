@@ -6,7 +6,7 @@
                 <div class="space-y-6">
                     <!-- Logo -->
                     <div class="flex items-center space-x-3">
-                        <img src="{{asset('assets/images/logo/dotbitz-logo.png')}}" alt="DotBitz Logo" width="150" class="w-32 md:w-auto">
+                        <img src="{{asset('assets/images/logo/dotbitz-logo.png')}}" alt="DotBitz Logo" class="w-32 ">
                     </div>
 
                     <!-- Description -->
@@ -95,13 +95,15 @@
             <div class="mt-10 pt-6 border-t text-center" style="border-color: #e5e7eb;">
                 <div class="flex flex-col md:flex-row justify-between items-center">
                     <p class="text-sm mb-2 md:mb-0" style="color: #1d1d1d;">
-                        © 2024 DotBitz. All rights reserved.
+                        © {{date('Y')}} DotBitz. All rights reserved.
                     </p>
                     <div class="flex flex-wrap justify-center gap-4 md:gap-6">
-                        <a href="#" class="text-sm hover:text-orange-500 transition-colors" style="color: #073a89;">Privacy Policy</a>
-                        <a href="#" class="text-sm hover:text-orange-500 transition-colors" style="color: #073a89;">Terms of Service</a>
-                        <a href="#" class="text-sm hover:text-orange-500 transition-colors" style="color: #073a89;">Cookie Policy</a>
-                        <a href="#" class="text-sm hover:text-orange-500 transition-colors" style="color: #073a89;">Sitemap</a>
+                        @php
+                            $policies = \App\Models\Policy::all();
+                        @endphp
+                        @foreach($policies as $policy)
+                        <a href="{{route('user.policy',$policy->slug)}}" class="text-sm hover:text-orange-500 transition-colors" style="color: #073a89;">{{$policy->title}}</a>
+                        @endforeach
                     </div>
                 </div>
             </div>

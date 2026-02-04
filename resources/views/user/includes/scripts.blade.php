@@ -57,7 +57,7 @@ $(document).ready(function() {
             this.bindEvents();
             this.bindOpenButtons(); // Bind all open buttons
         },
-        
+
         cacheElements: function() {
             this.$dateInput = $('#appointment_date');
             this.$timeInput = $('#appointment_time');
@@ -66,64 +66,64 @@ $(document).ready(function() {
             this.$overlay = this.$modal.find('.absolute');
             this.$form = this.$modal.find('form');
         },
-        
+
         setMinDate: function() {
             const today = new Date().toISOString().split('T')[0];
             this.$dateInput.attr('min', today);
         },
-        
+
         bindEvents: function() {
             // Date validation
             this.$dateInput.on('change', this.validateDate.bind(this));
-            
+
             // Time validation
             this.$timeInput.on('change', this.validateTime.bind(this));
-            
+
             // Close modal events
             this.$closeBtn.on('click', this.closeModal.bind(this));
             this.$overlay.on('click', this.closeModal.bind(this));
-            
+
             // Escape key
             $(document).on('keydown', this.handleEscape.bind(this));
-            
+
             // Click outside modal (improved selector)
             this.$modal.on('click', this.handleOutsideClick.bind(this));
         },
-        
+
         bindOpenButtons: function() {
             // Bind to any button with class 'open-consultation-modal'
             $(document).on('click', '.open-consultation-modal', this.openModal.bind(this));
-            
+
             // Also bind to your specific buttons
             $(document).on('click', '#openConsultationBtn', this.openModal.bind(this));
         },
-        
+
         validateDate: function() {
             const selectedDate = new Date(this.$dateInput.val());
             const day = selectedDate.getDay();
-            
+
             if (day === 0 || day === 6) {
                 this.showToast('error', 'Weekend Not Available', 'Consultations are only available Monday to Friday. Please select a weekday.');
                 this.$dateInput.val('');
             }
         },
-        
+
         validateTime: function() {
             const selectedTime = this.$timeInput.val();
             const [hours, minutes] = selectedTime.split(':').map(Number);
-            
+
             if (hours < 8 || hours > 19 || (hours === 19 && minutes > 0)) {
                 this.showToast('error', 'Invalid Time', 'Consultations are only available from 8:00 AM to 8:00 PM. Please select a valid time.');
                 this.$timeInput.val('');
             }
         },
-        
+
         openModal: function(e) {
             e.preventDefault();
             this.$modal.removeClass('hidden');
             $('body').addClass('overflow-hidden'); // Prevent background scrolling
         },
-        
+
         closeModal: function() {
             this.$modal.addClass('hidden');
             $('body').removeClass('overflow-hidden');
@@ -131,20 +131,20 @@ $(document).ready(function() {
                 this.$form[0].reset();
             }
         },
-        
+
         handleEscape: function(e) {
             if (e.key === 'Escape' && !this.$modal.hasClass('hidden')) {
                 this.closeModal();
             }
         },
-        
+
         handleOutsideClick: function(e) {
             // Check if click is on the modal background (not the content)
             if ($(e.target).attr('id') === 'consultationModal') {
                 this.closeModal();
             }
         },
-        
+
         showToast: function(type, title, message) {
             // Check if toastr is available
             if (typeof toastr !== 'undefined') {
@@ -196,10 +196,10 @@ $(document).ready(function() {
             }
         }
     };
-    
+
     // Initialize the modal
     consultationModal.init();
-    
+
     // Expose openModal function globally as well (backward compatibility)
     window.openConsultationModal = function(e) {
         if (e) e.preventDefault();
@@ -243,4 +243,38 @@ $(document).ready(function () {
 });
 
 
+</script>
+<script>
+$(document).ready(function() {
+    const $modal = $('#assessmentModal');
+    const $close = $('#closeAssessmentModal');
+
+    $(document).on('click', '.open-assessment-modal', function() {
+        const courseId = $(this).data('course-id');
+        const courseName = $(this).data('course-name');
+
+        $('#assessment_course_id').val(courseId);
+        $('#assessment_course_name').val(courseName);
+
+        $modal.removeClass('hidden');
+        $('body').addClass('overflow-hidden');
+    });
+
+    $close.on('click', function() {
+        $modal.addClass('hidden');
+        $('body').removeClass('overflow-hidden');
+        $modal.find('form')[0].reset();
+    });
+
+    // Close on clicking outside
+    $modal.on('click', function(e) {
+        if ($(e.target).is($modal)) {
+            $modal.addClass('hidden');
+            $('body').removeClass('overflow-hidden');
+            $modal.find('form')[0].reset();
+        }
+    });
+
+    
+});
 </script>

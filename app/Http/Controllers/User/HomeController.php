@@ -7,8 +7,10 @@ use App\Mail\AdminAppointmentConfirmationMail;
 use App\Mail\AdminContactMail;
 use App\Mail\CustomerAppointmentConfirmationMail;
 use App\Models\Appointment;
+use App\Models\AssessmentQuery;
 use App\Models\Contact;
 use App\Models\Course;
+use App\Models\Policy;
 use App\Models\Faq;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Mail;
@@ -53,7 +55,6 @@ class HomeController extends Controller
 
          // ✅ Send email to admin
         Mail::to('info@dotbitz.com')->send(new AdminContactMail($contact));
-
         flash()->success('Your message has been sent successfully!');
         return redirect()->back();
     }
@@ -134,4 +135,42 @@ class HomeController extends Controller
 
         return redirect()->back()->with('success', 'Appointment booked successfully!');
     }
+
+     public function Policy($slug)
+    {
+        $policy = Policy::where('slug',$slug)->first();
+        return view('user.pages.policy',get_defined_vars());
+    }
+
+    public function storeAssessmentQuery(Request $request)
+{
+    $request->validate([
+        'full_name' => 'required|string|max:100',
+        'email' => 'required|email|max:50',
+        'phone' => 'required|string|max:20',
+        'course_id' => 'required|exists:courses,id',
+    ]);
+
+    // Check duplicate registration
+    $exists = AssessmentQuery::where('email', $request->email)
+        ->where('course_id', $request->course_id)
+        ->exists();
+
+    if ($exists) {
+        return back()->withErrors(['email' => 'You have already booked this course.']);
+    }
+
+    // Save the assessment
+    AssessmentQuery::create([
+        'full_name' => $request->full_name,
+        'email' => $request->email,
+        'phone' => $request->phone,
+        'course_id' => $request->course_id,
+        'message' => $request->message,
+    ]);
+
+    return back()->with('success', 'You have successfully registered for this course.');
+}
+
+
 }

@@ -172,11 +172,12 @@
             <div class="mt-16">
                 <div class="rounded-2xl overflow-hidden shadow-lg border border-gray-200">
                     <iframe
-                        src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3447.635874371573!2d-95.61710212378538!3d30.224647974836847!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x8647308c7b51ce47%3A0x986d04e6d3d9eb5e!2s1210%20E%20Hufsmith%20Rd%2C%20Tomball%2C%20TX%2077375%2C%20USA!5e0!3m2!1sen!2s!4v1697719200312!5m2!1sen!2s"
+                        src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d48820.900750188615!2d-83.14592345!3d40.113177050000004!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x8838ecc4d450a11f%3A0xc2176815689028!2sDublin%2C%20OH%2C%20USA!5e0!3m2!1sen!2s!4v1770120548168!5m2!1sen!2s"
                         width="100%" height="400" class="border-0" allowfullscreen="" loading="lazy"
                         referrerpolicy="no-referrer-when-downgrade"
                         title="Our Location">
                     </iframe>
+
                 </div>
                 <div class="text-center mt-4">
                     <p class="text-gray-600 text-sm">

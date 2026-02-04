@@ -32,20 +32,6 @@
     transform: scale(1.2);
 }
 
-/* For line clamping */
-.line-clamp-3 {
-    display: -webkit-box;
-    -webkit-line-clamp: 3;
-    -webkit-box-orient: vertical;
-    overflow: hidden;
-}
-
-.line-clamp-4 {
-    display: -webkit-box;
-    -webkit-line-clamp: 4;
-    -webkit-box-orient: vertical;
-    overflow: hidden;
-}
 
 /* Mobile adjustments */
 @media (max-width: 640px) {
@@ -88,10 +74,10 @@
 
                     <!-- CTA Buttons -->
                     <div class="flex flex-col sm:flex-row gap-3 sm:gap-4 mb-8 lg:mb-12">
-                        <button class="cta-button px-6 sm:px-8 py-3 sm:py-4 rounded-xl font-bold text-base sm:text-lg text-gray-900 bg-white hover:bg-gray-100 transition-colors duration-300 flex items-center justify-center">
+                        <a href="https://portal.dotbitz.com/student/register" class="cta-button px-6 sm:px-8 py-3 sm:py-4 rounded-xl font-bold text-base sm:text-lg text-gray-900 bg-white hover:bg-gray-100 transition-colors duration-300 flex items-center justify-center">
                             Enroll Now
                             <i class="fas fa-arrow-right ml-2"></i>
-                        </button>
+                        </a>
                         <button class="px-6 sm:px-8 py-3 sm:py-4 rounded-xl font-bold text-base sm:text-lg border-2 border-white hover:bg-white hover:text-blue-900 transition-all duration-300 flex items-center justify-center">
                             Request a Demo
                         </button>
@@ -235,17 +221,17 @@
                       </div>
 
                       <!-- Enroll Now Button -->
-                      <button class="px-8 py-4 rounded-xl font-bold text-lg text-white transition-all duration-300 hover:transform hover:-translate-y-1"
+                      <a href="https://portal.dotbitz.com/student/register" class="px-8 py-4 rounded-xl font-bold text-lg text-white transition-all duration-300 hover:transform hover:-translate-y-1"
                               style="background: #FF6500; box-shadow: 0 10px 25px rgba(255, 101, 0, 0.3);">
                           <i class="fas fa-user-plus mr-2 text-white"></i>
                           Enroll Now
-                      </button>
+                      </a>
                   </div>
               </div>
           </div>
       </section>
       <!-- Courses Slider Section -->
-        <section class="py-10 md:py-10 bg-gray-50">
+        <section class="py-10 md:py-10 bg-gray-50 overflow-x-hidden">
             <div class="container mx-auto px-4 sm:px-6 lg:px-8">
                 <!-- Section Header -->
                 <div class="text-center mb-12">
@@ -254,7 +240,7 @@
                 </div>
 
                 <!-- Swiper Container -->
-                <div class="swiper coursesSwiper !overflow-visible">
+                <div class="swiper coursesSwiper overflow-hidden">
                     <div class="swiper-wrapper">
                         @foreach($courses as $course)
                         <div class="swiper-slide">
@@ -278,13 +264,13 @@
                                 <div class="p-6 md:p-8 flex flex-col h-[calc(100%-14rem)]">
                                     <!-- Course Name -->
                                     <div class="mb-4">
-                                       <a href="{{route('user.course.details',$course->slug)}}"> <h3 class="text-xl md:text-2xl font-bold" style="color: #073a89;">{{$course->course_name}}</h3></a>
+                                       <a href="{{route('user.course.details',$course->slug)}}"> <h3 class="text-lg md:text-lg font-bold" style="color: #073a89;">{{$course->course_name}}</h3></a>
 
                                     </div>
 
                                     <!-- Paragraph -->
                                     <p class="text-gray-700 mb-6 text-sm md:text-base flex-grow line-clamp-3 md:line-clamp-4">
-                                        {{$course->course_description}}
+                                        {{$course->short_description}}
                                     </p>
 
                                     <!-- Age and Button in Same Row -->
@@ -299,11 +285,13 @@
                                         </div>
 
                                         <!-- Book Assessment Button -->
-                                        <button class="px-4 py-2 md:px-6 md:py-3 rounded-xl font-bold text-white whitespace-nowrap transition-all duration-300 hover:scale-105 text-sm md:text-base w-full sm:w-auto"
-                                                style="background: #FF6500">
-                                            <i class="fas fa-calendar-check mr-2"></i>
-                                            Book Assessment
+                                        <button class="open-assessment-modal px-4 py-2 rounded-xl font-bold text-white"
+                                                style="background: #FF6500"
+                                                data-course-id="{{ $course->id }}"
+                                                data-course-name="{{ $course->course_name }}">
+                                            <i class="fas fa-calendar-check mr-2"></i> Book Assessment
                                         </button>
+
                                     </div>
                                 </div>
                             </div>
