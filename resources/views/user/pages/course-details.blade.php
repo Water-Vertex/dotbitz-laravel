@@ -1,5 +1,88 @@
 @extends('user.layouts.app')
 @section('content')
+<style>
+.policy-card {
+    @apply bg-gray-50 rounded-xl p-6 border border-gray-200 hover:border-[#073a89] transition-all duration-300;
+}
+
+.policy-section {
+    @apply transition-all duration-500;
+}
+
+.policy-section.active {
+    @apply block;
+}
+
+.policy-tab {
+    @apply cursor-pointer;
+}
+
+/* Smooth scrolling */
+html {
+    scroll-behavior: smooth;
+}
+
+/* Custom list styling */
+ul.custom-list {
+    @apply space-y-2;
+}
+
+ul.custom-list li {
+    @apply flex items-start;
+}
+
+ul.custom-list li::before {
+    content: "•";
+    @apply text-[#073a89] font-bold mr-3 mt-0.5;
+}
+
+/* Fix for content overflow */
+.policy-content {
+    overflow-x: hidden;
+    width: 100%;
+}
+
+.policy-content img,
+.policy-content table,
+.policy-content iframe,
+.policy-content video {
+    max-width: 100%;
+    height: auto;
+}
+
+.policy-content pre,
+.policy-content code {
+    white-space: pre-wrap;
+    word-wrap: break-word;
+    overflow-x: auto;
+}
+
+.policy-content table {
+    display: block;
+    overflow-x: auto;
+    white-space: nowrap;
+}
+
+/* Mobile-specific fixes */
+@media (max-width: 768px) {
+    .policy-content .prose {
+        font-size: 1rem;
+        line-height: 1.6;
+    }
+
+    .policy-content .prose h1 {
+        font-size: 1.5rem;
+    }
+
+    .policy-content .prose h2 {
+        font-size: 1.25rem;
+    }
+
+    .policy-content .prose h3 {
+        font-size: 1.125rem;
+    }
+}
+</style>
     <!-- Hero Section -->
     <section class="bg-gradient-to-br from-[#073a89] to-[#0091b9] text-white py-16 relative">
         <div class="container mx-auto px-6">
@@ -60,40 +143,32 @@
                     <!-- Course Description -->
                     <div class="mb-12">
                         <h2 class="text-3xl font-bold mb-6" style="color: #073a89;">Course Description</h2>
-                        <div class="prose max-w-none text-lg" style="color: #1d1d1d;">
-                            {!! nl2br(e($course->course_description)) !!}
-                        </div>
+                        <div class="policy-content overflow-hidden">
+            <div class="prose prose-lg max-w-none break-words overflow-wrap-anywhere">
+                {!! $course->course_description !!}
+            </div>
                     </div>
 
                     <!-- Course Highlights -->
-                    <div class="mb-12">
-                        <h2 class="text-3xl font-bold mb-6" style="color: #073a89;">What You'll Learn</h2>
+                     <div class="mb-12">
+                         @php
+                                $benefits = explode(",", $course->benefits);
+                            @endphp
+                            @if($course->benefits)
+                        <h2 class="text-3xl font-bold mb-6" style="color: #073a89;">Parent-Friendly Benefits</h2>
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                            <div class="flex items-start space-x-3">
-                                <div class="w-8 h-8 rounded-full flex items-center justify-center mt-1" style="background-color: #bae4f0;">
-                                    <i class="fas fa-check text-sm" style="color: #073a89;"></i>
-                                </div>
-                                <p style="color: #1d1d1d;">Master fundamental programming concepts</p>
+
+                            @foreach($benefits as $benefit)
+                                <div class="flex items-start space-x-3">
+                                    <div class="w-8 h-8 rounded-full flex items-center justify-center mt-1" style="background-color: #bae4f0;">
+                                        <i class="fas fa-check text-sm" style="color: #073a89;"></i>
+                                    </div>
+                                    <p style="color: #1d1d1d;">{{ $benefit }}</p>
                             </div>
-                            <div class="flex items-start space-x-3">
-                                <div class="w-8 h-8 rounded-full flex items-center justify-center mt-1" style="background-color: #bae4f0;">
-                                    <i class="fas fa-check text-sm" style="color: #073a89;"></i>
-                                </div>
-                                <p style="color: #1d1d1d;">Build real-world projects and applications</p>
-                            </div>
-                            <div class="flex items-start space-x-3">
-                                <div class="w-8 h-8 rounded-full flex items-center justify-center mt-1" style="background-color: #bae4f0;">
-                                    <i class="fas fa-check text-sm" style="color: #073a89;"></i>
-                                </div>
-                                <p style="color: #1d1d1d;">Develop problem-solving and logical thinking skills</p>
-                            </div>
-                            <div class="flex items-start space-x-3">
-                                <div class="w-8 h-8 rounded-full flex items-center justify-center mt-1" style="background-color: #bae4f0;">
-                                    <i class="fas fa-check text-sm" style="color: #073a89;"></i>
-                                </div>
-                                <p style="color: #1d1d1d;">Prepare for advanced programming challenges</p>
-                            </div>
+                            @endforeach
                         </div>
+                            @endif
+
                     </div>
 
                     <!-- Instructor Section -->
@@ -352,7 +427,7 @@
                     @endif
 
                     <div class="p-6">
-                        
+
                         <h3 class="text-xl font-bold mb-3" style="color: #073a89;">
                             <a href="{{ route('courses.show', $relatedCourse->slug) }}"
                                class="hover:text-[#0091b9] transition">
@@ -361,7 +436,7 @@
                         </h3>
 
                         <p class="text-gray-600 mb-4 line-clamp-2">
-                            {{ Str::limit($relatedCourse->course_description, 100) }}
+                            {{ Str::limit($relatedCourse->short_description, 100) }}
                         </p>
 
                         <div class="flex items-center justify-between">

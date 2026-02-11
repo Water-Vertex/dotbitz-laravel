@@ -17,6 +17,92 @@ use Illuminate\Validation\Rule;
 
 class StudentController extends Controller
 {
+    public function index()
+    {
+        $students = Student::with(['studentDetails', 'guardian'])->get();
+
+        return response()->json([
+            'success' => true,
+            'data' => $students
+        ]);
+    }
+
+    public function adminRegister(Request $request)
+    {
+        $request->merge(['student.status' => 1]);
+        return $this->register($request);
+    }
+
+
+    public function update(Request $request, $id)
+{
+    $student = Student::find($id);
+    if (!$student) {
+        return response()->json([
+            'success' => false,
+            'message' => 'Student not found'
+        ], 404);
+    }
+
+    $studentData = $request->input('student');
+    if(isset($studentData['password'])){
+        $studentData['password'] = Hash::make($studentData['password']);
+    }
+
+    $student->update($studentData);
+
+    // Update student details if provided
+    if($request->has('student_details')){
+        foreach($request->input('student_details') as $detail){
+            StudentDetail::updateOrCreate(
+                ['student_id' => $student->id, 'id' => $detail['id'] ?? null],
+                [
+                    'institution' => $detail['institution'],
+                    'degree' => $detail['degree'],
+                    'field_of_study' => $detail['field_of_study'] ?? null,
+                    'start_date' => $detail['start_date'],
+                    'end_date' => $detail['is_current'] ? null : ($detail['end_date'] ?? null),
+                    'is_current' => $detail['is_current'] ?? false,
+                    'description' => $detail['description'] ?? null,
+                ]
+            );
+        }
+    }
+
+    // Update guardian if provided
+    if($request->has('guardian')){
+        $guardianData = $request->input('guardian');
+        Guardian::updateOrCreate(
+            ['student_id' => $student->id],
+            $guardianData
+        );
+    }
+
+    return response()->json([
+        'success' => true,
+        'message' => 'Student updated successfully',
+        'data' => $student->fresh(['studentDetails','guardian'])
+    ]);
+}
+
+public function destroy($id)
+{
+    $student = Student::find($id);
+    if(!$student){
+        return response()->json([
+            'success' => false,
+            'message' => 'Student not found'
+        ], 404);
+    }
+
+    $student->delete();
+
+    return response()->json([
+        'success' => true,
+        'message' => 'Student deleted successfully'
+    ]);
+}
+
     // Register a new student
     public function register(Request $request)
     {
@@ -104,8 +190,10 @@ class StudentController extends Controller
             if ($request->has('guardian') && $age < 18) {
                 $guardianData = $request->input('guardian');
                 $guardianData['student_id'] = $student->id;
+                $pwd = 'PWD'.mt_rand(9999,99999);
+                $guardianData['password'] = Hash::make($pwd);
                 $guardian = Guardian::create($guardianData);
-                Mail::to($guardian->email)->send(new StudentEnrollmentToGuardianMail($student,$guardian));
+                Mail::to($guardian->email)->send(new StudentEnrollmentToGuardianMail($student,$guardian,$pwd));
             }
 
             // Commit transaction

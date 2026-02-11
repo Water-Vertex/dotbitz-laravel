@@ -53,7 +53,7 @@ return [
     */
 
     'url' => env('APP_URL', 'http://localhost'),
-    'asset_url' => env('ASSET_URL', 'https://dotbitz.com/public'),
+    // 'asset_url' => env('ASSET_URL', 'https://dotbitz.com/public'),
 
     /*
     |--------------------------------------------------------------------------

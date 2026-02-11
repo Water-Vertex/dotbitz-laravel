@@ -74,7 +74,7 @@
 
                     <!-- CTA Buttons -->
                     <div class="flex flex-col sm:flex-row gap-3 sm:gap-4 mb-8 lg:mb-12">
-                        <a href="https://portal.dotbitz.com/student/register" class="cta-button px-6 sm:px-8 py-3 sm:py-4 rounded-xl font-bold text-base sm:text-lg text-gray-900 bg-white hover:bg-gray-100 transition-colors duration-300 flex items-center justify-center">
+                        <a href="https://portal.dotbitz.com/student/registration" target="_blank" class="cta-button px-6 sm:px-8 py-3 sm:py-4 rounded-xl font-bold text-base sm:text-lg text-gray-900 bg-white hover:bg-gray-100 transition-colors duration-300 flex items-center justify-center">
                             Enroll Now
                             <i class="fas fa-arrow-right ml-2"></i>
                         </a>
@@ -221,7 +221,7 @@
                       </div>
 
                       <!-- Enroll Now Button -->
-                      <a href="https://portal.dotbitz.com/student/register" class="px-8 py-4 rounded-xl font-bold text-lg text-white transition-all duration-300 hover:transform hover:-translate-y-1"
+                      <a href="https://portal.dotbitz.com/student/registration" target="_blank" class="px-8 py-4 rounded-xl font-bold text-lg text-white transition-all duration-300 hover:transform hover:-translate-y-1"
                               style="background: #FF6500; box-shadow: 0 10px 25px rgba(255, 101, 0, 0.3);">
                           <i class="fas fa-user-plus mr-2 text-white"></i>
                           Enroll Now

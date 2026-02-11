@@ -60,7 +60,10 @@
                                 <i class="fas fa-chevron-right mr-2 text-xs" style="color: #ff6500;"></i>
                                 FAQ
                             </a>
-                            
+                            <a href="https://portal.dotbitz.com" target="_blank" class="footer-link block" style="color: #1d1d1d;">
+                                <i class="fas fa-chevron-right mr-2 text-xs" style="color: #ff6500;"></i>
+                                Login
+                            </a>
                         </div>
                         <div class="space-y-3">
 

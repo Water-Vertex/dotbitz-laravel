@@ -69,20 +69,20 @@ class PolicyController extends Controller
     {
         //
          $policy = Policy::find($id);
-    
-    if (!$policy) {
+
+        if (!$policy) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Policy not found'
+            ], 404);
+        }
+
         return response()->json([
-            'success' => false,
-            'message' => 'Policy not found'
-        ], 404);
-    }
-    
-    return response()->json([
-        'success' => true,
-        'data' => $policy,  // Wrap in 'data' property
-        'message' => 'Policy retrieved successfully'
-    ]);
-    }
+            'success' => true,
+            'data' => $policy,  // Wrap in 'data' property
+            'message' => 'Policy retrieved successfully'
+        ]);
+        }
 
     /**
      * Update the specified resource in storage.
@@ -108,14 +108,14 @@ class PolicyController extends Controller
             'meta_description' => 'nullable|string'
         ]);
 
-    
 
-    
+
+
         $validated['slug'] = Str::slug($request->title);
         $policy->update($validated);
 
         return response()->json($policy);
-       
+
     }
 
     /**

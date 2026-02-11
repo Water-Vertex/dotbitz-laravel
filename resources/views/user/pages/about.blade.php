@@ -73,7 +73,7 @@
                               We go beyond traditional coding classes. Our programs are designed to help students not only learn how to code, but also understand how technology connects to real careers. From early learning to job readiness, we support students throughout their educational journey with structured learning paths, mentorship, and real-world skill development.
                           </p>
                       </div>
-                     
+
                   </div>
               </div>
           </div>
@@ -137,27 +137,28 @@
                         {{-- <div class="w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4" style="background-color: #bae4f0;">
                             <i class="fas fa-laptop-code text-2xl" style="color: #073a89;"></i>
                         </div> --}}
-                        <h3 class="text-2xl md:text-3xl font-bold mb-2" style="color: #073a89;">Online Class Registration</h3>
+                        <h3 class="text-2xl md:text-3xl font-bold mb-2" style="color: #073a89;">Book Assessment</h3>
                         <p class="text-gray-600">Start your coding journey today</p>
                     </div>
 
                     <!-- Form -->
-                    <form class="space-y-6">
+                    <form class="space-y-6" action="{{ route('assessment.store') }}">
+                        @csrf
                         <!-- Full Name -->
                         <div>
-                            <label class="block text-sm font-medium mb-2" style="color: #073a89;">Full Name</label>
-                            <input type="text" 
+                            <label class="block text-sm font-medium mb-2" style="color: #073a89;">Full Full Name</label>
+                            <input type="text"
                                    class="w-full px-4 py-3 rounded-xl border border-gray-300 focus:border-[#0091b9] focus:ring-2 focus:ring-[#0091b9]/20 outline-none transition"
-                                   placeholder="Enter your full name"
+                                   placeholder="Enter your full name" name="full_name" value="{{ old('full_name') }}"
                                    required>
                         </div>
 
                         <!-- Email Address -->
                         <div>
                             <label class="block text-sm font-medium mb-2" style="color: #073a89;">Email Address</label>
-                            <input type="email" 
+                            <input type="email"
                                    class="w-full px-4 py-3 rounded-xl border border-gray-300 focus:border-[#0091b9] focus:ring-2 focus:ring-[#0091b9]/20 outline-none transition"
-                                   placeholder="Enter your email"
+                                   placeholder="Enter your email" name="email" value="{{ old('email') }}"
                                    required>
                         </div>
 
@@ -165,25 +166,25 @@
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                             <!-- Age -->
                             <div>
-                                <label class="block text-sm font-medium mb-2" style="color: #073a89;">Age</label>
-                                <input type="number" 
+                                <label class="block text-sm font-medium mb-2" style="color: #073a89;">Phone</label>
+                                <input type="tel"
                                        class="w-full px-4 py-3 rounded-xl border border-gray-300 focus:border-[#0091b9] focus:ring-2 focus:ring-[#0091b9]/20 outline-none transition"
-                                       placeholder="Age"
-                                       min="9"
-                                       max="18"
+                                       placeholder="Phone" name="phone" value="{{ old('phone') }}"
                                        required>
                             </div>
 
                             <!-- Gender -->
                             <div>
-                                <label class="block text-sm font-medium mb-2" style="color: #073a89;">Gender</label>
-                                <select class="w-full px-4 py-3 rounded-xl border border-gray-300 focus:border-[#0091b9] focus:ring-2 focus:ring-[#0091b9]/20 outline-none transition appearance-none"
+                                <label class="block text-sm font-medium mb-2" style="color: #073a89;">Courses</label>
+                                <select class="w-full px-4 py-3 rounded-xl border border-gray-300 focus:border-[#0091b9] focus:ring-2 focus:ring-[#0091b9]/20 outline-none transition appearance-none" name="course_id"
                                         required>
-                                    <option value="" disabled selected>Select gender</option>
-                                    <option value="male">Male</option>
-                                    <option value="female">Female</option>
-                                    <option value="other">Other</option>
-                                    <option value="prefer-not-to-say">Prefer not to say</option>
+                                    <option value="" disabled selected>Select Course</option>
+                                    @php
+                                        $courses = \App\Models\Course::where('status','active')->get();
+                                    @endphp
+                                    @foreach($courses as $course)
+                                    <option value="{{$course->id ?: old('course_id')}}">{{$course->name}}</option>
+                                    @endforeach
                                 </select>
                                 <div class="absolute right-4 top-1/2 transform -translate-y-1/2 pointer-events-none">
                                     <i class="fas fa-chevron-down text-gray-400"></i>
@@ -194,21 +195,21 @@
                         <!-- Requirements -->
                         <div>
                             <label class="block text-sm font-medium mb-2" style="color: #073a89;">Type your requirements</label>
-                            <textarea 
+                            <textarea
                                 class="w-full px-4 py-3 rounded-xl border border-gray-300 focus:border-[#0091b9] focus:ring-2 focus:ring-[#0091b9]/20 outline-none transition min-h-[120px] resize-none"
-                                placeholder="Tell us about your learning goals, experience level, or any specific requirements..."
-                                required></textarea>
+                                placeholder="Tell us about your learning goals, experience level, or any specific requirements..." name="message"
+                                required>{{ old('message') }}</textarea>
                         </div>
 
                         <!-- Submit Button -->
-                        <button type="submit" 
+                        <button type="submit"
                                 class="w-full py-4 rounded-xl font-bold text-lg text-white transition-all duration-300 transform hover:scale-[1.02] hover:shadow-lg active:scale-[0.98]"
                                 style="background: linear-gradient(135deg, #FF6500 0%, #FF8C42 100%);">
                             <i class="fas fa-paper-plane mr-2"></i>
                             SUBMIT
                         </button>
 
-                        
+
                     </form>
                 </div>
             </div>
@@ -262,7 +263,7 @@
                               To become a globally trusted platform that guides students from early learning to career success in technology.
                           </p>
                       </div>
-                     
+
                   </div>
               </div>
           </div>
@@ -303,7 +304,7 @@
                       <!-- Content -->
                       <div>
                           <h3 class="text-xl font-bold mb-3" style="color: #073a89;">
-                              Creativity and Innovation 
+                              Creativity and Innovation
                           </h3>
                           <p class="text-gray-700" style="color: #1d1d1d;">
                               Students turn ideas into real digital projects, strengthening their creative thinking and gaining confidence to design original solutions.
@@ -343,7 +344,7 @@
                       <!-- Content -->
                       <div>
                           <h3 class="text-xl font-bold mb-3" style="color: #073a89;">
-                              Practical Technical Skills 
+                              Practical Technical Skills
                           </h3>
                           <p class="text-gray-700" style="color: #1d1d1d;">
                               Hands-on projects teach programming, application building, and real-world technical skills, preparing students for advanced opportunities.
@@ -363,7 +364,7 @@
                       <!-- Content -->
                       <div>
                           <h3 class="text-xl font-bold mb-3" style="color: #073a89;">
-                              Future-Ready Mindset 
+                              Future-Ready Mindset
                           </h3>
                           <p class="text-gray-700" style="color: #1d1d1d;">
                               Exposure to modern technologies, teamwork, and industry practices equips students to adapt and thrive in a fast-changing digital world.
@@ -382,7 +383,7 @@
                       <!-- Content -->
                       <div>
                           <h3 class="text-xl font-bold mb-3" style="color: #073a89;">
-                              Confidence and Communication  
+                              Confidence and Communication
                           </h3>
                           <p class="text-gray-700" style="color: #1d1d1d;">
                               Through presentations and collaborative projects, students develop leadership, communication, and teamwork skills essential for success
@@ -402,7 +403,7 @@
                       <!-- Content -->
                       <div>
                           <h3 class="text-xl font-bold mb-3" style="color: #073a89;">
-                              Career and Portfolio Readiness  
+                              Career and Portfolio Readiness
                           </h3>
                           <p class="text-gray-700" style="color: #1d1d1d;">
                              Advanced learners graduate with professional portfolios, ready for higher education, internships, or tech careers.

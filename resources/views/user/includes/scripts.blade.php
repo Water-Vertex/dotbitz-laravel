@@ -1,50 +1,52 @@
 <script>
-    $(document).ready(function () {
+$(document).ready(function () {
+    // Mobile menu functionality
+    const $mobileMenuButton = $('#mobileMenuButton');
+    const $closeMobileMenu  = $('#closeMobileMenu');
+    const $mobileMenu       = $('#mobileMenu');
+    const $overlay          = $('#overlay');
 
-        // Mobile menu functionality
-        const $mobileMenuButton = $('#mobileMenuButton');
-        const $closeMobileMenu  = $('#closeMobileMenu');
-        const $mobileMenu       = $('#mobileMenu');
-        const $overlay          = $('#overlay');
-
-        // Open mobile menu
-        $mobileMenuButton.on('click', function () {
-            $mobileMenu.addClass('active');
-            $overlay.addClass('active');
-            $('body').css('overflow', 'hidden'); // Prevent scrolling
-        });
-
-        // Close mobile menu
-        function closeMenu() {
-            $mobileMenu.removeClass('active');
-            $overlay.removeClass('active');
-            $('body').css('overflow', 'auto'); // Re-enable scrolling
-        }
-
-        $closeMobileMenu.on('click', closeMenu);
-        $overlay.on('click', closeMenu);
-
-        // Close menu when clicking on links/buttons inside mobile menu
-        $mobileMenu.find('a, button').on('click', closeMenu);
-
-        // Simple scroll effect for header
-        const $header = $('.sticky-header');
-        $(window).on('scroll', function () {
-            if ($(window).scrollTop() > 10) {
-                $header.css('box-shadow', '0 2px 10px rgba(0,0,0,0.1)');
-            } else {
-                $header.css('box-shadow', 'none');
-            }
-        });
-
-        // Close menu on escape key
-        $(document).on('keydown', function (e) {
-            if (e.key === 'Escape') {
-                closeMenu();
-            }
-        });
-
+    // Open mobile menu
+    $mobileMenuButton.on('click', function () {
+        $mobileMenu.removeClass('translate-x-full').addClass('translate-x-0');
+        $overlay.removeClass('hidden');
+        $('body').css('overflow', 'hidden');
     });
+
+    // Close mobile menu
+    function closeMenu() {
+        $mobileMenu.removeClass('translate-x-0').addClass('translate-x-full');
+        $overlay.addClass('hidden');
+        $('body').css('overflow', 'auto');
+    }
+
+    $closeMobileMenu.on('click', closeMenu);
+    $overlay.on('click', closeMenu);
+
+    // Close menu when clicking on links/buttons inside mobile menu
+    $mobileMenu.find('a, button:not(#closeMobileMenu)').on('click', function() {
+        if(!$(this).hasClass('open-consultation-modal')) {
+            closeMenu();
+        }
+    });
+
+    // Simple scroll effect for header
+    const $header = $('.sticky-header');
+    $(window).on('scroll', function () {
+        if ($(window).scrollTop() > 10) {
+            $header.css('box-shadow', '0 2px 10px rgba(0,0,0,0.1)');
+        } else {
+            $header.css('box-shadow', 'none');
+        }
+    });
+
+    // Close menu on escape key
+    $(document).on('keydown', function (e) {
+        if (e.key === 'Escape') {
+            closeMenu();
+        }
+    });
+});
 </script>
 
 <script>
@@ -275,6 +277,6 @@ $(document).ready(function() {
         }
     });
 
-    
+
 });
 </script>

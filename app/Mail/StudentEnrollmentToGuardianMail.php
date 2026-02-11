@@ -17,15 +17,18 @@ class StudentEnrollmentToGuardianMail extends Mailable
 
      public $student;
      public $guardian;
+     public $pwd;
 
     /**
      * Create a new message instance.
      */
-    public function __construct(Student $student , Guardian $guardian)
+    public function __construct(Student $student , Guardian $guardian, $pwd)
     {
         //
         $this->student = $student;
         $this->guardian = $guardian;
+        $this->pwd = $pwd;
+
     }
     /**
      * Get the message content definition.
