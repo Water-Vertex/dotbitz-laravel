@@ -1,4 +1,5 @@
-<script>
+{{-- <script>
+
 $(document).ready(function () {
     // Mobile menu functionality
     const $mobileMenuButton = $('#mobileMenuButton');
@@ -47,8 +48,64 @@ $(document).ready(function () {
         }
     });
 });
-</script>
+</script> --}}
+<script>
+    function initMobileMenu() {
+      const menu = document.getElementById('mobileMenu');
+      const search = document.getElementById('mobileSearch');
+      const overlay = document.getElementById('overlay');
 
+      const menuToggle = document.getElementById('menuToggle');
+      const closeMenu = document.getElementById('closeMenu');
+      const searchToggle = document.getElementById('searchToggle');
+      const closeSearch = document.getElementById('closeSearch');
+
+      if (menuToggle) {
+          menuToggle.onclick = () => {
+              menu.classList.remove('-translate-x-full');
+              overlay.classList.remove('hidden');
+          };
+      }
+
+      if (closeMenu) {
+          closeMenu.onclick = () => {
+              menu.classList.add('-translate-x-full');
+              overlay.classList.add('hidden');
+          };
+      }
+
+      if (searchToggle) {
+          searchToggle.onclick = () => {
+              search.classList.remove('-translate-y-full');
+              overlay.classList.remove('hidden');
+          };
+      }
+
+      if (closeSearch) {
+          closeSearch.onclick = () => {
+              search.classList.add('-translate-y-full');
+              overlay.classList.add('hidden');
+          };
+      }
+
+      if (overlay) {
+          overlay.onclick = () => {
+              menu.classList.add('-translate-x-full');
+              search.classList.add('-translate-y-full');
+              overlay.classList.add('hidden');
+          };
+      }
+    }
+
+
+    document.addEventListener('DOMContentLoaded', () => {
+      initMobileMenu();
+    });
+
+    document.addEventListener('livewire:navigated', () => {
+        initMobileMenu();
+    });
+  </script>
 <script>
 $(document).ready(function() {
     // Initialize modal functionality
@@ -279,4 +336,34 @@ $(document).ready(function() {
 
 
 });
+</script>
+<!-- AOS Animation Library -->
+    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+    <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+<!-- AOS Initialization -->
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        AOS.init({
+            duration: 900,
+            once: true,           // animation only once
+            offset: 100,          // trigger offset
+            easing: 'ease-out-cubic'
+        });
+
+        // Swiper initialization (if courses exist)
+        if (document.querySelector('.coursesSwiper')) {
+            new Swiper('.coursesSwiper', {
+                slidesPerView: 1,
+                spaceBetween: 20,
+                loop: true,
+                autoplay: { delay: 4000, disableOnInteraction: false },
+                pagination: { el: '.swiper-pagination', clickable: true },
+                navigation: { nextEl: '.swiper-button-next', prevEl: '.swiper-button-prev' },
+                breakpoints: {
+                    640: { slidesPerView: 2, spaceBetween: 25 },
+                    1024: { slidesPerView: 3, spaceBetween: 30 }
+                }
+            });
+        }
+    });
 </script>

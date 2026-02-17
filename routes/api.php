@@ -13,14 +13,13 @@ use App\Http\Controllers\Api\InstructorController;
 use App\Http\Controllers\Api\McqController;
 use App\Http\Controllers\Api\PolicyController;
 use App\Http\Controllers\Api\StudentController;
-
-
+use App\Http\Controllers\Api\GuardianController;
 // Public routes
-Route::post('/login', [AuthController::class, 'login']);
-Route::post('/logout', [AuthController::class, 'logout'])->middleware('auth:sanctum');
+Route::post('admin/login', [AuthController::class, 'login']);
+Route::post('/logout', [AuthController::class, 'logout'])->middleware('auth:user');
 
 // Protected routes
-Route::middleware('auth:sanctum')->group(function () {
+Route::middleware('auth:user')->prefix('admin')->group(function () {
     Route::post('/logout', [AuthController::class, 'logout']);
     Route::apiResource('faqs', FaqController::class);
     Route::apiResource('instructors', InstructorController::class);
@@ -34,6 +33,28 @@ Route::middleware('auth:sanctum')->group(function () {
 
 });
 
+// Guardian routes ----------------- //
+Route::post('guardian/login', [AuthController::class, 'Guardianlogin']);
+Route::post('/guardian/logout', [AuthController::class, 'Guardianlogout'])->middleware('auth:guardian');
+
+Route::middleware('auth:guardian')->prefix('guardian')->group(function () {
+    // GET /api/guardian -> returns currently authenticated guardian's profile
+    Route::get('/', [GuardianController::class, 'index']);
+   Route::put('profile/update', [GuardianController::class, 'update']);
+});
+
+// Student routes ----------------- //
+
+Route::post('student/login', [AuthController::class, 'Studentlogin']);
+Route::post('/student/logout', [AuthController::class, 'Studentlogout'])->middleware('auth:student');
+Route::middleware('auth:student')->prefix('student')->group(function () {
+        Route::get('/profile', [StudentController::class, 'profile']);
+        Route::put('/profile', [StudentController::class, 'updateProfile']);
+        Route::get('/{id}', [StudentController::class, 'show']);
+        Route::put('/{id}', [StudentController::class, 'update']);
+        Route::get('/{studentId}/education', [StudentController::class, 'getStudentDetails']);
+        Route::get('/{studentId}/guardian', [StudentController::class, 'getGuardian']);
+    });
 
 // Student Registration Routes
 Route::prefix('students')->group(function () {

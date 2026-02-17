@@ -98,56 +98,32 @@
         <!-- Courses Grid -->
         <div id="courses-container" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8">
             @foreach($courses as $course)
-            <div class="course-card bg-white rounded-2xl sm:rounded-3xl shadow-lg sm:shadow-xl overflow-hidden transition-all duration-300 hover:shadow-2xl hover:-translate-y-2 h-full"
-                 data-level="{{strtolower($course->course_level)}}">
-                <!-- Course Image -->
-                <div class="relative h-48 sm:h-56 overflow-hidden">
-                    <img src="{{asset('assets/images/courses/'. $course->thumbnail_image)}}"
-                        alt="{{$course->course_name}}"
-                        class="w-full h-full object-cover transition-transform duration-500">
-                    <!-- Level Badge -->
-                    <div class="absolute top-3 sm:top-4 left-3 sm:left-4">
-                        <span class="inline-block px-3 sm:px-4 py-1 sm:py-2 rounded-full text-xs sm:text-sm font-semibold text-white"
-                            style="background: rgba(7, 58, 137, 0.9);">
-                            <i class="fas fa-star mr-1 sm:mr-2"></i>
+             <div class="course-card group relative overflow-hidden rounded-xl bg-white shadow-md transition-all duration-300 hover:shadow-lg hover:-translate-y-1"  data-level="{{strtolower($course->course_level)}}">
+                        <span class="absolute left-3 top-3 z-10 rounded-full bg-indigo-600 px-3 py-1 text-xs font-semibold text-white">
                             {{$course->course_level}}
                         </span>
-                    </div>
-                </div>
-
-                <!-- Card Content -->
-                <div class="p-5 sm:p-6 md:p-8 flex flex-col">
-                    <!-- Course Name -->
-                    <div class="mb-4">
-                         <a href="{{route('user.course.details',$course->slug)}}"> <h3 class="text-lg md:text-lg font-bold" style="color: #073a89;">{{$course->course_name}}</h3></a>
-                    </div>
-
-                    <!-- Description -->
-                    <p class="text-gray-700 mb-6 text-sm sm:text-base line-clamp-3 md:line-clamp-4 flex-grow">
-                        {{$course->short_description}}
-                    </p>
-
-                    <!-- Age and Button -->
-                    <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 sm:gap-4 mt-auto pt-4 border-t border-gray-100">
-                        <!-- Age Section -->
-                        <div class="w-full sm:w-auto">
-                            <div class="flex items-center p-2 sm:p-3 rounded-lg" style="background-color: #bae4f0;">
-                                <div>
-                                    <p class="font-bold text-xs sm:text-sm md:text-base" style="color: #073a89;">Age: {{$course->age_limit}} Yrs</p>
+                        <div class="relative h-48 overflow-hidden">
+                            <img src="{{asset('assets/images/courses/' . $course->thumbnail_image)}}" alt="{{$course->course_name}}" class="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105">
+                            
+                        </div>
+                        <div class="p-5">
+                            <a href=""><h3 class="mb-2 text-lg font-bold text-gray-900">{{$course->course_name}}</h3></a>
+                            <p class="mb-4 text-sm text-gray-600 line-clamp-5">{{$course->short_description}}</p>
+                            <div class="flex items-center justify-between border-t border-gray-100 pt-4">
+                                <div class="flex items-center">
+                                    <p class="font-bold text-xs md:text-sm" style="color: #073a89;">Age: 20-23 Yrs</p>
+                                </div>
+                                <div class="text-right">
+                                    <button class="open-assessment-modal px-4 py-2 rounded-xl font-bold text-white bg-[#FF6500] hover:bg-[#e55a00] transition-all"
+                                        data-course-id="{{ $course->id }}"
+                                        data-course-name="{{ $course->course_name }}">
+                                        <i class="fas fa-calendar-check mr-2"></i> Book Assessment
+                                    </button>
                                 </div>
                             </div>
                         </div>
-
-                        <!-- Book Assessment Button -->
-                         <button class="open-assessment-modal px-4 py-2 rounded-xl font-bold text-white"
-                                                style="background: #FF6500"
-                                                data-course-id="{{ $course->id }}"
-                                                data-course-name="{{ $course->course_name }}">
-                                            <i class="fas fa-calendar-check mr-2"></i> Book Assessment
-                                        </button>
                     </div>
-                </div>
-            </div>
+
             @endforeach
         </div>
 

@@ -2,11 +2,16 @@
 
 namespace App\Models;
 
+use Illuminate\Container\Attributes\Auth;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Notifications\Notifiable;
+use Laravel\Sanctum\HasApiTokens;
+use Illuminate\Foundation\Auth\User as Authenticatable;
 
-class Guardian extends Model
+class Guardian extends Authenticatable
 {
     //
+    use HasApiTokens, Notifiable;
     protected $fillable = [
 
         'student_id',
@@ -15,7 +20,7 @@ class Guardian extends Model
         'email',
         'phone',
         'relationship',
-        'date_of_birth',
+        // 'date_of_birth',
         'gender',
         'address',
         'state',

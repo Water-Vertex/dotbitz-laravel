@@ -289,4 +289,50 @@ public function destroy($id)
             'data' => $guardian
         ]);
     }
+
+
+     public function profile(Request $request)
+{
+    $student = $request->user(); // logged-in student
+
+    return response()->json([
+        'id' => $student->id,
+        'student_uid' => $student->student_uid,
+        'first_name' => $student->first_name,
+        'last_name' => $student->last_name,
+        'user_name' => $student->user_name,
+        'email' => $student->email,
+        'phone' => $student->phone,
+        'date_of_birth' => $student->date_of_birth,
+        'gender' => $student->gender,
+        'city' => $student->city,
+        'state' => $student->state,
+    ]);
+}
+
+public function updateProfile(Request $request)
+{
+    $student = $request->user(); // Get authenticated student
+
+    // Validation
+    $validated = $request->validate([
+        'first_name' => 'required|string|max:255',
+        'last_name' => 'required|string|max:255',
+        'user_name' => 'required|string|max:255|unique:students,user_name,' . $student->id,
+        'email' => 'required|email|unique:students,email,' . $student->id,
+        'phone' => 'nullable|string|max:20',
+        'date_of_birth' => 'nullable|date',
+        'gender' => 'nullable|in:male,female,other',
+        'city' => 'nullable|string|max:255',
+        'state' => 'nullable|string|max:255',
+    ]);
+
+    // Update student
+    $student->update($validated);
+
+    return response()->json([
+        'message' => 'Profile updated successfully',
+        'data' => $student
+    ], 200);
+}
 }

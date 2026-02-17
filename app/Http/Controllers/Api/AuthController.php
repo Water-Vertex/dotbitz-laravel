@@ -3,76 +3,99 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
-use App\Models\Guardian;
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Hash;
 use App\Models\User;
+use App\Models\Guardian;
+use App\Models\Student;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Hash;
 
 class AuthController extends Controller
 {
+    /* ================= USER LOGIN ================= */
     public function login(Request $request)
-{
-    $request->validate([
-        'email' => 'required|email',
-        'password' => 'required|min:6'
-    ]);
+    {
+        $request->validate([
+            'email' => 'required|email',
+            'password' => 'required|min:6'
+        ]);
 
-    $user = User::where('email', $request->email)->first();
+        $user = User::where('email', $request->email)->first();
 
-    if (!$user || !Hash::check($request->password, $user->password)) {
+        if (!$user || !Hash::check($request->password, $user->password)) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Invalid credentials'
+            ], 401);
+        }
+
+        $token = $user->createToken('user_token')->plainTextToken;
+
         return response()->json([
-            'success' => false,
-            'message' => 'Invalid credentials'
-        ], 401);
+            'success' => true,
+            'type' => 'user',
+            'user' => $user,
+            'token' => $token
+        ]);
     }
 
-    $token = $user->createToken('auth_token')->plainTextToken;
+    /* ================= GUARDIAN LOGIN ================= */
+    public function guardianLogin(Request $request)
+    {
+        $request->validate([
+            'email' => 'required|email',
+            'password' => 'required|min:6'
+        ]);
 
-    return response()->json([
-        'success' => true,
-        'user' => [
-            'id' => $user->id,
-            'name' => $user->name,
-            'email' => $user->email
-        ],
-        'token' => $token
-    ], 200);
-}
+        $guardian = Guardian::where('email', $request->email)->first();
 
- public function Guardianlogin(Request $request)
-{
-    $request->validate([
-        'email' => 'required|email',
-        'password' => 'required|min:6'
-    ]);
+        if (!$guardian || !Hash::check($request->password, $guardian->password)) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Invalid credentials'
+            ], 401);
+        }
 
-    $user = Guardian::where('email', $request->email)->first();
+        $token = $guardian->createToken('guardian_token')->plainTextToken;
 
-    if (!$user || !Hash::check($request->password, $user->password)) {
         return response()->json([
-            'success' => false,
-            'message' => 'Invalid credentials'
-        ], 401);
+            'success' => true,
+            'type' => 'guardian',
+            'guardian' => $guardian,
+            'token' => $token
+        ]);
     }
 
-    $token = $user->createToken('auth_token')->plainTextToken;
+    /* ================= STUDENT LOGIN ================= */
+    public function studentLogin(Request $request)
+    {
+        $request->validate([
+            'email' => 'required|email',
+            'password' => 'required|min:6'
+        ]);
 
-    return response()->json([
-        'success' => true,
-        'user' => [
-            'id' => $user->id,
-            'name' => $user->name,
-            'email' => $user->email
-        ],
-        'token' => $token
-    ], 200);
-}
+        $student = Student::where('email', $request->email)->first();
 
+        if (!$student || !Hash::check($request->password, $student->password)) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Invalid credentials'
+            ], 401);
+        }
+
+        $token = $student->createToken('student_token')->plainTextToken;
+
+        return response()->json([
+            'success' => true,
+            'type' => 'student',
+            'student' => $student,
+            'token' => $token
+        ]);
+    }
+
+    /* ================= LOGOUT (FOR ANY TYPE) ================= */
     public function logout(Request $request)
     {
-        // Sanctum logout
-        $request->user()->tokens()->delete();
+        $request->user()->currentAccessToken()->delete();
 
         return response()->json([
             'success' => true,
