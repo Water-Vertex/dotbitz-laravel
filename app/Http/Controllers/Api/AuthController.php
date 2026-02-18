@@ -28,7 +28,7 @@ class AuthController extends Controller
             ], 401);
         }
 
-        $token = $user->createToken('user_token')->plainTextToken;
+        $token = $user->createToken('user_token',['user'])->plainTextToken;
 
         return response()->json([
             'success' => true,
@@ -55,7 +55,7 @@ class AuthController extends Controller
             ], 401);
         }
 
-        $token = $guardian->createToken('guardian_token')->plainTextToken;
+        $token = $guardian->createToken('guardian_token',['guardian'])->plainTextToken;
 
         return response()->json([
             'success' => true,
@@ -82,7 +82,7 @@ class AuthController extends Controller
             ], 401);
         }
 
-        $token = $student->createToken('student_token')->plainTextToken;
+        $token = $student->createToken('student_token',['student'])->plainTextToken;
 
         return response()->json([
             'success' => true,

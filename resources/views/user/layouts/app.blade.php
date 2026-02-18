@@ -7,7 +7,6 @@
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
   <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
-    @vite(['resources/css/app.css', 'resources/js/app.js'])
     @include('user.includes.styles')
     @yield('styles')
 </head>
@@ -32,9 +31,9 @@
 
 
     <!-- Mobile Menu Drawer -->
-
+<main class="main">
     @yield('content')
-
+</main>
 
      <!-- Consultation Modal -->
 <div id="consultationModal" class="fixed inset-0 hidden z-50">

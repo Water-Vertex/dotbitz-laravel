@@ -84,68 +84,30 @@ ul.custom-list li::before {
     }
 }
 </style>
-<section class="bg-gradient-to-br from-[#073a89] to-[#0091b9] text-white py-16 relative">
-    <div class="container mx-auto px-6">
-        <!-- Breadcrumb -->
-        <nav class="text-sm mb-6 opacity-90">
-            <ol class="flex items-center space-x-2">
-                <li>
-                    <a href="/" class="hover:text-[#ffd500] transition">Home</a>
-                </li>
-                <li>/</li>
-                <li class="text-[#ffd500] font-semibold">{{$policy->slug}}</li>
-            </ol>
-        </nav>
-
-        <!-- Heading -->
-        <h1 class="text-4xl md:text-5xl font-bold mb-4">
-            {{$policy->title}}
-        </h1>
-        <!--<p class="max-w-2xl text-lg opacity-90">-->
-        <!--    Your privacy is our priority. Learn how we collect, use, and protect your information.-->
-        <!--</p>-->
+<div class="site-breadcrumb" style="background: url({{asset('assets/images/course-banner.png')}})">
+    <div class="container">
+        <h2 class="breadcrumb-title">{{$policy->title}}</h2>
+        <ul class="breadcrumb-menu">
+        <li><a href="{{ route('user.home') }}">Home</a></li>
+        <li class="active">{{$policy->slug}}</li>
+        </ul>
     </div>
-
-    <!-- Decorative blur -->
-    <div class="absolute top-0 right-0 w-64 h-64 bg-[#ffd500] opacity-10 blur-3xl rounded-full"></div>
-</section>
-
-<section class="py-20 bg-white">
-    <div class="container mx-auto px-4 sm:px-6 max-w-6xl">
-        <!-- Policies Content -->
-        <div class="policy-content overflow-hidden">
-            <div class="prose prose-lg max-w-none break-words overflow-wrap-anywhere">
-                {!! $policy->description !!}
+</div>
+<div class="privacy-area py-120">
+    <div class="container">
+        <div class="row">
+            <div class="col">
+                <div class="terms-content policy-content">
+                    <h3>{{ $policy->title }}</h3>
+                    <p class="prose prose-lg max-w-none break-words overflow-wrap-anywhere">
+                        {!! $policy->description !!}
+                    </p>
+                </div>
             </div>
         </div>
     </div>
-</section>
+</div>
 
-<!-- Contact Section -->
-<section class="py-16 bg-gray-50">
-    <div class="container mx-auto px-6 max-w-6xl">
-        <div class="bg-white rounded-2xl shadow-lg p-8 md:p-12 text-center">
-            <h2 class="text-3xl font-bold text-gray-900 mb-4">Questions About Our {{$policy->title}}?</h2>
-            <p class="text-gray-600 mb-8 max-w-2xl mx-auto">
-                If you have any questions about how we handle your data or want to exercise your privacy rights, our team is here to help.
-            </p>
-            <div class="flex flex-col sm:flex-row gap-4 justify-center">
-                <a href="{{ route('user.contact') }}"
-                   class="px-8 py-3 rounded-lg font-semibold transition-all duration-300"
-                   style="background: #073a89; color: white; hover:opacity-90;">
-                    Contact Our Team
-                </a>
-                <a href="mailto:info@dotbitz.com"
-                   class="px-8 py-3 rounded-lg font-semibold border-2 border-[#073a89] text-[#073a89] hover:bg-[#073a89] hover:text-white transition-all duration-300">
-                    Email: info@dotbitz.com
-                </a>
-            </div>
-            <p class="text-sm text-gray-500 mt-6">
-                Last updated: {{ date('F d, Y') }}
-            </p>
-        </div>
-    </div>
-</section>
 <style>
 .policy-card {
     @apply bg-gray-50 rounded-xl p-6 border border-gray-200 hover:border-[#073a89] transition-all duration-300;

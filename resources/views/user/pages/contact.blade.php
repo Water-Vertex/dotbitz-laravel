@@ -1,191 +1,142 @@
 @extends('user.layouts.app')
 
 @section('content')
-<!-- Contact Us Hero Section -->
-<section class="bg-gradient-to-br from-[#073a89] to-[#0091b9] text-white py-16 relative">
-    <div class="container mx-auto px-6">
-        <!-- Breadcrumb -->
-        <nav class="text-sm mb-4 opacity-90">
-            <ol class="flex items-center space-x-2">
-                <li>
-                    <a href="/" class="hover:text-[#ffd500] transition">Home</a>
-                </li>
-                <li>/</li>
-                <li class="text-[#ffd500] font-semibold">Contact</li>
-            </ol>
-        </nav>
-
-        <!-- Heading -->
-        <h1 class="text-4xl md:text-5xl font-bold mb-4">
-            Contact Us
-        </h1>
-        <p class="max-w-2xl text-lg opacity-90">
-            Fill out the form below or reach us through our contact details. We'll get back to you as soon as possible.
-        </p>
+<div class="site-breadcrumb" style="background: url({{asset('assets/images/course-banner.png')}})">
+    <div class="container">
+        <h2 class="breadcrumb-title">Contact Us</h2>
+        <ul class="breadcrumb-menu">
+        <li><a href="{{ route('user.home') }}">Home</a></li>
+        <li class="active">Contact Us</li>
+        </ul>
     </div>
-</section>
-
-
-
-<!-- Contact Section -->
-<section class="py-16 md:py-20 bg-white">
-    <div class="container mx-auto px-4 sm:px-6 lg:px-8">
-        <!-- Section Header -->
-        <div class="text-center max-w-3xl mx-auto mb-12 md:mb-16">
-            <h2 class="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
-                Get in Touch
-            </h2>
-            <p class="text-lg text-gray-600">
-                Have questions? We're here to help. Send us a message and we'll respond as soon as possible.
-            </p>
-        </div>
-
-        <div class="max-w-6xl mx-auto">
-            <div class="grid grid-cols-1 lg:grid-cols-3 gap-8 lg:gap-12">
-                <!-- ================= CONTACT INFO (LEFT) ================= -->
-                <div class="lg:col-span-1">
-                    <div class="space-y-6">
-                        <h3 class="text-2xl font-bold text-gray-900 mb-6">Contact Information</h3>
-
-                        <!-- Contact Cards -->
-                        <div class="space-y-6">
-                            <!-- Location -->
-                            <div class="flex items-start space-x-4 p-4 rounded-xl bg-gray-50 hover:bg-gray-100 transition-colors duration-200">
-                                <div class="flex-shrink-0 w-12 h-12 flex items-center justify-center rounded-lg text-white"
-                                     style="background-color: #073a89;">
-                                    <i class="fas fa-map-marker-alt text-lg"></i>
-                                </div>
-                                <div>
-                                    <h4 class="font-semibold text-gray-800 mb-1">Our Location</h4>
-                                    <p class="text-gray-600">Dublin, OH 43016</p>
-                                </div>
-                            </div>
-
-                            <!-- Email -->
-                            <div class="flex items-start space-x-4 p-4 rounded-xl bg-gray-50 hover:bg-gray-100 transition-colors duration-200">
-                                <div class="flex-shrink-0 w-12 h-12 flex items-center justify-center rounded-lg text-white"
-                                     style="background-color: #073a89;">
-                                    <i class="fas fa-envelope text-lg"></i>
-                                </div>
-                                <div>
-                                    <h4 class="font-semibold text-gray-800 mb-1">Email Us</h4>
-                                    <p class="text-gray-600">info@dotbitz.com</p>
-                                </div>
-                            </div>
-
-                            <!-- Phone -->
-                            <div class="flex items-start space-x-4 p-4 rounded-xl bg-gray-50 hover:bg-gray-100 transition-colors duration-200">
-                                <div class="flex-shrink-0 w-12 h-12 flex items-center justify-center rounded-lg text-white"
-                                     style="background-color: #073a89;">
-                                    <i class="fas fa-phone-alt text-lg"></i>
-                                </div>
-                                <div>
-                                    <h4 class="font-semibold text-gray-800 mb-1">Call Us</h4>
-                                    <p class="text-gray-600">+1 323-888-4554</p>
-                                </div>
-                            </div>
-
-                            <!-- Hours -->
-                            <div class="flex items-start space-x-4 p-4 rounded-xl bg-gray-50 hover:bg-gray-100 transition-colors duration-200">
-                                <div class="flex-shrink-0 w-12 h-12 flex items-center justify-center rounded-lg text-white"
-                                     style="background-color: #073a89;">
-                                    <i class="fas fa-clock text-lg"></i>
-                                </div>
-                                <div>
-                                    <h4 class="font-semibold text-gray-800 mb-1">Business Hours</h4>
-                                    <p class="text-gray-600">Mon – Fri: 8:00 AM – 8:00 PM</p>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
+</div>
+ <!-- contact area -->
+      <div class="contact-area pt-120 pb-100">
+        <div class="container">
+          <div class="contact-content pb-80">
+            <div class="row">
+              <div class="col-md-3">
+                <div class="contact-info">
+                  <div class="icon">
+                    <i class="fal fa-map-location-dot"></i>
+                  </div>
+                  <div class="content">
+                    <h5>Office Address</h5>
+                    <p>Dublin, OH 43016</p>
+                  </div>
                 </div>
-
-                <!-- ================= CONTACT FORM (RIGHT) ================= -->
-                <div class="lg:col-span-2">
-                    <div class="bg-white rounded-2xl p-6 md:p-8 border border-gray-200 shadow-sm">
-                        <h3 class="text-2xl font-bold text-gray-900 mb-6">Send a Message</h3>
-
-                        <form action="{{route('contact.store')}}" method="POST" class="space-y-6">
-                            @csrf
-
-                            <!-- Two-column layout for name and email -->
-                            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                                <!-- Full Name -->
-                                <div>
-                                    <label for="name" class="block text-gray-700 font-medium mb-2">
-                                        Full Name *
-                                    </label>
-                                    <input type="text" id="name" name="name" required
-                                        class="w-full px-4 py-3 rounded-lg border border-gray-300 bg-white
-                                               focus:ring-2 focus:ring-[#0091b9] focus:border-transparent
-                                               focus:outline-none transition-colors duration-200">
-
-                                </div>
-
-                                <!-- Email -->
-                                <div>
-                                    <label for="email" class="block text-gray-700 font-medium mb-2">
-                                        Email Address *
-                                    </label>
-                                    <input type="email" id="email" name="email" required
-                                        class="w-full px-4 py-3 rounded-lg border border-gray-300 bg-white
-                                               focus:ring-2 focus:ring-[#0091b9] focus:border-transparent
-                                               focus:outline-none transition-colors duration-200">
-                                </div>
-                            </div>
-                            <div>
-                                <label for="phone" class="block text-gray-700 font-medium mb-2">
-                                    Phone *
-                                </label>
-                                <input type="text" id="phone" name="phone" required
-                                    class="w-full px-4 py-3 rounded-lg border border-gray-300 bg-white
-                                            focus:ring-2 focus:ring-[#0091b9] focus:border-transparent
-                                            focus:outline-none transition-colors duration-200">
-                            </div>
-                            <!-- Message -->
-                            <div>
-                                <label for="message" class="block text-gray-700 font-medium mb-2">
-                                    Your Message *
-                                </label>
-                                <textarea id="message" name="message" rows="5" required
-                                    class="w-full px-4 py-3 rounded-lg border border-gray-300 bg-white
-                                           focus:ring-2 focus:ring-[#0091b9] focus:border-transparent
-                                           focus:outline-none resize-none transition-colors duration-200"
-                                    placeholder="How can we help you?"></textarea>
-                            </div>
-
-                            <!-- Submit Button -->
-                            <button type="submit"
-                                class="w-full md:w-auto px-8 py-4 rounded-lg font-semibold text-white
-                                       hover:opacity-90 transition-all duration-300 transform hover:-translate-y-0.5
-                                       shadow-lg hover:shadow-xl"
-                                style="background:#FF6500;">
-                                <i class="fas fa-paper-plane mr-2"></i>
-                                Send Message
-                            </button>
-                        </form>
-                    </div>
+              </div>
+              <div class="col-md-3">
+                <div class="contact-info">
+                  <div class="icon">
+                    <i class="fal fa-phone-volume"></i>
+                  </div>
+                  <div class="content">
+                    <h5>Call Us</h5>
+                    <p>+1 323-888-4554</p>
+                  </div>
                 </div>
+              </div>
+              <div class="col-md-3">
+                <div class="contact-info">
+                  <div class="icon">
+                    <i class="fal fa-envelopes"></i>
+                  </div>
+                  <div class="content">
+                    <h5>Email Us</h5>
+                    <p><a href="mailto:info@dotbitz.com" class="" >info@dotbitz.com</a></p>
+                  </div>
+                </div>
+              </div>
+              <div class="col-md-3">
+                <div class="contact-info">
+                  <div class="icon">
+                    <i class="fal fa-alarm-clock"></i>
+                  </div>
+                  <div class="content">
+                    <h5>Open Time</h5>
+                    <p>Mon - Fri (10.00AM - 08.00PM)</p>
+                  </div>
+                </div>
+              </div>
             </div>
-
-            <!-- Map Section -->
-            <div class="mt-16">
-                <div class="rounded-2xl overflow-hidden shadow-lg border border-gray-200">
-                    <iframe
-                        src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d48820.900750188615!2d-83.14592345!3d40.113177050000004!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x8838ecc4d450a11f%3A0xc2176815689028!2sDublin%2C%20OH%2C%20USA!5e0!3m2!1sen!2s!4v1770120548168!5m2!1sen!2s"
-                        width="100%" height="400" class="border-0" allowfullscreen="" loading="lazy"
-                        referrerpolicy="no-referrer-when-downgrade"
-                        title="Our Location">
-                    </iframe>
-
+          </div>
+          <div class="contact-form-wrap">
+            <div class="row g-4">
+              <div class="col-lg-5">
+                <div class="contact-img">
+                  <img src="{{asset('assets/images/contact.jpg')}}" alt="" />
                 </div>
-                <div class="text-center mt-4">
-                    <p class="text-gray-600 text-sm">
-                        Visit us at our office in Dublin, Ohio
+              </div>
+              <div class="col-lg-7">
+                <div class="contact-form">
+                  <div class="contact-form-header">
+                    <h2>Get In Touch</h2>
+                    <p>
+                     Have questions? We're here to help. Send us a message and we'll respond as soon as possible.
                     </p>
+                  </div>
+                  <div class="form-message"></div>
+                  <form method="post" action="{{route('contact.store')}}">
+                    @csrf
+                    <div class="row">
+                      <div class="col-md-6">
+                        <div class="form-group">
+                          <div class="form-icon">
+                            <i class="far fa-user-tie"></i>
+                            <input type="text" class="form-control" name="name" placeholder="Your Name" required />
+                          </div>
+                        </div>
+                      </div>
+                      <div class="col-md-6">
+                        <div class="form-group">
+                          <div class="form-icon">
+                            <i class="far fa-envelope"></i>
+                            <input type="email" class="form-control" name="email" placeholder="Your Email" required />
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="form-group">
+                      <div class="form-icon">
+                        <i class="far fa-pen"></i>
+                        <input type="text" class="form-control" name="phone" placeholder="Your Phone" required />
+                      </div>
+                    </div>
+                    <div class="form-group">
+                      <div class="form-icon">
+                        <i class="far fa-comment-lines"></i>
+                        <textarea
+                          name="message"
+                          cols="30"
+                          rows="5"
+                          class="form-control"
+                          placeholder="Write Your Message"
+                          required
+                        ></textarea>
+                      </div>
+                    </div>
+                    <button type="submit" class="theme-btn">Send Message <i class="far fa-paper-plane"></i></button>
+                  </form>
                 </div>
+              </div>
             </div>
+          </div>
         </div>
-    </div>
-</section>
+      </div>
+      <!-- end contact area -->
+
+      <!-- map -->
+      <div class="contact-map pb-120">
+        <div class="container">
+          <iframe
+            src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d48820.900750188615!2d-83.14592345!3d40.113177050000004!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x8838ecc4d450a11f%3A0xc2176815689028!2sDublin%2C%20OH%2C%20USA!5e0!3m2!1sen!2s!4v1770120548168!5m2!1sen!2s"
+            style="border: 0"
+            allowfullscreen=""
+            loading="lazy"
+          ></iframe>
+        </div>
+      </div>
+      <!-- map end -->
+
 @endsection
