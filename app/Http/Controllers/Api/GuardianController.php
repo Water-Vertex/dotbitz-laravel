@@ -99,4 +99,31 @@ public function update(Request $request)
     {
         //
     }
+
+    public function getGuardianStudents()
+{
+    // 1. Logged-in guardian ka data lein
+    $guardian = Auth::user();
+
+    if (!$guardian) {
+        return response()->json(['message' => 'Unauthorized'], 401);
+    }
+    $studentData = \App\Models\Student::find($guardian->student_id);
+
+    return response()->json([
+        'id'           => $guardian->id,
+        'student_id'   => $guardian->student_id,
+        'first_name'   => $guardian->first_name,
+        'last_name'    => $guardian->last_name,
+        'email'        => $guardian->email,
+        'phone'        => $guardian->phone,
+        'relationship' => $guardian->relationship,
+        'gender'       => $guardian->gender,
+        'address'      => $guardian->address,
+        'city'         => $guardian->city,
+        'state'        => $guardian->state,
+        'zipcode'      => $guardian->zipcode,
+        'students'     => $studentData ? [$studentData] : []
+    ]);
+}
 }

@@ -55,4 +55,12 @@ class Course extends Model
         return $this->belongsTo(Instructor::class);
     }
 
+        /**
+        * Relationship: Course has many Class Schedules
+        */
+    public function classSchedules()
+    {
+        return $this->hasMany(ClassSchedule::class);
+    }
+
 }

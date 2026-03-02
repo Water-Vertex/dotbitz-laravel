@@ -35,70 +35,218 @@
     @yield('content')
 </main>
 
-     <!-- Consultation Modal -->
-<div id="consultationModal" class="fixed inset-0 hidden z-50">
+<style>
+/* Modal Base Styles */
+.modal {
+    position: fixed;
+    inset: 0;
+    z-index: 50;
+    display: none;
+}
 
-    <!-- Overlay -->
-    <div class="absolute inset-0 bg-black/60"></div>
+.modal.active {
+    display: block;
+}
 
-    <!-- Modal Wrapper (Scrollable Area) -->
-    <div class="flex items-center justify-center h-screen p-4 overflow-hidden">
+.modal-overlay {
+    position: absolute;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.6);
+}
 
-        <!-- Modal Content -->
-        <div class="modal-scroll bg-white rounded-2xl shadow-2xl w-full max-w-4xl relative max-h-[90vh] overflow-y-auto" style="height:580px;overflow-y:scroll">
+.modal-wrapper {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 100vh;
+    padding: 1rem;
+    overflow: hidden;
+}
 
-            <!-- Close Button -->
-            <button id="closeModal"
-                class="absolute top-4 right-4 text-gray-400 hover:text-gray-700 transition z-20">
-                <i class="fas fa-times text-xl"></i>
+.modal-content {
+    background: white;
+    border-radius: 1rem;
+    box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+    width: 100%;
+    max-width: 64rem;
+    position: relative;
+    max-height: 90vh;
+    overflow-y: auto;
+    height: 580px;
+}
+
+.modal-close {
+    position: absolute;
+    top: 1rem;
+    right: 1rem;
+    color: #9ca3af;
+    background: none;
+    border: none;
+    cursor: pointer;
+    z-index: 20;
+    transition: color 0.2s;
+}
+
+.modal-close:hover {
+    color: #374151;
+}
+
+.modal-close i {
+    font-size: 1.25rem;
+}
+
+.modal-body {
+    padding: 1.5rem;
+}
+
+@media (min-width: 768px) {
+    .modal-body {
+        padding: 2rem;
+    }
+}
+
+.modal-title {
+    font-size: 1.5rem;
+    font-weight: bold;
+    margin-bottom: 1.5rem;
+    text-align: center;
+    color: #1f2937;
+}
+
+/* Form Styles */
+.form {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+
+.form-row {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 1rem;
+}
+
+@media (min-width: 768px) {
+    .form-row {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 1.5rem;
+    }
+}
+
+.form-group {
+    display: flex;
+    flex-direction: column;
+}
+
+.form-label {
+    display: block;
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: #374151;
+    margin-bottom: 0.25rem;
+}
+
+.form-input,
+.form-select,
+.form-textarea {
+    width: 100%;
+    padding: 0.5rem 0.5rem;
+    font-size: 0.875rem;
+    border: 1px solid #d1d5db;
+    border-radius: 0.5rem;
+    transition: all 0.2s;
+}
+
+.form-input:focus,
+.form-select:focus,
+.form-textarea:focus {
+    outline: none;
+    ring: 2px solid #f97316;
+    border-color: #f97316;
+}
+
+.form-input[disabled] {
+    background-color: #f3f4f6;
+}
+
+.form-hint {
+    font-size: 0.75rem;
+    color: #6b7280;
+    margin-top: 0.5rem;
+}
+
+/* Button Styles */
+.btn {
+    padding: 0.5rem 1.5rem;
+    font-weight: 600;
+    font-size: 1rem;
+    border: none;
+    border-radius: 0.5rem;
+    cursor: pointer;
+    transition: all 0.2s;
+    width: 100%;
+}
+
+.btn-primary {
+    background: #FF6500;
+    color: white;
+}
+
+.btn-primary:hover {
+    background: #e65c00;
+}
+
+.btn-primary:focus {
+    outline: none;
+    ring: 2px solid #f97316;
+    ring-offset: 2px;
+}
+
+/* Utility Classes */
+.overflow-hidden {
+    overflow: hidden;
+}
+
+.hidden {
+    display: none !important;
+}
+
+/* Form Submit Wrapper */
+.form-submit {
+    padding-top: 1rem;
+}
+</style>
+
+<!-- Consultation Modal -->
+<div id="consultationModal" class="modal">
+    <div class="modal-overlay"></div>
+    <div class="modal-wrapper">
+        <div class="modal-content">
+            <button id="closeModal" class="modal-close">
+                <i class="fas fa-times"></i>
             </button>
-
-            <div class="p-6 md:p-8">
-                <h2 class="text-2xl font-bold mb-6 text-center text-gray-800">
-                    Book Free Consultation
-                </h2>
-                <form action="{{route('appointment.store')}}" method="POST" class="space-y-6">
+            <div class="modal-body">
+                <h2 class="modal-title">Book Free Consultation</h2>
+                <form action="{{route('appointment.store')}}" method="POST" class="form">
                     @csrf
-
-                    <!-- Row 1 -->
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6">
-                        <div>
-                            <label for="name" class="block text-sm font-medium text-gray-700 mb-1">
-                                Full Name *
-                            </label>
-                            <input type="text" id="name" name="name" placeholder="Enter your full name" value="{{old('name')}}" required
-                                class="w-full px-2 py-2 text-sm border border-gray-300 rounded-lg
-                                focus:outline-none focus:ring-2 focus:ring-orange-400 focus:border-orange-400">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="name" class="form-label">Full Name *</label>
+                            <input type="text" id="name" name="name" placeholder="Enter your full name" value="{{old('name')}}" required class="form-input">
                         </div>
-
-                        <div>
-                            <label for="email" class="block text-sm font-medium text-gray-700 mb-1">
-                                Email Address *
-                            </label>
-                            <input type="email" id="email" name="email" placeholder="Enter your email" value="{{old('email')}}" required
-                                class="w-full px-2 py-2 text-sm border border-gray-300 rounded-lg
-                                focus:outline-none focus:ring-2 focus:ring-orange-400 focus:border-orange-400">
+                        <div class="form-group">
+                            <label for="email" class="form-label">Email Address *</label>
+                            <input type="email" id="email" name="email" placeholder="Enter your email" value="{{old('email')}}" required class="form-input">
                         </div>
                     </div>
-
-                    <!-- Row 2 -->
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6">
-                        <div>
-                            <label for="phone" class="block text-sm font-medium text-gray-700 mb-1">
-                                Phone Number *
-                            </label>
-                            <input type="text" id="phone" name="phone" placeholder="Enter your phone number" value="{{old('phone')}}" required
-                                class="w-full px-2 py-2 text-sm border border-gray-300 rounded-lg
-                                focus:outline-none focus:ring-2 focus:ring-orange-400 focus:border-orange-400">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="phone" class="form-label">Phone Number *</label>
+                            <input type="text" id="phone" name="phone" placeholder="Enter your phone number" value="{{old('phone')}}" required class="form-input">
                         </div>
-
-                        <div>
-                            <label for="course_id" class="block text-sm font-medium text-gray-700 mb-1">
-                                Select Course *
-                            </label>
-                            <select id="course_id" name="course_id" required
-                                class="w-full px-2 py-2 text-sm border border-gray-300 rounded-lg
-                                focus:outline-none focus:ring-2 focus:ring-orange-400 focus:border-orange-400">
+                        <div class="form-group">
+                            <label for="course_id" class="form-label">Select Course *</label>
+                            <select id="course_id" name="course_id" required class="form-select">
                                 <option value="">Choose a course...</option>
                                 @php
                                     $courses = \App\Models\Course::where('status','active')->get();
@@ -109,27 +257,15 @@
                             </select>
                         </div>
                     </div>
-
-                    <!-- Row 3 -->
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6">
-                        <div>
-                            <label for="appointment_date" class="block text-sm font-medium text-gray-700 mb-1">
-                                Consultation Date *
-                            </label>
-                            <input type="date" id="appointment_date" name="appointment_date" value="{{old('appointment_date')}}" required
-                                min="{{ date('Y-m-d') }}"
-                                class="w-full px-2 py-2 text-sm border border-gray-300 rounded-lg
-                                focus:outline-none focus:ring-2 focus:ring-orange-400 focus:border-orange-400">
-                            <p class="text-xs text-gray-500 mt-2">Available Monday to Friday only</p>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="appointment_date" class="form-label">Consultation Date *</label>
+                            <input type="date" id="appointment_date" name="appointment_date" value="{{old('appointment_date')}}" required min="{{ date('Y-m-d') }}" class="form-input">
+                            <p class="form-hint">Available Monday to Friday only</p>
                         </div>
-
-                        <div>
-                            <label for="appointment_time" class="block text-sm font-medium text-gray-700 mb-1">
-                                Consultation Time *
-                            </label>
-                            <select name="appointment_time" id="appointment_time" required
-                                class="w-full px-2 py-2 text-sm border border-gray-300 rounded-lg
-                                focus:outline-none focus:ring-2 focus:ring-orange-400 focus:border-orange-400">
+                        <div class="form-group">
+                            <label for="appointment_time" class="form-label">Consultation Time *</label>
+                            <select name="appointment_time" id="appointment_time" required class="form-select">
                                 <option value="">Select a time...</option>
                                 @php
                                     $start = strtotime('08:00 AM');
@@ -141,125 +277,69 @@
                                     }
                                 @endphp
                             </select>
-                            <p class="text-xs text-gray-500 mt-2">Available from 8:00 AM to 8:00 PM</p>
+                            <p class="form-hint">Available from 8:00 AM to 8:00 PM</p>
                         </div>
                     </div>
-
-                    <!-- Message -->
-                    <div>
-                        <label for="message" class="block text-sm font-medium text-gray-700 mb-1">
-                            Message (Optional)
-                        </label>
-                        <textarea id="message" name="message" rows="2" placeholder="Any additional information..."
-                            class="w-full px-2 py-2 text-sm border border-gray-300 rounded-lg
-                            focus:outline-none focus:ring-2 focus:ring-orange-400 focus:border-orange-400">{{old('message')}}</textarea>
+                    <div class="form-group">
+                        <label for="message" class="form-label">Message (Optional)</label>
+                        <textarea id="message" name="message" rows="2" placeholder="Any additional information..." class="form-textarea">{{old('message')}}</textarea>
                     </div>
-
-                    <!-- Submit -->
-                    <div class="pt-4">
-                        <button type="submit"
-                            class="w-full bg-[#FF6500] hover:bg-[#e65c00]
-                            text-white px-4 sm:px-6 py-2 sm:py-2 rounded-lg font-semibold text-base transition duration-200
-                            focus:outline-none focus:ring-2 focus:ring-orange-400 focus:ring-offset-2">
-                            Submit Consultation
-                        </button>
+                    <div class="form-submit">
+                        <button type="submit" class="btn btn-primary">Submit Consultation</button>
                     </div>
                 </form>
             </div>
-
         </div>
     </div>
 </div>
 
 <!-- Assessment Modal -->
-<div id="assessmentModal" class="fixed inset-0 hidden z-50">
-
-    <!-- Overlay -->
-    <div class="absolute inset-0 bg-black/60"></div>
-
-    <!-- Modal Wrapper (Scrollable Area) -->
-    <div class="flex items-center justify-center h-screen p-4 overflow-hidden">
-
-        <!-- Modal Content -->
-        <div class="modal-scroll bg-white rounded-2xl shadow-2xl w-full max-w-4xl relative max-h-[90vh] overflow-y-auto">
-
-            <!-- Close Button -->
-            <button id="closeAssessmentModal"
-                class="absolute top-4 right-4 text-gray-400 hover:text-gray-700 transition z-20">
-                <i class="fas fa-times text-xl"></i>
+<div id="assessmentModal" class="modal">
+    <div class="modal-overlay"></div>
+    <div class="modal-wrapper">
+        <div class="modal-content" style="height: auto;">
+            <button id="closeAssessmentModal" class="modal-close">
+                <i class="fas fa-times"></i>
             </button>
-
-            <div class="p-6 md:p-8">
-                <h2 class="text-2xl font-bold mb-6 text-center text-gray-800">
-                    Book Assessment
-                </h2>
-
-                <form action="{{ route('assessment.store') }}" method="POST" class="space-y-6">
+            <div class="modal-body">
+                <h2 class="modal-title">Book Assessment</h2>
+                <form action="{{ route('assessment.store') }}" method="POST" class="form">
                     @csrf
-
                     <input type="hidden" id="assessment_course_id" name="course_id">
-
-                    <!-- Row 1 -->
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6">
-                        <div>
-                            <label class="block text-sm font-medium text-gray-700 mb-1">Full Name *</label>
-                            <input type="text" name="full_name"  placeholder="Enter your full name" required
-                                class="w-full px-2 py-2 text-sm border border-gray-300 rounded-lg
-                                focus:outline-none focus:ring-2 focus:ring-orange-400 focus:border-orange-400"
-                                value="{{ old('full_name') }}">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label class="form-label">Full Name *</label>
+                            <input type="text" name="full_name" placeholder="Enter your full name" required class="form-input" value="{{ old('full_name') }}">
                         </div>
-
-                        <div>
-                            <label class="block text-sm font-medium text-gray-700 mb-1">Email *</label>
-                            <input type="email" name="email"  placeholder="Enter your email" required
-                                class="w-full px-2 py-2 text-sm border border-gray-300 rounded-lg
-                                focus:outline-none focus:ring-2 focus:ring-orange-400 focus:border-orange-400"
-                                value="{{ old('email') }}">
+                        <div class="form-group">
+                            <label class="form-label">Email *</label>
+                            <input type="email" name="email" placeholder="Enter your email" required class="form-input" value="{{ old('email') }}">
                         </div>
                     </div>
-
-                    <!-- Row 2 -->
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6">
-                        <div>
-                            <label class="block text-sm font-medium text-gray-700 mb-1">Phone *</label>
-                            <input type="text" name="phone"  placeholder="Enter your phone number " required
-                                class="w-full px-2 py-2 text-sm border border-gray-300 rounded-lg
-                                focus:outline-none focus:ring-2 focus:ring-orange-400 focus:border-orange-400"
-                                value="{{ old('phone') }}">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label class="form-label">Phone *</label>
+                            <input type="text" name="phone" placeholder="Enter your phone number" required class="form-input" value="{{ old('phone') }}">
                         </div>
-
-                        <div>
-                            <label class="block text-sm font-medium text-gray-700 mb-1">Course *</label>
-                            <input type="text" id="assessment_course_name" disabled
-                                class="w-full px-2 py-2 text-sm border border-gray-300 rounded-lg
-                                bg-gray-100">
+                        <div class="form-group">
+                            <label class="form-label">Course *</label>
+                            <input type="text" id="assessment_course_name" disabled class="form-input" style="background-color: #f3f4f6;">
                         </div>
                     </div>
-
-                    <!-- Row 3 -->
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-1">Message</label>
-                        <textarea name="message"  placeholder="Enter your message" rows="3"
-                            class="w-full px-2 py-2 text-sm border border-gray-300 rounded-lg
-                            focus:outline-none focus:ring-2 focus:ring-orange-400 focus:border-orange-400">{{ old('message') }}</textarea>
+                    <div class="form-group">
+                        <label class="form-label">Message</label>
+                        <textarea name="message" placeholder="Enter your message" rows="3" class="form-textarea">{{ old('message') }}</textarea>
                     </div>
-
-                    <!-- Submit -->
-                    <div class="pt-4">
-                        <button type="submit"
-                            class="w-full bg-[#FF6500] hover:bg-[#e65c00]
-                            text-white px-4 sm:px-6 py-2 sm:py-2 rounded-lg font-semibold text-base transition duration-200
-                            focus:outline-none focus:ring-2 focus:ring-orange-400 focus:ring-offset-2">
-                            Submit Assessment
-                        </button>
+                    <div class="form-submit">
+                        <button type="submit" class="btn btn-primary">Submit Assessment</button>
                     </div>
-
                 </form>
             </div>
-
         </div>
     </div>
 </div>
+
+
 
      <!-- Footer -->
 

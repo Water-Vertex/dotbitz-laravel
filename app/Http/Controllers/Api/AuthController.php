@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use App\Models\User;
 use App\Models\Guardian;
+use App\Models\Instructor;
 use App\Models\Student;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
@@ -28,7 +29,7 @@ class AuthController extends Controller
             ], 401);
         }
 
-        $token = $user->createToken('user_token',['user'])->plainTextToken;
+        $token = $user->createToken('user_token')->plainTextToken;
 
         return response()->json([
             'success' => true,
@@ -55,7 +56,7 @@ class AuthController extends Controller
             ], 401);
         }
 
-        $token = $guardian->createToken('guardian_token',['guardian'])->plainTextToken;
+        $token = $guardian->createToken('guardian_token')->plainTextToken;
 
         return response()->json([
             'success' => true,
@@ -82,12 +83,39 @@ class AuthController extends Controller
             ], 401);
         }
 
-        $token = $student->createToken('student_token',['student'])->plainTextToken;
+        $token = $student->createToken('student_token')->plainTextToken;
 
         return response()->json([
             'success' => true,
             'type' => 'student',
             'student' => $student,
+            'token' => $token
+        ]);
+    }
+
+    /* ================= INSTRUCTOR LOGIN ================= */
+    public function instructorLogin(Request $request)
+    {
+        $request->validate([
+            'email' => 'required|email',
+            'password' => 'required|min:6'
+        ]);
+
+        $instructor = Instructor::where('email', $request->email)->first();
+
+        if (!$instructor || !Hash::check($request->password, $instructor->password)) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Invalid credentials'
+            ], 401);
+        }
+
+        $token = $instructor->createToken('instructor_token')->plainTextToken;
+
+        return response()->json([
+            'success' => true,
+            'type' => 'instructor',
+            'instructor' => $instructor,
             'token' => $token
         ]);
     }

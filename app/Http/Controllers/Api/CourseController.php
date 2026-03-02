@@ -201,8 +201,40 @@ public function index(Request $request)
 
     public function studentIndex(Request $request)
     {
+
+
         try {
             $query = Course::with('instructor');
+
+            // Apply search if provided
+            if ($request->filled('search')) {
+                $search = $request->search;
+                $query->where(function ($q) use ($search) {
+                    $q->where('course_name', 'like', "%{$search}%")
+                    ->orWhere('course_code', 'like', "%{$search}%");
+                });
+            }
+
+            // Get per_page from request (e.g., 50) or default to 10
+            $perPage = $request->query('per_page', 10);
+
+            // Return paginated results specifically for the API
+            return response()->json($query->orderBy('id', 'desc')->paginate($perPage));
+
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Error: ' . $e->getMessage()
+            ], 500);
+        }
+    }
+
+    public function InstructorIndex(Request $request)
+    {
+
+        try {
+            $user = $request->user(); // Get authenticated instructor
+            $query = Course::with('instructor')->where('instructor_id', $user->id);
 
             // Apply search if provided
             if ($request->filled('search')) {

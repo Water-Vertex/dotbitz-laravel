@@ -51,7 +51,7 @@
                     <a href="https://portal.dotbitz.com" target="_blank" class="nav-link"><span class="far fa-sign-in"></span> Sign In</a>
                   </div>
                   <div class="nav-btn">
-                    <a href="https://portal.dotbitz.com" target="_blank" class="theme-btn" style="background: #FF6500 !important">Book Free Consultation</a>
+                    <a href="javascript:void(0)" class="theme-btn open-consultation-modal" style="background: #FF6500 !important">Book Free Consultation</a>
                   </div>
 
                 </div>

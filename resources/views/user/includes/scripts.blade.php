@@ -108,13 +108,13 @@ $(document).ready(function () {
   </script>
 <script>
 $(document).ready(function() {
-    // Initialize modal functionality
+    // Consultation Modal
     const consultationModal = {
         init: function() {
             this.cacheElements();
             this.setMinDate();
             this.bindEvents();
-            this.bindOpenButtons(); // Bind all open buttons
+            this.bindOpenButtons();
         },
 
         cacheElements: function() {
@@ -122,7 +122,7 @@ $(document).ready(function() {
             this.$timeInput = $('#appointment_time');
             this.$modal = $('#consultationModal');
             this.$closeBtn = $('#closeModal');
-            this.$overlay = this.$modal.find('.absolute');
+            this.$overlay = this.$modal.find('.modal-overlay');
             this.$form = this.$modal.find('form');
         },
 
@@ -132,28 +132,16 @@ $(document).ready(function() {
         },
 
         bindEvents: function() {
-            // Date validation
             this.$dateInput.on('change', this.validateDate.bind(this));
-
-            // Time validation
             this.$timeInput.on('change', this.validateTime.bind(this));
-
-            // Close modal events
             this.$closeBtn.on('click', this.closeModal.bind(this));
             this.$overlay.on('click', this.closeModal.bind(this));
-
-            // Escape key
             $(document).on('keydown', this.handleEscape.bind(this));
-
-            // Click outside modal (improved selector)
             this.$modal.on('click', this.handleOutsideClick.bind(this));
         },
 
         bindOpenButtons: function() {
-            // Bind to any button with class 'open-consultation-modal'
             $(document).on('click', '.open-consultation-modal', this.openModal.bind(this));
-
-            // Also bind to your specific buttons
             $(document).on('click', '#openConsultationBtn', this.openModal.bind(this));
         },
 
@@ -179,12 +167,12 @@ $(document).ready(function() {
 
         openModal: function(e) {
             e.preventDefault();
-            this.$modal.removeClass('hidden');
-            $('body').addClass('overflow-hidden'); // Prevent background scrolling
+            this.$modal.addClass('active');
+            $('body').addClass('overflow-hidden');
         },
 
         closeModal: function() {
-            this.$modal.addClass('hidden');
+            this.$modal.removeClass('active');
             $('body').removeClass('overflow-hidden');
             if (this.$form.length) {
                 this.$form[0].reset();
@@ -192,149 +180,125 @@ $(document).ready(function() {
         },
 
         handleEscape: function(e) {
-            if (e.key === 'Escape' && !this.$modal.hasClass('hidden')) {
+            if (e.key === 'Escape' && this.$modal.hasClass('active')) {
                 this.closeModal();
             }
         },
 
         handleOutsideClick: function(e) {
-            // Check if click is on the modal background (not the content)
             if ($(e.target).attr('id') === 'consultationModal') {
                 this.closeModal();
             }
         },
 
         showToast: function(type, title, message) {
-            // Check if toastr is available
             if (typeof toastr !== 'undefined') {
+                const options = {
+                    closeButton: true,
+                    progressBar: true,
+                    positionClass: 'toast-top-right',
+                    timeOut: type === 'error' ? 5000 : 3000,
+                    extendedTimeOut: type === 'error' ? 2000 : 1000,
+                    preventDuplicates: true
+                };
+
                 switch(type) {
                     case 'error':
-                        toastr.error(message, title, {
-                            closeButton: true,
-                            progressBar: true,
-                            positionClass: 'toast-top-right',
-                            timeOut: 5000,
-                            extendedTimeOut: 2000,
-                            preventDuplicates: true
-                        });
+                        toastr.error(message, title, options);
                         break;
                     case 'success':
-                        toastr.success(message, title, {
-                            closeButton: true,
-                            progressBar: true,
-                            positionClass: 'toast-top-right',
-                            timeOut: 3000,
-                            extendedTimeOut: 1000,
-                            preventDuplicates: true
-                        });
+                        toastr.success(message, title, options);
                         break;
                     case 'warning':
-                        toastr.warning(message, title, {
-                            closeButton: true,
-                            progressBar: true,
-                            positionClass: 'toast-top-right',
-                            timeOut: 4000,
-                            extendedTimeOut: 1500,
-                            preventDuplicates: true
-                        });
+                        toastr.warning(message, title, options);
                         break;
                     case 'info':
-                        toastr.info(message, title, {
-                            closeButton: true,
-                            progressBar: true,
-                            positionClass: 'toast-top-right',
-                            timeOut: 4000,
-                            extendedTimeOut: 1500,
-                            preventDuplicates: true
-                        });
+                        toastr.info(message, title, options);
                         break;
                 }
             } else {
-                // Fallback to alert if toastr is not available
                 alert(`${title}: ${message}`);
             }
         }
     };
 
-    // Initialize the modal
-    consultationModal.init();
+    // Assessment Modal
+    const assessmentModal = {
+        init: function() {
+            this.cacheElements();
+            this.bindEvents();
+        },
 
-    // Expose openModal function globally as well (backward compatibility)
+        cacheElements: function() {
+            this.$modal = $('#assessmentModal');
+            this.$close = $('#closeAssessmentModal');
+        },
+
+        bindEvents: function() {
+            $(document).on('click', '.open-assessment-modal', this.openModal.bind(this));
+            this.$close.on('click', this.closeModal.bind(this));
+            this.$modal.on('click', this.handleOutsideClick.bind(this));
+        },
+
+        openModal: function(e) {
+            const courseId = $(e.currentTarget).data('course-id');
+            const courseName = $(e.currentTarget).data('course-name');
+
+            $('#assessment_course_id').val(courseId);
+            $('#assessment_course_name').val(courseName);
+
+            this.$modal.addClass('active');
+            $('body').addClass('overflow-hidden');
+        },
+
+        closeModal: function() {
+            this.$modal.removeClass('active');
+            $('body').removeClass('overflow-hidden');
+            this.$modal.find('form')[0].reset();
+        },
+
+        handleOutsideClick: function(e) {
+            if ($(e.target).is(this.$modal)) {
+                this.closeModal();
+            }
+        }
+    };
+
+    // Initialize both modals
+    consultationModal.init();
+    assessmentModal.init();
+
+    // Flatpickr initialization
+    if ($('#appointment_date').length) {
+        flatpickr("#appointment_date", {
+            dateFormat: "m-d-Y",
+            minDate: "today",
+            disable: [
+                function(date) {
+                    return (date.getDay() === 0 || date.getDay() === 6);
+                }
+            ]
+        });
+    }
+
+    if ($('#appointment_time').length) {
+        flatpickr("#appointment_time", {
+            enableTime: true,
+            noCalendar: true,
+            dateFormat: "H:i",
+            time_24hr: false,
+            minTime: "08:00",
+            maxTime: "20:00",
+            minuteIncrement: 15
+        });
+    }
+
+    // Global open function for backward compatibility
     window.openConsultationModal = function(e) {
         if (e) e.preventDefault();
-        $('#consultationModal').removeClass('hidden');
+        $('#consultationModal').addClass('active');
         $('body').addClass('overflow-hidden');
     };
-});
-
-</script>
-<script>
-$(document).ready(function () {
-
-    // Date Picker (Mon-Fri only)
-    flatpickr("#appointment_date", {
-        dateFormat: "m-d-Y",
-        minDate: "today",
-        disable: [
-            function(date) {
-                // Disable Saturday (6) and Sunday (0)
-                return (date.getDay() === 0 || date.getDay() === 6);
-            }
-        ],
-        onChange: function(selectedDates, dateStr) {
-            if (!dateStr) return;
-            // optional: toastr message
-            // toastr.info("Date selected: " + dateStr);
-        }
-    });
-
-    // Time Picker (8:00 AM - 8:00 PM)
-    flatpickr("#appointment_time", {
-        enableTime: true,
-        noCalendar: true,
-        dateFormat: "H:i",
-        time_24hr: false,
-        minTime: "08:00",
-        maxTime: "20:00",
-        minuteIncrement: 15
-    });
-
-});
-
-
-</script>
-<script>
-$(document).ready(function() {
-    const $modal = $('#assessmentModal');
-    const $close = $('#closeAssessmentModal');
-
-    $(document).on('click', '.open-assessment-modal', function() {
-        const courseId = $(this).data('course-id');
-        const courseName = $(this).data('course-name');
-
-        $('#assessment_course_id').val(courseId);
-        $('#assessment_course_name').val(courseName);
-
-        $modal.removeClass('hidden');
-        $('body').addClass('overflow-hidden');
-    });
-
-    $close.on('click', function() {
-        $modal.addClass('hidden');
-        $('body').removeClass('overflow-hidden');
-        $modal.find('form')[0].reset();
-    });
-
-    // Close on clicking outside
-    $modal.on('click', function(e) {
-        if ($(e.target).is($modal)) {
-            $modal.addClass('hidden');
-            $('body').removeClass('overflow-hidden');
-            $modal.find('form')[0].reset();
-        }
-    });
-
-
 });
 </script>
 <!-- AOS Animation Library -->

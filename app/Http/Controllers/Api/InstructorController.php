@@ -27,7 +27,7 @@ class InstructorController extends Controller
             });
         }
 
-        
+
         $instructors = $query->orderBy('id', 'desc')->get();
 
         return response()->json([
@@ -172,4 +172,55 @@ class InstructorController extends Controller
             'message' => 'Instructor deleted successfully'
         ]);
     }
+
+    public function profile(Request $request)
+    {
+        $instructor = $request->user(); // logged-in instructor
+
+        return response()->json([
+            'id' => $instructor->id,
+            'instructor_uid' => $instructor->instructor_uid,
+            'first_name' => $instructor->first_name,
+            'last_name' => $instructor->last_name,
+            'user_name' => $instructor->user_name,
+            'email' => $instructor->email,
+            'phone' => $instructor->phone,
+            'date_of_birth' => $instructor->date_of_birth,
+            'gender' => $instructor->gender,
+            'address' => $instructor->address,
+            'zipcode' => $instructor->zipcode,
+            'city' => $instructor->city,
+            'state' => $instructor->state,
+        ]);
+    }
+
+    public function updateProfile(Request $request)
+    {
+        $instructor = $request->user(); // Get authenticated instructor
+
+        // Validation
+        $validated = $request->validate([
+            'first_name' => 'required|string|max:255',
+            'last_name' => 'required|string|max:255',
+            'user_name' => 'required|string|max:255|unique:instructors,user_name,' . $instructor->id,
+            'email' => 'required|email|unique:instructors,email,' . $instructor->id,
+            'phone' => 'nullable|string|max:20',
+            'date_of_birth' => 'nullable|date',
+            'gender' => 'nullable|in:male,female,other',
+            'address' => 'nullable|string|max:255',
+            'zipcode' => 'nullable|string|max:20',
+            'city' => 'nullable|string|max:255',
+            'state' => 'nullable|string|max:255',
+        ]);
+
+        // Update instructor
+        $instructor->update($validated);
+
+        return response()->json([
+            'message' => 'Profile updated successfully',
+            'data' => $instructor
+        ], 200);
+    }
+
+    
 }

@@ -8,18 +8,13 @@
             <div class="row g-4">
               <div class="col-lg-5">
                 <div class="footer-widget-box about-us">
-                  <a href="#" class="footer-logo">
-                    <img src="assets/img/logo/logo.png" alt="" />
+                  <a href="{{route('user.home')}}" class="footer-logo">
+                    <img src="{{asset('assets/images/logo/dotbitz-logo.png')}}" alt="" />
                   </a>
                   <p class="mb-3">
-                    We are many variations of passages available but the majority have suffered alteration some form by injected humour
-                    words believable.
+                     DotBitz is an online learning institute dedicated to teaching programming and career-ready skills to students aged 9 and above. We believe that early exposure to technology, combined with the right guidance, can shape confident learners and future professionals.
                   </p>
-                  <div class="footer-lang mb-4">
-                    <a href="#" class="lang-btn" data-bs-toggle="modal" data-bs-target="#langModal">
-                      <span class="far fa-globe"></span>English
-                    </a>
-                  </div>
+
                   <div class="footer-newsletter">
                     <h6>Subscribe Our Newsletter</h6>
                     <div class="newsletter-form">
@@ -41,48 +36,29 @@
                   <h4 class="footer-widget-title">Company</h4>
                   <ul class="footer-list">
                     <li>
-                      <a href="about.html"><i class="far fa-angle-double-right"></i>About Us</a>
+                      <a href="{{route('user.about')}}"><i class="far fa-angle-double-right"></i>About Us</a>
                     </li>
                     <li>
-                      <a href="blog.html"><i class="far fa-angle-double-right"></i>Update News</a>
+                      <a href="{{route('user.faq')}}"><i class="far fa-angle-double-right"></i>FAQs</a>
                     </li>
                     <li>
-                      <a href="testimonial.html"><i class="far fa-angle-double-right"></i>Testimonials</a>
-                    </li>
-                    <li>
-                      <a href="contact.html"><i class="far fa-angle-double-right"></i>Contact Us</a>
-                    </li>
-                    <li>
-                      <a href="terms.html"><i class="far fa-angle-double-right"></i>Terms Of Service</a>
-                    </li>
-                    <li>
-                      <a href="privacy.html"><i class="far fa-angle-double-right"></i>Privacy policy</a>
+                      <a href="{{route('user.contact')}}"><i class="far fa-angle-double-right"></i>Contact Us</a>
                     </li>
                   </ul>
                 </div>
               </div>
               <div class="col-6 col-lg-2">
                 <div class="footer-widget-box list">
-                  <h4 class="footer-widget-title">Quick Links</h4>
+                  <h4 class="footer-widget-title">Informations</h4>
                   <ul class="footer-list">
+                    @php
+                        $policies = \App\Models\Policy::all();
+                    @endphp
+                    @foreach($policies as $policy)
                     <li>
-                      <a href="course.html"><i class="far fa-angle-double-right"></i>Popular Courses</a>
+                      <a href="{{route('user.policy', $policy->slug)}}"><i class="far fa-angle-double-right"></i>{{$policy->title}}</a>
                     </li>
-                    <li>
-                      <a href="become-instructor.html"><i class="far fa-angle-double-right"></i>Become Instructor</a>
-                    </li>
-                    <li>
-                      <a href="help.html"><i class="far fa-angle-double-right"></i>Help & Support</a>
-                    </li>
-                    <li>
-                      <a href="event.html"><i class="far fa-angle-double-right"></i>Upcoming Events</a>
-                    </li>
-                    <li>
-                      <a href="affiliate.html"><i class="far fa-angle-double-right"></i>Our Affiliate</a>
-                    </li>
-                    <li>
-                      <a href="career.html"><i class="far fa-angle-double-right"></i>Join Our Team</a>
-                    </li>
+                    @endforeach
                   </ul>
                 </div>
               </div>
@@ -96,7 +72,7 @@
                       </div>
                       <div class="content">
                         <h6>Our Address</h6>
-                        <p>25/AB Milford Road, New York, USA</p>
+                        <p>Dublin, OH 43016</p>
                       </div>
                     </li>
                     <li>
@@ -105,7 +81,7 @@
                       </div>
                       <div class="content">
                         <h6>Call Us</h6>
-                        <a href="tel:+21236547898">+2 123 654 7898</a>
+                        <a href="tel:+21236547898">+1 323-888-4554</a>
                       </div>
                     </li>
                     <li>
@@ -114,27 +90,14 @@
                       </div>
                       <div class="content">
                         <h6>Mail Us</h6>
-                        <a href="/cdn-cgi/l/email-protection#167f78707956736e777b667a733875797b"><span class="__cf_email__" data-cfemail="2a43444c456a4f524b475a464f04494547">[email&#160;protected]</span></a>
+                        <a href="mailto:info@dotbitz.com"><span class="" >info@dotbitz.com</span></a>
                       </div>
                     </li>
                   </ul>
                 </div>
               </div>
             </div>
-            <div class="footer-payment mt-4">
-              <h6>We Accept Payment Gateway</h6>
-              <div class="payment-img">
-                <img class="paypal" src="assets/img/payment/paypal.png" alt="" />
-                <img class="master" src="assets/img/payment/master-card.png" alt="" />
-                <img class="visa" src="assets/img/payment/visa.png" alt="" />
-                <img class="google" src="assets/img/payment/google-pay.png" alt="" />
-                <img class="apple" src="assets/img/payment/apple-pay.png" alt="" />
-                <img class="stripe" src="assets/img/payment/stripe.png" alt="" />
-                <img class="amex" src="assets/img/payment/american-express.png" alt="" />
-                <img class="discover" src="assets/img/payment/discover.png" alt="" />
-                <img class="amazon" src="assets/img/payment/amazon-pay.png" alt="" />
-              </div>
-            </div>
+
           </div>
         </div>
       </div>
@@ -142,7 +105,7 @@
         <div class="copyright">
           <div class="row">
             <div class="col-md-6 align-self-center">
-              <p class="copyright-text">&copy; Copyright <span id="date"></span> <a href="#"> Edubo </a> All Rights Reserved.</p>
+              <p class="copyright-text">&copy; Copyright <span id="date"></span> <a href="#"> Dotbitz </a> All Rights Reserved.</p>
             </div>
             <div class="col-md-6 align-self-center">
               <ul class="footer-social">

@@ -2,11 +2,18 @@
 
 namespace App\Models;
 
+use Illuminate\Container\Attributes\Auth;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Foundation\Auth\User as Authenticatable;
+use Illuminate\Notifications\Notifiable;
+use Illuminate\Testing\Fluent\Concerns\Has;
+use Laravel\Sanctum\HasApiTokens;
 
-class Instructor extends Model
+class Instructor extends Authenticatable
 {
     //
+    use HasFactory, Notifiable, HasApiTokens;
     protected $fillable = [
         'instructor_uid',
         'first_name',
@@ -32,5 +39,10 @@ class Instructor extends Model
     public function courses()
     {
         return $this->hasMany(Course::class);
+    }
+
+    public function classSchedules()
+    {
+        return $this->hasMany(ClassSchedule::class);
     }
 }

@@ -5,18 +5,23 @@ use App\Http\Controllers\Api\AssignmentController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\AuthController;
+use App\Http\Controllers\Api\ClassScheduleController;
 use App\Http\Controllers\Api\CouponController;
 use App\Http\Controllers\Api\CourseController;
 use App\Http\Controllers\Api\CourseCurriculumController;
+use App\Http\Controllers\Api\CoursesByStudentController;
 use App\Http\Controllers\Api\FaqController;
 use App\Http\Controllers\Api\InstructorController;
 use App\Http\Controllers\Api\McqController;
 use App\Http\Controllers\Api\PolicyController;
 use App\Http\Controllers\Api\StudentController;
 use App\Http\Controllers\Api\GuardianController;
+use App\Http\Controllers\Api\OrderController;
+use App\Models\Student;
+
 // Public routes
 Route::post('admin/login', [AuthController::class, 'login']);
-Route::post('/logout', [AuthController::class, 'logout'])->middleware('auth:user');
+Route::post('/logout', [AuthController::class, 'logout'])->middleware('auth:sanctum');
 
 // Protected routes
 Route::middleware('auth:sanctum')->prefix('admin')->group(function () {
@@ -30,35 +35,61 @@ Route::middleware('auth:sanctum')->prefix('admin')->group(function () {
     Route::apiResource('coupons', CouponController::class);
     Route::apiResource('mcqs', McqController::class);
     Route::apiResource('assessments', AssessmentController::class);
+    Route::apiResource('students', StudentController::class);
 
 });
 
 // Guardian routes ----------------- //
 Route::post('guardian/login', [AuthController::class, 'Guardianlogin']);
-Route::post('/guardian/logout', [AuthController::class, 'Guardianlogout'])->middleware('auth:guardian');
+Route::post('/guardian/logout', [AuthController::class, 'Guardianlogout'])->middleware('auth:sanctum');
 
 Route::middleware('auth:sanctum')->prefix('guardian')->group(function () {
     // GET /api/guardian -> returns currently authenticated guardian's profile
     Route::get('/', [GuardianController::class, 'index']);
-   Route::put('profile/update', [GuardianController::class, 'update']);
-   Route::get('courses', [CourseController::class, 'guardianIndex']);
-   Route::get('courses/{id}', [CourseController::class, 'show']);
+    Route::put('profile/update', [GuardianController::class, 'update']);
+    Route::get('courses', [CourseController::class, 'guardianIndex']);
+    Route::get('courses/{id}', [CourseController::class, 'show']);
+    Route::get('students', [GuardianController::class, 'getGuardianStudents']);
+    Route::get('checkout/guardian', [GuardianController::class, 'getGuardianStudents']);
+    Route::post('validate-coupon', [OrderController::class, 'validateCoupon']);
+    Route::post('orders', [OrderController::class, 'GuardianOrderstore']);
+    Route::get('orders', [OrderController::class, 'index']);
+    Route::get('orders/{id}', [OrderController::class, 'show']);
+    Route::get('student-courses/{student_id}', [CoursesByStudentController::class, 'getCoursesByStudentForGuardian']);
 });
 
 // Student routes ----------------- //
 
 Route::post('student/login', [AuthController::class, 'Studentlogin']);
 Route::post('/student/logout', [AuthController::class, 'Studentlogout'])->middleware('auth:student');
+
 Route::middleware('auth:sanctum')->prefix('student')->group(function () {
-        Route::get('/profile', [StudentController::class, 'profile']);
-        Route::put('/profile', [StudentController::class, 'updateProfile']);
-        Route::get('/{id}', [StudentController::class, 'show']);
-        Route::put('/{id}', [StudentController::class, 'update']);
-        Route::get('/{studentId}/education', [StudentController::class, 'getStudentDetails']);
-        Route::get('/{studentId}/guardian', [StudentController::class, 'getGuardian']);
-        Route::get('courses', [CourseController::class, 'studentIndex']);
-        Route::get('courses/{id}', [CourseController::class, 'show']);
-    });
+
+    // Profile
+    Route::get('/profile', [StudentController::class, 'profile']);
+    Route::put('/profile', [StudentController::class, 'updateProfile']);
+
+    // Courses
+    Route::get('/courses', [CourseController::class, 'studentIndex']);
+    Route::get('/courses/{id}', [CourseController::class, 'show']);
+    Route::get('/my-courses', [CoursesByStudentController::class, 'myEnrolledCourses']);
+    Route::get('/my-courses/{id}', [CoursesByStudentController::class, 'show']);
+    Route::get('/assignments/course/{courseId}', [AssignmentController::class, 'getAssignmentsByCourse']);
+
+    // Orders & Coupon (specific - pehle)
+    Route::post('/coupon/validate', [OrderController::class, 'validateCoupon']);
+    Route::post('/orders', [OrderController::class, 'store']);
+    Route::get('/orders', [OrderController::class, 'index']);
+    Route::get('/orders/{id}', [OrderController::class, 'show']);
+
+    // Education & Guardian sub-routes
+    Route::get('/{studentId}/education', [StudentController::class, 'getStudentDetails']);
+    Route::get('/{studentId}/guardian', [StudentController::class, 'getGuardian']);
+
+    // Generic (baad mein - warna sab match ho jata)
+    Route::get('/{id}', [StudentController::class, 'show']);
+    Route::put('/{id}', [StudentController::class, 'update']);
+});
 
 // Student Registration Routes
 Route::prefix('students')->group(function () {
@@ -80,5 +111,27 @@ Route::prefix('students')->group(function () {
         Route::put('/{id}', [StudentController::class, 'update']); // edit
         Route::delete('/{id}', [StudentController::class, 'destroy']); // delete
     });
+});
+
+// Instructor routes ----------------- //
+Route::post('instructor/login', [AuthController::class, 'instructorLogin']);
+Route::post('/instructor/logout', [AuthController::class, 'logout'])->middleware('auth:instructor');
+
+Route::middleware('auth:sanctum')->prefix('instructor')->group(function () {
+    // GET /api/instructor -> returns currently authenticated instructor's profile
+    Route::get('/', [InstructorController::class, 'index']);
+    Route::put('profile/update', [InstructorController::class, 'update']);
+    Route::get('courses', [CourseController::class, 'instructorIndex']);
+    Route::get('courses/{id}', [CourseController::class, 'show']);
+    // Profile
+    Route::get('/profile', [InstructorController::class, 'profile']);
+    Route::put('/profile', [InstructorController::class, 'updateProfile']);
+
+    Route::get('/courses', [CourseController::class, 'InstructorIndex']);
+    Route::get('/courses/{id}', [CourseController::class, 'show']);
+
+    Route::get('/instructors', [InstructorController::class, 'index']);
+
+    Route::apiResource('class-schedules', ClassScheduleController::class);
 });
 

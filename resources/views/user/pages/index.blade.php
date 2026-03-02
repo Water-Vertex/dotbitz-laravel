@@ -270,7 +270,7 @@
                     -webkit-box-orient: vertical;">{{$course->short_description}}</p>
                 </div>
                 <div class="course-bottom">
-                  <a href="javascript:void(0)" data-course-id="{{ $course->id }}"
+                  <a href="javascript:void(0)" class="open-assessment-modal" data-course-id="{{ $course->id }}"
                                         data-course-name="{{ $course->course_name }}">
                     <div class="course-instructor">
 
