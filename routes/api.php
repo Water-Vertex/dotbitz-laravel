@@ -1,10 +1,12 @@
 <?php
 
+use App\Http\Controllers\Api\AnnouncementController;
 use App\Http\Controllers\Api\AssessmentController;
 use App\Http\Controllers\Api\AssignmentController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\AuthController;
+use App\Http\Controllers\Api\BatchController;
 use App\Http\Controllers\Api\ClassScheduleController;
 use App\Http\Controllers\Api\CouponController;
 use App\Http\Controllers\Api\CourseController;
@@ -36,6 +38,10 @@ Route::middleware('auth:sanctum')->prefix('admin')->group(function () {
     Route::apiResource('mcqs', McqController::class);
     Route::apiResource('assessments', AssessmentController::class);
     Route::apiResource('students', StudentController::class);
+    Route::apiResource('batches', BatchController::class);
+    Route::get('/instructors/{id}/courses', [CourseController::class, 'CoursesByInstructor']);
+    Route::get('/courses/{id}/students', [CoursesByStudentController::class, 'getstudents']);
+    Route::apiResource('announcements', AnnouncementController::class);
 
 });
 
@@ -133,5 +139,11 @@ Route::middleware('auth:sanctum')->prefix('instructor')->group(function () {
     Route::get('/instructors', [InstructorController::class, 'index']);
 
     Route::apiResource('class-schedules', ClassScheduleController::class);
+    Route::get('/class-schedules/batch/{batchId}', [ClassScheduleController::class, 'getByBatch']);
+
+    Route::put('/class-schedules/multiple/{id}', [ClassScheduleController::class, 'updateMultiple']); // For updating multiple
+
+    Route::delete('/class-schedules', [ClassScheduleController::class, 'destroyMultiple']); // Delete multiple
+    Route::get('/courses/{courseId}/batches', [BatchController::class, 'getBatchesByCourse']);
 });
 

@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Models\CoursesByStudent;
+use App\Models\Student;
 use Illuminate\Http\Request;
 
 class CoursesByStudentController extends Controller
@@ -84,6 +85,22 @@ class CoursesByStudentController extends Controller
         return response()->json([
             'success' => true,
             'data'    => $courses
+        ]);
+    }
+
+    public function getstudents($id)
+    {
+        // 1️⃣ Get all student IDs for the course
+        $studentIds = CoursesByStudent::where('course_id', $id)
+                        ->pluck('student_id'); // gives array of IDs
+
+        // 2️⃣ Fetch student details from students table
+        $students = Student::whereIn('id', $studentIds)->get();
+
+        // 3️⃣ Return response
+        return response()->json([
+            'success' => true,
+            'data' => $students
         ]);
     }
 }

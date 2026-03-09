@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use App\Models\ClassSchedule;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class ClassScheduleController extends Controller
 {
@@ -13,36 +14,120 @@ class ClassScheduleController extends Controller
      */
     public function index()
     {
-        //
-        $schedules = ClassSchedule::all();
+        $schedules = ClassSchedule::with(['course', 'batch', 'instructor'])->get();
         return response()->json([
             'message' => 'Class schedules retrieved successfully',
             'data' => $schedules
         ]);
-
     }
 
     /**
-     * Store a newly created resource in storage.
+     * Store multiple schedules (for recurring classes)
      */
     public function store(Request $request)
     {
-        //
-        $schedule = ClassSchedule::create(
-            $request->only([
-                'course_id',
-                'instructor_id',
-                'start_time',
-                'end_time',
-                'meeting_link',
-                'duration',
-                'status',
-            ])
-        );
+        $request->validate([
+            '*.course_id' => 'required|exists:courses,id',
+            '*.instructor_id' => 'required|exists:instructors,id',
+            '*.batch_id' => 'required|exists:batches,id',
+            '*.start_time' => 'required|date',
+            '*.end_time' => 'required|date|after:*.start_time',
+            '*.meeting_link' => 'required|url',
+            '*.day' => 'required|in:monday,tuesday,wednesday,thursday,friday,saturday,sunday',
+            '*.status' => 'required|in:scheduled,ongoing,completed,cancelled',
+            '*.note' => 'nullable|string'
+        ]);
+
+        DB::beginTransaction();
+
+        try {
+            $schedules = [];
+            foreach ($request->all() as $scheduleData) {
+                $schedules[] = ClassSchedule::create($scheduleData);
+            }
+
+            DB::commit();
+
+            return response()->json([
+                'message' => count($schedules) . ' class schedule(s) created successfully',
+                'data' => $schedules
+            ], 201);
+
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return response()->json([
+                'message' => 'Failed to create schedules',
+                'error' => $e->getMessage()
+            ], 500);
+        }
+    }
+
+    /**
+     * Update multiple schedules (for recurring classes)
+     */
+    public function updateMultiple(Request $request, $id)
+    {
+        $request->validate([
+            '*.id' => 'sometimes|exists:class_schedules,id',
+            '*.course_id' => 'required|exists:courses,id',
+            '*.instructor_id' => 'required|exists:instructors,id',
+            '*.batch_id' => 'required|exists:batches,id',
+            '*.start_time' => 'required|date',
+            '*.end_time' => 'required|date|after:*.start_time',
+            '*.meeting_link' => 'required|url',
+            '*.day' => 'required|in:monday,tuesday,wednesday,thursday,friday,saturday,sunday',
+            '*.status' => 'required|in:scheduled,ongoing,completed,cancelled',
+            '*.note' => 'nullable|string'
+        ]);
+
+        DB::beginTransaction();
+
+        try {
+            $updatedSchedules = [];
+
+            foreach ($request->all() as $scheduleData) {
+                if (isset($scheduleData['id'])) {
+                    // Update existing schedule
+                    $schedule = ClassSchedule::findOrFail($scheduleData['id']);
+                    $schedule->update($scheduleData);
+                    $updatedSchedules[] = $schedule;
+                } else {
+                    // Create new schedule
+                    $updatedSchedules[] = ClassSchedule::create($scheduleData);
+                }
+            }
+
+            DB::commit();
+
+            return response()->json([
+                'message' => count($updatedSchedules) . ' class schedule(s) updated successfully',
+                'data' => $updatedSchedules
+            ]);
+
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return response()->json([
+                'message' => 'Failed to update schedules',
+                'error' => $e->getMessage()
+            ], 500);
+        }
+    }
+
+    /**
+     * Get schedules by batch
+     */
+    public function getByBatch($batchId)
+    {
+        $schedules = ClassSchedule::where('batch_id', $batchId)
+            ->with(['course', 'instructor'])
+            ->orderBy('day')
+            ->orderBy('start_time')
+            ->get();
+
         return response()->json([
-            'message' => 'Class schedule created successfully',
-            'data' => $schedule
-        ], 201);
+            'message' => 'Schedules retrieved successfully',
+            'data' => $schedules
+        ]);
     }
 
     /**
@@ -50,8 +135,7 @@ class ClassScheduleController extends Controller
      */
     public function show(string $id)
     {
-        //
-        $schedule = ClassSchedule::findOrFail($id);
+        $schedule = ClassSchedule::with(['course', 'batch', 'instructor'])->findOrFail($id);
         return response()->json([
             'message' => 'Class schedule retrieved successfully',
             'data' => $schedule
@@ -59,39 +143,32 @@ class ClassScheduleController extends Controller
     }
 
     /**
-     * Update the specified resource in storage.
+     * Delete a specific schedule
      */
-    public function update(Request $request, string $id)
+    public function destroy(string $id)
     {
-        //
         $schedule = ClassSchedule::findOrFail($id);
-        $schedule->update(
-            $request->only([
-                'course_id',
-                'instructor_id',
-                'start_time',
-                'end_time',
-                'meeting_link',
-                'duration',
-                'status',
-            ])
-        );
+        $schedule->delete();
+
         return response()->json([
-            'message' => 'Class schedule updated successfully',
-            'data' => $schedule
+            'message' => 'Class schedule deleted successfully'
         ]);
     }
 
     /**
-     * Remove the specified resource from storage.
+     * Delete multiple schedules
      */
-    public function destroy(string $id)
+    public function destroyMultiple(Request $request)
     {
-        //
-        $schedule = ClassSchedule::findOrFail($id);
-        $schedule->delete();
+        $request->validate([
+            'ids' => 'required|array',
+            'ids.*' => 'exists:class_schedules,id'
+        ]);
+
+        ClassSchedule::whereIn('id', $request->ids)->delete();
+
         return response()->json([
-            'message' => 'Class schedule deleted successfully'
+            'message' => count($request->ids) . ' class schedule(s) deleted successfully'
         ]);
     }
 }
