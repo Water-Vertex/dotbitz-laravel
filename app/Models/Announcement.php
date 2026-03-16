@@ -13,12 +13,29 @@ class Announcement extends Model
         'announced_by_id',
         'status',
         'priority',
+        'target_type',
+        'course_id',
+        'batch_id',
+        'target_instructor_ids',
         'scheduled_at',
         'sent_at',
     ];
 
     protected $casts = [
-        'scheduled_at' => 'datetime',
-        'sent_at'      => 'datetime',
+        'scheduled_at'          => 'datetime',
+        'sent_at'               => 'datetime',
+        'target_instructor_ids' => 'array',
     ];
+
+    public function course()
+    {
+        return $this->belongsTo(Course::class);
+    }
+
+    public function batch()
+    {
+        return $this->belongsTo(Batch::class);
+    }
+
+    
 }

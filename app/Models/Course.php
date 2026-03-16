@@ -63,4 +63,15 @@ class Course extends Model
         return $this->hasMany(ClassSchedule::class);
     }
 
+
+    public function batches()
+    {
+        return $this->hasMany(Batch::class);
+    }
+
+     public function announcements()
+    {
+        return $this->hasMany(Announcement::class);
+    }
+
 }

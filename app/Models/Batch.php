@@ -34,5 +34,10 @@ class Batch extends Model
         return $this->hasMany(ClassSchedule::class);
     }
 
+    public function announcements()
+    {
+        return $this->hasMany(Announcement::class);
+    }
+
 
 }

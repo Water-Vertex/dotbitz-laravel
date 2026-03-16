@@ -39,9 +39,12 @@ Route::middleware('auth:sanctum')->prefix('admin')->group(function () {
     Route::apiResource('assessments', AssessmentController::class);
     Route::apiResource('students', StudentController::class);
     Route::apiResource('batches', BatchController::class);
+    Route::get('announcements/instructors', [AnnouncementController::class, 'getInstructors']);
+    Route::get('announcements/courses',     [AnnouncementController::class, 'getCourses']);
     Route::get('/instructors/{id}/courses', [CourseController::class, 'CoursesByInstructor']);
     Route::get('/courses/{id}/students', [CoursesByStudentController::class, 'getstudents']);
     Route::apiResource('announcements', AnnouncementController::class);
+    
 
 });
 
@@ -145,5 +148,16 @@ Route::middleware('auth:sanctum')->prefix('instructor')->group(function () {
 
     Route::delete('/class-schedules', [ClassScheduleController::class, 'destroyMultiple']); // Delete multiple
     Route::get('/courses/{courseId}/batches', [BatchController::class, 'getBatchesByCourse']);
+
+    Route::get('/announcements/courses', [AnnouncementController::class, 'instructorCourses']);
+    Route::get('/announcements/courses/{courseId}/batches', [AnnouncementController::class, 'getBatchesByCourse']);
+    Route::get('/announcements/courses/{courseId}/students-count', [AnnouncementController::class, 'getCourseStudentsCount']);
+    Route::get('/announcements', [AnnouncementController::class, 'instructorIndex']);
+    Route::post('/announcements', [AnnouncementController::class, 'instructorStore']);
+    Route::get('/announcements/{id}', [AnnouncementController::class, 'instructorShow']);
+    Route::put('/announcements/{id}', [AnnouncementController::class, 'instructorUpdate']);
+    Route::delete('/announcements/{id}', [AnnouncementController::class, 'destroy']);
+    
+    Route::get('announcements/batches/{courseId}', [AnnouncementController::class, 'getBatches']);
 });
 

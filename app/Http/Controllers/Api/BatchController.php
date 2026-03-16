@@ -25,25 +25,25 @@ class BatchController extends Controller
      */
     public function store(Request $request)
 {
-    // Handle students - convert to array if it's a string
-    $students = $request->students;
+    // // Handle students - convert to array if it's a string
+    // $students = $request->students;
 
-    // If it's a string, convert to array first
-    if (is_string($students)) {
-        // If it's an empty string, make it empty array
-        if (empty($students)) {
-            $students = [];
-        } else {
-            // Split by comma and trim each value
-            $students = array_map('trim', explode(',', $students));
-        }
-    }
+    // // If it's a string, convert to array first
+    // if (is_string($students)) {
+    //     // If it's an empty string, make it empty array
+    //     if (empty($students)) {
+    //         $students = [];
+    //     } else {
+    //         // Split by comma and trim each value
+    //         $students = array_map('trim', explode(',', $students));
+    //     }
+    // }
 
     // Ensure it's an array and filter out empty values
-    $studentsArray = is_array($students) ? $students : [];
-    $studentsArray = array_filter($studentsArray, function($value) {
-        return $value !== '' && $value !== null;
-    });
+    // $studentsArray = is_array($students) ? $students : [];
+    // $studentsArray = array_filter($studentsArray, function($value) {
+    //     return $value !== '' && $value !== null;
+    // });
 
     $batch = Batch::create([
         'name' => $request->name,
@@ -53,7 +53,7 @@ class BatchController extends Controller
         'start_date' => $request->start_date,
         'end_date' => $request->end_date,
         'description' => $request->description,
-        'students' => implode(',', $studentsArray),
+        'students' =>  $request->students, // Store as comma-separated string
         'status' => $request->status,
     ]);
 
@@ -78,24 +78,24 @@ class BatchController extends Controller
 public function update(Request $request, string $id)
 {
     // Handle students - convert to array if it's a string
-    $students = $request->students;
+    // $students = $request->students;
 
-    // If it's a string, convert to array first
-    if (is_string($students)) {
-        // If it's an empty string, make it empty array
-        if (empty($students)) {
-            $students = [];
-        } else {
-            // Split by comma and trim each value
-            $students = array_map('trim', explode(',', $students));
-        }
-    }
+    // // If it's a string, convert to array first
+    // if (is_string($students)) {
+    //     // If it's an empty string, make it empty array
+    //     if (empty($students)) {
+    //         $students = [];
+    //     } else {
+    //         // Split by comma and trim each value
+    //         $students = array_map('trim', explode(',', $students));
+    //     }
+    // }
 
-    // Ensure it's an array and filter out empty values
-    $studentsArray = is_array($students) ? $students : [];
-    $studentsArray = array_filter($studentsArray, function($value) {
-        return $value !== '' && $value !== null;
-    });
+    // // Ensure it's an array and filter out empty values
+    // $studentsArray = is_array($students) ? $students : [];
+    // $studentsArray = array_filter($studentsArray, function($value) {
+    //     return $value !== '' && $value !== null;
+    // });
 
     $batch = Batch::findOrFail($id);
     $batch->update([
@@ -106,7 +106,7 @@ public function update(Request $request, string $id)
         'start_date' => $request->start_date,
         'end_date' => $request->end_date,
         'description' => $request->description,
-        'students' => implode(',', $studentsArray),
+        'students' => $request->students, // Store as comma-separated string
         'status' => $request->status,
     ]);
 
