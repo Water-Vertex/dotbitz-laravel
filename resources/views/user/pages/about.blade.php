@@ -26,7 +26,7 @@
                   </div>
                 </div>
                 <div class="about-experience">
-                  <h5>30<span>+</span></h5>
+                  <h5>10<span>+</span></h5>
                   <p>Years Of Experience</p>
                 </div>
               </div>

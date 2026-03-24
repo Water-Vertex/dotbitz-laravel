@@ -426,6 +426,14 @@ class AnnouncementController extends Controller
                 Log::error("Email failed: " . $e->getMessage());
             }
         }
+        Mail::to('info@dotbitz.com')->send(new AnnouncementMail(
+                    recipientName:       'Admin',
+                    announcementTitle:   $announcement->title,
+                    announcementMessage: $announcement->message,
+                    priority:            $announcement->priority,
+                    announcedBy:         $announcement->announced_by,
+                    announcedByName:     $senderName,
+                ));
     }
 
     private function announcementByInstructor(Announcement $announcement, string $instructorName): void

@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
+use App\Models\Batch;
 use App\Models\Coupon;
 use App\Models\Order;
 use App\Models\OrderDetail;
@@ -53,12 +54,13 @@ class OrderController extends Controller
         ]);
     }
 
-     public function GuardianOrderstore(Request $request)
+    public function GuardianOrderstore(Request $request)
     {
         $request->validate([
             'guardian_id'      => 'required|exists:guardians,id',
             'student_id'       => 'required|exists:students,id',
             'course_id'        => 'required|exists:courses,id',
+            'batch_id'         => 'required|exists:batches,id',
             'sub_amount'       => 'required|numeric',
             'total_amount'     => 'required|numeric',
             'payment_method'   => 'required|string',
@@ -71,12 +73,9 @@ class OrderController extends Controller
         ]);
 
         try {
-
             return DB::transaction(function () use ($request) {
 
-                /**
-                 * 1️⃣ Prevent Duplicate Enrollment
-                 */
+                // 1. Already enrolled check
                 $alreadyEnrolled = CoursesByStudent::where('student_id', $request->student_id)
                     ->where('course_id', $request->course_id)
                     ->where('status', 'enrolled')
@@ -89,11 +88,23 @@ class OrderController extends Controller
                     ], 422);
                 }
 
-                /**
-                 * 2️⃣ Coupon Re-Verification (Secure Way)
-                 */
-                if ($request->coupon_code) {
+                // 2. Batch limit check
+                $batch = Batch::findOrFail($request->batch_id);
+                if ($batch->students !== null) {
+                    $enrolledCount = CoursesByStudent::where('batch_id', $request->batch_id)
+                        ->where('status', 'enrolled')
+                        ->count();
 
+                    if ($enrolledCount >= $batch->students) {
+                        return response()->json([
+                            'success' => false,
+                            'message' => 'This batch is full. No more enrollments allowed.',
+                        ], 422);
+                    }
+                }
+
+                // 3. Coupon check
+                if ($request->coupon_code) {
                     $coupon = Coupon::where('code', $request->coupon_code)
                         ->where('is_active', true)
                         ->where(function ($q) {
@@ -117,9 +128,7 @@ class OrderController extends Controller
                     $coupon->increment('used_count');
                 }
 
-                /**
-                 * 3️⃣ Create Order
-                 */
+                // 4. Order create
                 $order = Order::create([
                     'order_number'     => 'ORD-' . date('Ymd') . '-' . strtoupper(Str::random(6)),
                     'guardian_id'      => $request->guardian_id,
@@ -137,9 +146,7 @@ class OrderController extends Controller
                     'ordered_at'       => now(),
                 ]);
 
-                /**
-                 * 4️⃣ Create Order Detail
-                 */
+                // 5. Order detail
                 OrderDetail::create([
                     'order_id'   => $order->id,
                     'course_id'  => $request->course_id,
@@ -147,12 +154,11 @@ class OrderController extends Controller
                     'price'      => $request->total_amount,
                 ]);
 
-                /**
-                 * 5️⃣ Create Enrollment (courses_by_students)
-                 */
+                // 6. Enrollment
                 CoursesByStudent::create([
                     'course_id'   => $request->course_id,
                     'student_id'  => $request->student_id,
+                    'batch_id'    => $request->batch_id,
                     'enrolled_at' => now(),
                     'status'      => 'enrolled',
                 ]);
@@ -165,7 +171,6 @@ class OrderController extends Controller
             });
 
         } catch (\Exception $e) {
-
             return response()->json([
                 'success' => false,
                 'message' => 'Something went wrong: ' . $e->getMessage(),
@@ -173,11 +178,11 @@ class OrderController extends Controller
         }
     }
 
-
     public function store(Request $request)
     {
         $request->validate([
             'course_id'        => 'required|exists:courses,id',
+            'batch_id'         => 'required|exists:batches,id',
             'sub_amount'       => 'required|numeric',
             'total_amount'     => 'required|numeric',
             'payment_method'   => 'required|string',
@@ -189,7 +194,7 @@ class OrderController extends Controller
             'finance_provider' => 'required_if:is_financed,true|nullable|string',
         ]);
 
-        // ✅ Already enrolled check
+        // 1. Already enrolled check
         $alreadyEnrolled = CoursesByStudent::where('student_id', Auth::user()->id)
             ->where('course_id', $request->course_id)
             ->exists();
@@ -201,7 +206,22 @@ class OrderController extends Controller
             ], 409);
         }
 
-        // Server-side coupon re-verify
+        // 2. Batch limit check
+        $batch = Batch::findOrFail($request->batch_id);
+        if ($batch->students !== null) {
+            $enrolledCount = CoursesByStudent::where('batch_id', $request->batch_id)
+                ->where('status', 'enrolled')
+                ->count();
+
+            if ($enrolledCount >= $batch->students) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'This batch is full. No more enrollments allowed.',
+                ], 422);
+            }
+        }
+
+        // 3. Coupon check
         if ($request->coupon_code) {
             $coupon = Coupon::where('code', $request->coupon_code)
                 ->where('is_active', true)
@@ -228,7 +248,7 @@ class OrderController extends Controller
         try {
             DB::beginTransaction();
 
-            // 1. Order insert
+            // 4. Order create
             $order = Order::create([
                 'order_number'     => 'ORD-' . date('Ymd') . '-' . strtoupper(Str::random(6)),
                 'student_id'       => Auth::user()->id,
@@ -245,7 +265,7 @@ class OrderController extends Controller
                 'ordered_at'       => now(),
             ]);
 
-            // 2. Order detail insert
+            // 5. Order detail
             OrderDetail::create([
                 'order_id'   => $order->id,
                 'course_id'  => $request->course_id,
@@ -253,10 +273,11 @@ class OrderController extends Controller
                 'price'      => $request->total_amount,
             ]);
 
-            // 3. courses_by_students insert
+            // 6. Enrollment
             CoursesByStudent::create([
                 'course_id'   => $request->course_id,
                 'student_id'  => Auth::user()->id,
+                'batch_id'    => $request->batch_id,
                 'enrolled_at' => now(),
                 'status'      => 'enrolled',
             ]);

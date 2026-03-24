@@ -28,7 +28,6 @@ class ClassScheduleController extends Controller
     {
         $request->validate([
             '*.course_id' => 'required|exists:courses,id',
-            '*.batch_id' => 'required|exists:batches,id',
             '*.instructor_id' => 'required|exists:instructors,id',
             '*.start_time' => 'required|date',
             '*.end_time' => 'required|date|after:*.start_time',
@@ -70,7 +69,6 @@ class ClassScheduleController extends Controller
         $request->validate([
             '*.id' => 'sometimes|exists:class_schedules,id',
             '*.course_id' => 'required|exists:courses,id',
-            '*.batch_id' => 'required|exists:batches,id',
             '*.instructor_id' => 'required|exists:instructors,id',
             '*.start_time' => 'required|date',
             '*.end_time' => 'required|date|after:*.start_time',

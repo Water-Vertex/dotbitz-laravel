@@ -38,12 +38,20 @@ Route::middleware('auth:sanctum')->prefix('admin')->group(function () {
     Route::apiResource('mcqs', McqController::class);
     Route::apiResource('assessments', AssessmentController::class);
     Route::apiResource('students', StudentController::class);
+    
     Route::apiResource('batches', BatchController::class);
     Route::get('announcements/instructors', [AnnouncementController::class, 'getInstructors']);
     Route::get('announcements/courses',     [AnnouncementController::class, 'getCourses']);
     Route::get('/instructors/{id}/courses', [CourseController::class, 'CoursesByInstructor']);
     Route::get('/courses/{id}/students', [CoursesByStudentController::class, 'getstudents']);
     Route::apiResource('announcements', AnnouncementController::class);
+    
+    Route::middleware('auth:sanctum')->prefix('students')->group(function(){
+        Route::get('/', [StudentController::class, 'index']); // list all
+        Route::post('/register', [StudentController::class, 'Register']); // admin add
+        Route::put('/{id}', [StudentController::class, 'update']); // edit
+        Route::delete('/{id}', [StudentController::class, 'destroy']); // delete
+    });
     
 
 });
@@ -65,6 +73,8 @@ Route::middleware('auth:sanctum')->prefix('guardian')->group(function () {
     Route::get('orders', [OrderController::class, 'index']);
     Route::get('orders/{id}', [OrderController::class, 'show']);
     Route::get('student-courses/{student_id}', [CoursesByStudentController::class, 'getCoursesByStudentForGuardian']);
+    Route::get('courses/{courseId}/batches', [BatchController::class, 'getBatchesByCourse']);
+    Route::get('batches/{batchId}/schedule', [ClassScheduleController::class, 'getByBatch']);
 });
 
 // Student routes ----------------- //
@@ -77,6 +87,12 @@ Route::middleware('auth:sanctum')->prefix('student')->group(function () {
     // Profile
     Route::get('/profile', [StudentController::class, 'profile']);
     Route::put('/profile', [StudentController::class, 'updateProfile']);
+    
+     Route::post('/register', [StudentController::class, 'register']);
+    Route::get('/check-email/{email}', [StudentController::class, 'checkEmailExists']);
+    Route::get('/check-username/{username}', [StudentController::class, 'checkUsernameExists']);
+
+    
 
     // Courses
     Route::get('/courses', [CourseController::class, 'studentIndex']);
@@ -84,6 +100,8 @@ Route::middleware('auth:sanctum')->prefix('student')->group(function () {
     Route::get('/my-courses', [CoursesByStudentController::class, 'myEnrolledCourses']);
     Route::get('/my-courses/{id}', [CoursesByStudentController::class, 'show']);
     Route::get('/assignments/course/{courseId}', [AssignmentController::class, 'getAssignmentsByCourse']);
+    Route::get('/courses/{courseId}/batches', [BatchController::class, 'getBatchesByCourse']);
+    Route::get('/class-schedules/batch/{batchId}', [ClassScheduleController::class, 'getByBatch']);
 
     // Orders & Coupon (specific - pehle)
     Route::post('/coupon/validate', [OrderController::class, 'validateCoupon']);
@@ -98,14 +116,7 @@ Route::middleware('auth:sanctum')->prefix('student')->group(function () {
     // Generic (baad mein - warna sab match ho jata)
     Route::get('/{id}', [StudentController::class, 'show']);
     Route::put('/{id}', [StudentController::class, 'update']);
-});
-
-// Student Registration Routes
-Route::prefix('students')->group(function () {
-    Route::post('/register', [StudentController::class, 'register']);
-    Route::get('/check-email/{email}', [StudentController::class, 'checkEmailExists']);
-    Route::get('/check-username/{username}', [StudentController::class, 'checkUsernameExists']);
-
+    
     // Protected routes (require authentication)
     Route::middleware('auth:sanctum')->group(function () {
         Route::get('/{id}', [StudentController::class, 'show']);
@@ -114,13 +125,13 @@ Route::prefix('students')->group(function () {
         Route::get('/{studentId}/guardian', [StudentController::class, 'getGuardian']);
     });
 
-    Route::middleware('auth:sanctum')->prefix('admin/students')->group(function(){
-        Route::get('/', [StudentController::class, 'index']); // list all
-        Route::post('/add', [StudentController::class, 'adminRegister']); // admin add
-        Route::put('/{id}', [StudentController::class, 'update']); // edit
-        Route::delete('/{id}', [StudentController::class, 'destroy']); // delete
-    });
+    
 });
+
+// Student Registration Routes
+// Route::prefix('students')->group(function () {
+   
+// });
 
 // Instructor routes ----------------- //
 Route::post('instructor/login', [AuthController::class, 'instructorLogin']);

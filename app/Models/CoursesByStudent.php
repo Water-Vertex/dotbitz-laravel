@@ -10,6 +10,7 @@ class CoursesByStudent extends Model
      protected $fillable = [
         'course_id',
         'student_id',
+        'batch_id',
         'enrolled_at',
         'status',
         'completed_at',
@@ -29,5 +30,10 @@ class CoursesByStudent extends Model
     public function student()
     {
         return $this->belongsTo(Student::class);
+    }
+
+    public function batch()
+    {
+        return $this->belongsTo(Batch::class);
     }
 }

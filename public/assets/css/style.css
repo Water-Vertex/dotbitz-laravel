@@ -2218,6 +2218,12 @@ label {
     margin-top: 90px;
   }
 }
+@media (min-width: 1400px) {
+  .hs-1 .hero-single .hero-img .img-1 {
+    width: 35%;
+    bottom: 0;
+  }
+}
 
 /* hero section 2 */
 .hs-2 {
@@ -4646,6 +4652,7 @@ label {
   background: var(--color-white);
   box-shadow: var(--box-shadow);
   border-radius: 20px;
+  height:200px;
 }
 .category-item .icon {
   width: 80px;

@@ -125,9 +125,27 @@ public function update(Request $request, string $id)
         return response()->json(null, 204);
     }
 
+    // public function getBatchesByCourse($courseId)
+    // {
+    //     $batches = Batch::where('course_id', $courseId)->get();
+    //     return response()->json($batches);
+    // }
+
     public function getBatchesByCourse($courseId)
     {
-        $batches = Batch::where('course_id', $courseId)->get();
+        $batches = Batch::where('course_id', $courseId)
+            ->withCount([
+                'coursesByStudents as enrolled_count' => function ($query) {
+                    $query->where('status', 'enrolled');
+                }
+            ])
+            ->get()
+            ->map(function ($batch) {
+                $batch->is_full = $batch->students !== null && 
+                                $batch->enrolled_count >= $batch->students;
+                return $batch;
+            });
+
         return response()->json($batches);
     }
 }

@@ -81,7 +81,7 @@
                       </div>
                       <div class="content">
                         <h6>Call Us</h6>
-                        <a href="tel:+21236547898">+1 323-888-4554</a>
+                        <a href="tel:+1 (614) 680-1470">+1 (614) 680-1470</a>
                       </div>
                     </li>
                     <li>

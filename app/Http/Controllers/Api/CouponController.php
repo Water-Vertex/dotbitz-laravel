@@ -27,7 +27,7 @@ class CouponController extends Controller
     {
         //
         $validated = $request->validate([
-            'code' => 'required|string|min:2|max:50|unique:discounts,code',
+            'code' => 'required|string|min:2|max:50|unique:coupons,code',
             'discount_type' => 'required|in:fixed,percentage',
             'usage_limit' => 'nullable|integer|min:1',
             'used_count'  => 'nullable|integer|min:0',
@@ -80,7 +80,7 @@ class CouponController extends Controller
         }
 
         $validated = $request->validate([
-            'code' => 'required|string|min:2|max:50|unique:discounts,code',
+            'code' => 'required|string|min:2|max:50|unique:coupons,code',
             'discount_type' => 'required|in:fixed,percentage',
             'usage_limit' => 'nullable|integer|min:1',
             'used_count'  => 'nullable|integer|min:0',

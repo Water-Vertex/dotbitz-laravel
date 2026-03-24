@@ -18,7 +18,7 @@
               <div class="col-md-3">
                 <div class="contact-info">
                   <div class="icon">
-                    <i class="fal fa-map-location-dot"></i>
+                    <i class="fa fa-map-location-dot"></i>
                   </div>
                   <div class="content">
                     <h5>Office Address</h5>
@@ -29,7 +29,7 @@
               <div class="col-md-3">
                 <div class="contact-info">
                   <div class="icon">
-                    <i class="fal fa-phone-volume"></i>
+                    <i class="fa fa-phone-volume"></i>
                   </div>
                   <div class="content">
                     <h5>Call Us</h5>
@@ -40,7 +40,7 @@
               <div class="col-md-3">
                 <div class="contact-info">
                   <div class="icon">
-                    <i class="fal fa-envelopes"></i>
+                    <i class="fa fa-envelopes"></i>
                   </div>
                   <div class="content">
                     <h5>Email Us</h5>
@@ -51,7 +51,7 @@
               <div class="col-md-3">
                 <div class="contact-info">
                   <div class="icon">
-                    <i class="fal fa-alarm-clock"></i>
+                    <i class="fa fa-alarm-clock"></i>
                   </div>
                   <div class="content">
                     <h5>Open Time</h5>

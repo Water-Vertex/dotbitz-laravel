@@ -27,11 +27,11 @@ class StudentController extends Controller
         ]);
     }
 
-    public function adminRegister(Request $request)
-    {
-        $request->merge(['student.status' => 1]);
-        return $this->register($request);
-    }
+    // public function adminRegister(Request $request)
+    // {
+    //     $request->merge(['student.status' => 1]);
+    //     return $this->register($request);
+    // }
 
 
     public function update(Request $request, $id)
@@ -106,6 +106,7 @@ public function destroy($id)
     // Register a new student
     public function register(Request $request)
     {
+        // dd($request->all());
         // Validate request
         $validator = Validator::make($request->all(), [
             'student.first_name' => 'required|string|max:100',
@@ -192,7 +193,9 @@ public function destroy($id)
                 $guardianData['student_id'] = $student->id;
                 $pwd = 'PWD'.mt_rand(9999,99999);
                 $guardianData['password'] = Hash::make($pwd);
+                
                 $guardian = Guardian::create($guardianData);
+                
                 Mail::to($guardian->email)->send(new StudentEnrollmentToGuardianMail($student,$guardian,$pwd));
             }
 
@@ -201,7 +204,7 @@ public function destroy($id)
 
             // Generate token for immediate login (optional)
             $token = $student->createToken('student-auth-token')->plainTextToken;
-
+            
             return response()->json([
                 'success' => true,
                 'message' => 'Student registered successfully',
@@ -214,7 +217,7 @@ public function destroy($id)
         } catch (\Exception $e) {
             // Rollback transaction on error
             DB::rollBack();
-
+            
             return response()->json([
                 'success' => false,
                 'message' => 'Registration failed',

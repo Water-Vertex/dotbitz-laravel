@@ -11,27 +11,25 @@ use Illuminate\Queue\SerializesModels;
 class AnnouncementMail extends Mailable
 {
     use Queueable, SerializesModels;
+        public  $recipientName;
+        public  $announcementTitle;
+        public  $announcementMessage;
+        public  $priority;
+        public  $announcedBy;
+        public  $announcedByName;
 
-    public function __construct(
-        public string $recipientName,
-        public string $announcementTitle,
-        public string $announcementMessage,
-        public string $priority,
-        public string $announcedBy,
-        public string $announcedByName,
-    ) {}
-
-    public function envelope(): Envelope
-    {
-        return new Envelope(
-            subject: '[DotBitz] ' . $this->announcementTitle,
-        );
+    public function __construct($recipientName,$announcementTitle,$announcementMessage,$priority,$announcedBy,$announcedByName) {
+        $this->recipientName = $recipientName;
+        $this->announcementTitle = $announcementTitle;
+        $this->announcementMessage = $announcementMessage;
+        $this->priority = $priority;
+        $this->announcedBy = $announcedBy;
+        $this->announcedByName = $announcedByName;
     }
 
-    public function content(): Content
+     public function build()
     {
-        return new Content(
-            view: 'emails.announcement',
-        );
+        return $this->subject($this->announcementTitle)
+                    ->view('emails.announcement');
     }
 }

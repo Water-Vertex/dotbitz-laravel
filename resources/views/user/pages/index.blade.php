@@ -48,30 +48,30 @@
       </div>
       <!-- hero area end -->
       <!-- partner area -->
-      <div class="partner-area2 negative">
-        <div class="col-lg-10 col-xl-9 ms-auto">
-          <div class="partner-wrapper">
-            <div class="row g-4 align-items-center">
-              <div class="col-lg-2">
-                <div class="partner-title">
-                  <h5>Let's check our <span>350+</span> partners</h5>
-                </div>
-              </div>
-              <div class="col-lg-10">
-                <div class="partner-slider owl-carousel owl-theme">
-                  <img src="{{asset('assets/images/partner/01.png')}}" alt="thumb" />
-                  <img src="{{asset('assets/images/partner/02.png')}}" alt="thumb" />
-                  <img src="{{asset('assets/images/partner/03.png')}}" alt="thumb" />
-                  <img src="{{asset('assets/images/partner/04.png')}}" alt="thumb" />
-                  <img src="{{asset('assets/images/partner/05.png')}}" alt="thumb" />
-                  <img src="{{asset('assets/images/partner/06.png')}}" alt="thumb" />
-                  <img src="{{asset('assets/images/partner/07.png')}}" alt="thumb" />
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
+      <!--<div class="partner-area2 negative">-->
+      <!--  <div class="col-lg-10 col-xl-9 ms-auto">-->
+      <!--    <div class="partner-wrapper">-->
+      <!--      <div class="row g-4 align-items-center">-->
+      <!--        <div class="col-lg-2">-->
+      <!--          <div class="partner-title">-->
+      <!--            <h5>Let's check our <span>350+</span> partners</h5>-->
+      <!--          </div>-->
+      <!--        </div>-->
+      <!--        <div class="col-lg-10">-->
+      <!--          <div class="partner-slider owl-carousel owl-theme">-->
+      <!--            <img src="{{asset('assets/images/partner/01.png')}}" alt="thumb" />-->
+      <!--            <img src="{{asset('assets/images/partner/02.png')}}" alt="thumb" />-->
+      <!--            <img src="{{asset('assets/images/partner/03.png')}}" alt="thumb" />-->
+      <!--            <img src="{{asset('assets/images/partner/04.png')}}" alt="thumb" />-->
+      <!--            <img src="{{asset('assets/images/partner/05.png')}}" alt="thumb" />-->
+      <!--            <img src="{{asset('assets/images/partner/06.png')}}" alt="thumb" />-->
+      <!--            <img src="{{asset('assets/images/partner/07.png')}}" alt="thumb" />-->
+      <!--          </div>-->
+      <!--        </div>-->
+      <!--      </div>-->
+      <!--    </div>-->
+      <!--  </div>-->
+      <!--</div>-->
        <!-- partner area end -->
        <!-- about area -->
       <div class="about-area py-120">
@@ -90,7 +90,7 @@
                   </div>
                 </div>
                 <div class="about-experience">
-                  <h5>30<span>+</span></h5>
+                  <h5>10<span>+</span></h5>
                   <p>Years Of Experience</p>
                 </div>
               </div>
@@ -196,7 +196,7 @@
                     <img src="{{asset('assets/images/icons/office.svg')}}" alt="" />
                   </div>
                   <div class="info">
-                    <h6>Office Productivity</h6>
+                    <h6>Artificial Intelligence</h6>
                     <p>36 Courses</p>
                   </div>
                 </div>
@@ -209,7 +209,7 @@
                     <img src="{{asset('assets/images/icons/health.svg')}}" alt="" />
                   </div>
                   <div class="info">
-                    <h6>Health & Fitness</h6>
+                    <h6>Mobile App Development</h6>
                     <p>59 Courses</p>
                   </div>
                 </div>
@@ -222,7 +222,7 @@
                     <img src="{{asset('assets/images/icons/lifestyle.svg')}}" alt="" />
                   </div>
                   <div class="info">
-                    <h6>Lifestyle</h6>
+                    <h6>Machine Learning</h6>
                     <p>65 Courses</p>
                   </div>
                 </div>
@@ -261,13 +261,13 @@
                     <span>3.5k</span>
                   </div>
                 </div> --}}
-                <h4 class="course-title"><a href="{{ route('user.course.details', $course->slug) }}">{{$course->course_name}}</a></h4>
+                <h4 class="course-title" style="height:45px"><a href="{{ route('user.course.details', $course->slug) }}">{{$course->course_name}}</a></h4>
                 <div class="course-info">
                   <p style="
-                    overflow: hidden;
-                    text-overflow: ellipsis;display: -webkit-box;
-                    -webkit-line-clamp: 2;
-                    -webkit-box-orient: vertical;">{{$course->short_description}}</p>
+  overflow: hidden;
+  text-overflow: ellipsis;display: -webkit-box;
+   -webkit-line-clamp: 5;
+   -webkit-box-orient: vertical;">{{$course->short_description}}</p>
                 </div>
                 <div class="course-bottom">
                   <a href="javascript:void(0)" class="open-assessment-modal" data-course-id="{{ $course->id }}"
@@ -420,7 +420,7 @@
                 <div class="process-item">
                   <span class="count">01</span>
 
-                  <div class="content">
+                  <div class="content" style="height:330px">
                     <h4>Our Junior Level</h4>
                     <p>Our junior teams craft interactive and web-based projects like games, apps, and websites, using HTML, CSS, JavaScript and design. </p>
                   </div>
@@ -430,7 +430,7 @@
                 <div class="process-item">
                   <span class="count">02</span>
 
-                  <div class="content">
+                  <div class="content" style="height:330px">
                     <h4>Our Mid Level</h4>
                     <p>At the mid-level, students create complete applications with frontend and backend functionality, incorporating Python, Java, Git, REST APIs, and debugging techniques. They learn online collaboration, teamwork, and real-world development practices, preparing them for more complex projects.</p>
                   </div>
@@ -440,7 +440,7 @@
                 <div class="process-item">
                   <span class="count">03</span>
 
-                  <div class="content">
+                  <div class="content" style="height:330px">
                     <h4>Our Senior Level</h4>
                     <p>Senior learners tackle real-world and portfolio projects within professional teams. They master advanced programming languages, database integration, mobile-app development, game development, and agile workflows, while building portfolio projects that meet industry standards, making them fully prepared for internships, freelance work, or high-tech careers..</p>
                   </div>

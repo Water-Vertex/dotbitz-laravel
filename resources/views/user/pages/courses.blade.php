@@ -42,16 +42,16 @@
                     <span>3.5k</span>
                   </div>
                 </div> --}}
-                <h4 class="course-title"><a href="{{ route('user.course.details', $course->slug) }}">{{$course->course_name}}</a></h4>
+                <h4 class="course-title" style="height:45px"><a href="{{ route('user.course.details', $course->slug) }}">{{$course->course_name}}</a></h4>
                 <div class="course-info">
                   <p style="
-                    overflow: hidden;
-                    text-overflow: ellipsis;display: -webkit-box;
-                    -webkit-line-clamp: 2;
-                    -webkit-box-orient: vertical;">{{$course->short_description}}</p>
+  overflow: hidden;
+  text-overflow: ellipsis;display: -webkit-box;
+   -webkit-line-clamp: 5;
+   -webkit-box-orient: vertical;">{{$course->short_description}}</p>
                 </div>
                 <div class="course-bottom">
-                  <a href="javascript:void(0)" data-course-id="{{ $course->id }}"
+                  <a href="javascript:void(0)" class="open-assessment-modal" data-course-id="{{ $course->id }}"
                                         data-course-name="{{ $course->course_name }}">
                     <div class="course-instructor">
 

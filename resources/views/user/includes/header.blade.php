@@ -3,7 +3,7 @@
       <div class="main-navigation">
         <nav class="navbar navbar-expand-lg">
           <div class="container position-relative">
-            <a class="navbar-brand" href="index.html">
+            <a class="navbar-brand" href="/">
               <img src="{{asset('assets/images/logo/dotbitz-logo.png')}}" alt="logo" />
             </a>
             <div class="mobile-menu-right">
@@ -48,7 +48,7 @@
                     <button type="button" class="nav-right-link search-box-outer"><i class="far fa-search"></i></button>
                   </div>
                   <div class="nav-btn">
-                    <a href="https://portal.dotbitz.com" target="_blank" class="nav-link"><span class="far fa-sign-in"></span> Sign In</a>
+                    <a href="https://portal.dotbitz.com/student/login" target="_blank" class="nav-link"><span class="far fa-sign-in"></span> Sign In</a>
                   </div>
                   <div class="nav-btn">
                     <a href="javascript:void(0)" class="theme-btn open-consultation-modal" style="background: #FF6500 !important">Book Free Consultation</a>
