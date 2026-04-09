@@ -7,6 +7,7 @@ use App\Mail\AdminAppointmentConfirmationMail;
 use App\Mail\AdminContactMail;
 use App\Mail\CustomerAppointmentConfirmationMail;
 use App\Models\Appointment;
+use App\Models\Assessment;
 use App\Models\AssessmentQuery;
 use App\Models\Contact;
 use App\Models\Course;
@@ -87,6 +88,16 @@ class HomeController extends Controller
     return view('user.pages.course-details', get_defined_vars());
 }
 
+public function Assessmentindex()
+{
+    // dd(1);
+    $assessment_queries = AssessmentQuery::with('course')
+        ->withExists('assigned as already_assigned')
+        ->get();
+    //   dd($assessment_queries);
+    return response()->json($assessment_queries);
+}
+
     public function storeAppointment(Request $request)
     {
         $request->validate([
@@ -96,6 +107,9 @@ class HomeController extends Controller
                 'required',
                 'email',
                 'max:50',
+                Rule::unique('appointments')->where(function ($q) use ($request) {
+                    return $q->where('course_id', $request->course_id);
+                }),
 
             ],
 
@@ -103,6 +117,9 @@ class HomeController extends Controller
                 'required',
                 'string',
                 'max:20',
+                Rule::unique('appointments')->where(function ($q) use ($request) {
+                    return $q->where('course_id', $request->course_id);
+                }),
 
             ],
 
@@ -142,7 +159,7 @@ class HomeController extends Controller
         return view('user.pages.policy',get_defined_vars());
     }
 
-    public function storeAssessmentQuery(Request $request)
+   public function storeAssessmentQuery(Request $request)
 {
     $request->validate([
         'full_name' => 'required|string|max:100',
@@ -157,7 +174,7 @@ class HomeController extends Controller
         ->exists();
 
     if ($exists) {
-        return back()->withErrors(['email' => 'You have already booked this course.']);
+        return back()->with('error' , 'You have already booked this course.');
     }
 
     // Save the assessment
@@ -169,8 +186,54 @@ class HomeController extends Controller
         'message' => $request->message,
     ]);
 
-    return back()->with('success', 'You have successfully registered for this course.');
+    return redirect()->route('user.thankyou')->with('success', 'You have successfully registered for this course.');
 }
+
+ public function getAssessmentsForAppointment($id)
+{
+    $assessment_query = AssessmentQuery::find($id);
+
+    if (!$assessment_query) {
+        return response()->json(['message' => 'Assessment Query not found'], 404);
+    }
+
+    if (!$assessment_query->course_id) {
+        return response()->json(['message' => 'Course not found for this assessment'], 404);
+    }
+
+    $assessments = Assessment::with('questions')
+        ->where('course_id', $assessment_query->course_id)
+        ->get()
+        ->map(function ($a) {
+            return [
+               'id' => $a->id,
+                'assessment_title' => $a->assessment_title,
+                'total_marks' => $a->total_marks,
+                'questions' => $a->questions->map(function ($q) {
+                    return [
+                        'id' => $q->id,
+                        'question' => $q->question,
+                        'marks' => $q->marks,
+                    ];
+                }),
+            ];
+        });
+
+    return response()->json([
+        'success' => true,
+        'data' => $assessments
+    ]);
+}
+    public function BookAssessment($id)
+    {
+        $course = Course::find($id);
+        return view('user.pages.book-assessment', get_defined_vars());
+    }
+
+    public function Thankyou()
+    {
+        return view('user.pages.thankyou');
+    }
 
 
 }

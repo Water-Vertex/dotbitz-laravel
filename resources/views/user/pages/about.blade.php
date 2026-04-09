@@ -18,7 +18,7 @@
                 <div class="about-img">
                   <div class="row g-0">
                     <div class="col-6">
-                      <img class="img-1" src="{{asset('assets/images/about.jpg')}}" alt="" />
+                      <img class="img-1" src="{{asset('assets/images/kids1.png')}}" alt="" />
                     </div>
                     <div class="col-6">
                       <img class="img-2" src="{{asset('assets/images/about2.jpg')}}" alt="" />

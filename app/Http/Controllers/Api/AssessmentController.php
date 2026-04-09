@@ -4,50 +4,52 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Models\Assessment;
+use App\Models\AssessmentQuestion;
 use Illuminate\Http\Request;
 
 class AssessmentController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
     public function index()
     {
         return response()->json([
-        'success' => true,
-        'data' => [
-            'assessments' => Assessment::with('course')->get(),
-            'courses' => \App\Models\Course::select('id', 'name')->where('status', 'active')->get()
-        ]
-    ]);
+            'success' => true,
+            'data' => [
+                'assessments' => Assessment::with(['course', 'questions'])->get(),
+                'courses' => \App\Models\Course::select('id', 'course_name')
+                    ->where('status', 'active')
+                    ->get()
+            ]
+        ]);
     }
 
-    /**
-     * Store a newly created resource in storage.
-     */
     public function store(Request $request)
     {
-        $assessment = Assessment::create(
-            $request->only([
-                'question',
-                'answer',
-                'options',
-                'course_id',
-                'assessment_type',
-                'status',
-                'is_single',
-            ])
-        );
+        $totalMarks = collect($request->questions)->sum('marks');
+        $assessment = Assessment::create([
+            'course_id' => $request->course_id,
+            'assessment_title' => $request->assessment_title,
+            'total_marks' => $totalMarks,
+        ]);
 
-        return response()->json($assessment, 201);
+        foreach ($request->questions as $q) {
+            AssessmentQuestion::create([
+                'assessment_id' => $assessment->id,
+                'question' => $q['question'],
+                'answer' => $q['answer'],
+                'marks' => $q['marks'] ?? 0,
+                'options' => $q['options'] ?? [],
+                'assessment_type' => $q['assessment_type'],
+                'is_single' => $q['is_single'],
+                'status' => $q['status'] ?? 'active',
+            ]);
+        }
+
+        return response()->json(['message' => 'Assessments created successfully'], 201);
     }
 
-    /**
-     * Display the specified resource.
-     */
     public function show(string $id)
     {
-        $assessment = Assessment::find($id);
+        $assessment = Assessment::with('questions')->find($id);
 
         if (!$assessment) {
             return response()->json([
@@ -63,9 +65,6 @@ class AssessmentController extends Controller
         ]);
     }
 
-    /**
-     * Update the specified resource in storage.
-     */
     public function update(Request $request, string $id)
     {
         $assessment = Assessment::find($id);
@@ -76,24 +75,29 @@ class AssessmentController extends Controller
             ], 404);
         }
 
-        $assessment->update(
-            $request->only([
-                'question',
-                'answer',
-                'options',
-                'course_id',
-                'assessment_type',
-                'status',
-                'is_single',
-            ])
-        );
+        $assessment->update([
+            'course_id' => $request->course_id,
+            'assessment_title' => $request->assessment_title,
+        ]);
+
+        AssessmentQuestion::where('assessment_id', $assessment->id)->delete();
+
+        foreach ($request->questions as $q) {
+            AssessmentQuestion::create([
+                'assessment_id' => $assessment->id,
+                'question' => $q['question'],
+                'answer' => $q['answer'],
+                'marks' => $q['marks'] ?? 0,
+                'options' => $q['options'] ?? [],
+                'assessment_type' => $q['assessment_type'],
+                'is_single' => $q['is_single'],
+                'status' => $q['status'] ?? 'active',
+            ]);
+        }
 
         return response()->json($assessment);
     }
 
-    /**
-     * Remove the specified resource from storage.
-     */
     public function destroy(string $id)
     {
         $assessment = Assessment::find($id);
@@ -104,10 +108,20 @@ class AssessmentController extends Controller
             ], 404);
         }
 
+        AssessmentQuestion::where('assessment_id', $id)->delete();
         $assessment->delete();
 
         return response()->json([
             'message' => 'Assessment deleted successfully'
         ]);
+    }
+
+    public function getByCourse($course_id)
+    {
+        $assessments = Assessment::with('questions')
+            ->where('course_id', $course_id)
+            ->get();
+
+        return response()->json($assessments);
     }
 }

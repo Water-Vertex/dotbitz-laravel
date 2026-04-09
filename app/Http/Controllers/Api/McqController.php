@@ -6,9 +6,35 @@ use App\Http\Controllers\Controller;
 use App\Models\Mcq;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Auth;
 
 class McqController extends Controller
 {
+public function instructorIndex()
+{
+    $user = Auth::user();
+
+    $instructor = \App\Models\Instructor::where('email', $user->email)->first();
+
+    if (!$instructor) {
+        return response()->json([
+            'success' => false,
+            'message' => 'Instructor not found.',
+        ], 404);
+    }
+
+    $courseIds = \App\Models\CourseInstructor::where('instructor_id', $instructor->id)
+        ->pluck('course_id');
+
+    $mcqs = \App\Models\Mcq::whereIn('course_id', $courseIds)
+        ->orderBy('created_at', 'desc')
+        ->get();
+
+    return response()->json([
+        'success' => true,
+        'data'    => $mcqs,
+    ]);
+}
     /**
      * Get all MCQs with course relation
      * ✅ Optimized with select() to avoid loading unnecessary data
@@ -20,7 +46,7 @@ class McqController extends Controller
                 // ✅ Only select needed columns from course
                 $query->select('id', 'course_name', 'course_code', 'status');
             }])
-            ->select('msq_id', 'question', 'answer', 'options', 'course_id', 'status', 'issingle', 'created_at')
+            ->select('id', 'question', 'answer', 'options', 'course_id', 'status', 'issingle', 'created_at')
             ->get();
 
             Log::info('MCQs fetched successfully', ['count' => $mcqs->count()]);
@@ -75,7 +101,9 @@ class McqController extends Controller
                 'options.*' => 'required|string',
                 'course_id' => 'required|exists:courses,id',
                 'status' => 'sometimes|in:active,inactive',
-                'issingle' => 'required|boolean'
+                'issingle' => 'required|boolean',
+                'marks' => 'required'
+
             ]);
 
             $mcq = Mcq::create($validated);
@@ -123,7 +151,8 @@ class McqController extends Controller
                 'options.*' => 'sometimes|string',
                 'course_id' => 'sometimes|exists:courses,id',
                 'status' => 'sometimes|in:active,inactive',
-                'issingle' => 'sometimes|boolean'
+                'issingle' => 'sometimes|boolean',
+                'marks' => 'required'
             ]);
 
             $mcq->update($validated);

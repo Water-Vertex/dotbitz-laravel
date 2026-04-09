@@ -19,4 +19,10 @@ class AssessmentQuery extends Model
     {
         return $this->belongsTo(Course::class);
     }
+    public function assigned()
+    {
+        // Relationship name 'assigned' as you requested
+        return $this->hasOne(AssignAssessment::class, 'appointment_id');
+    }
+    
 }

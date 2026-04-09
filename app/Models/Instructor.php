@@ -36,13 +36,17 @@ class Instructor extends Authenticatable
     {
         return $this->hasMany(InstructorDetail::class);
     }
-    public function courses()
-    {
-        return $this->hasMany(Course::class);
-    }
+    // public function courses()
+    // {
+    //     return $this->hasMany(Course::class);
+    // }
 
     public function classSchedules()
     {
         return $this->hasMany(ClassSchedule::class);
     }
+    public function courses()
+{
+    return $this->belongsToMany(Course::class, 'course_instructor', 'instructor_id', 'course_id');
+}
 }

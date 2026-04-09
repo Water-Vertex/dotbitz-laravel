@@ -16,4 +16,11 @@ class Appointment extends Model
         'appointment_time',
         'message',
     ];
+
+    public function course()
+    {
+        return $this->belongsTo(Course::class, 'course_id', 'id');
+    }
+
+    
 }

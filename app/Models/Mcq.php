@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 class Mcq extends Model
 {
     protected $table = 'mcqs';
-    protected $primaryKey = 'msq_id';
+    protected $primaryKey = 'id';
     public $timestamps = true;
 
 
@@ -17,7 +17,8 @@ class Mcq extends Model
         'options',
         'course_id',
         'status',
-        'issingle'
+        'issingle',
+        'marks',
     ];
 
     protected $casts = [

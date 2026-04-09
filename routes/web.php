@@ -17,4 +17,6 @@ Route::view('/privacy-policy','user.pages.privacy-policy')->name('privacy-policy
 Route::view('/terms-of-service','user.pages.terms-of-service')->name('terms-of-service');
 Route::view('/cookie-policy','user.pages.cookie-policy')->name('cookie-policy');
 Route::get('/policy/{slug}', [HomeController::class, 'Policy'])->name('user.policy');
+Route::get('/book-assessment/{id}', [HomeController::class, 'BookAssessment'])->name('user.book-assessment');
+Route::get('/thank-you', [HomeController::class, 'Thankyou'])->name('user.thankyou');
 

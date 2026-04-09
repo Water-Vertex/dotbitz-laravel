@@ -5,6 +5,9 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\Course;
+use App\Models\CourseInstructor;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
 use Illuminate\Validation\Rule;
 
@@ -51,7 +54,6 @@ public function index(Request $request)
             'end_date' => 'nullable|date|after_or_equal:start_date',
             'status' => 'nullable',
             'is_featured' => 'boolean',
-            'instructor_id' => 'required|exists:instructors,id',
             'thumbnail_image' => 'required|image|mimes:jpeg,png,jpg|max:2048',
             'benefits'         => 'nullable|string',
             'short_description' => 'nullable|string'
@@ -82,8 +84,10 @@ public function index(Request $request)
      */
     public function show($id)
     {
-        $course = Course::with('instructor')->find($id);
+        Log::info("Fetching course with ID: {$id}");
 
+        $course = Course::with('instructor')->find($id);
+        Log::info("Course Record: " . json_encode($course));
         if (!$course) {
             return response()->json([
                 'success' => false,
@@ -123,7 +127,6 @@ public function index(Request $request)
             'end_date' => 'nullable|date|after_or_equal:start_date',
             'status' => 'nullable',
             'is_featured' => 'boolean',
-            'instructor_id' => 'required|exists:instructors,id',
             'thumbnail_image' => 'nullable|image|mimes:jpeg,png,jpg|max:2048',
             'benefits'         => 'nullable|string',
             'short_description' => 'nullable|string'
@@ -229,35 +232,26 @@ public function index(Request $request)
         }
     }
 
-    public function InstructorIndex(Request $request)
-    {
+     public function InstructorIndex()
+{
+    $instructor = Auth::guard('sanctum')->user();
 
-        try {
-            $user = $request->user(); // Get authenticated instructor
-            $query = Course::with('instructor')->where('instructor_id', $user->id);
-
-            // Apply search if provided
-            if ($request->filled('search')) {
-                $search = $request->search;
-                $query->where(function ($q) use ($search) {
-                    $q->where('course_name', 'like', "%{$search}%")
-                    ->orWhere('course_code', 'like', "%{$search}%");
-                });
-            }
-
-            // Get per_page from request (e.g., 50) or default to 10
-            $perPage = $request->query('per_page', 10);
-
-            // Return paginated results specifically for the API
-            return response()->json($query->orderBy('id', 'desc')->paginate($perPage));
-
-        } catch (\Exception $e) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Error: ' . $e->getMessage()
-            ], 500);
-        }
+    if (!$instructor) {
+        return response()->json(['message' => 'Unauthorized'], 401);
     }
+
+    $courseIds = CourseInstructor::where('instructor_id', $instructor->id)
+        ->pluck('course_id');
+
+    $courses = Course::whereIn('id', $courseIds)
+        ->where('status', 'active')
+        ->get();
+
+    return response()->json([
+        'success' => true,
+        'data' => $courses,
+    ]);
+}
 
     public function CoursesByInstructor(Request $request)
     {

@@ -42,6 +42,7 @@ class AuthController extends Controller
     /* ================= GUARDIAN LOGIN ================= */
     public function guardianLogin(Request $request)
     {
+        
         $request->validate([
             'email' => 'required|email',
             'password' => 'required|min:6'

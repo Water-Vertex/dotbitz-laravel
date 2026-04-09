@@ -27,8 +27,11 @@ class Course extends Model
         'instructor_id',
         'thumbnail_image',
         'benefits',
-        'short_description'
-    ];
+
+        'short_description',
+        ];
+
+
 
     /**
      * The attributes that should be cast to native types.
@@ -73,5 +76,14 @@ class Course extends Model
     {
         return $this->hasMany(Announcement::class);
     }
+    
+    public function assessmentQueries()
+    {
+        return $this->hasMany(AssessmentQuery::class);
+    }
 
+    public function instructors()
+{
+    return $this->belongsToMany(Instructor::class, 'course_instructor', 'course_id', 'instructor_id');
+}
 }

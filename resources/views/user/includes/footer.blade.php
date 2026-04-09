@@ -81,7 +81,7 @@
                       </div>
                       <div class="content">
                         <h6>Call Us</h6>
-                        <a href="tel:+1 (614) 680-1470">+1 (614) 680-1470</a>
+                        <a href="tel:+1 (614) 332-5066">+1 (614) 332-5066</a>
                       </div>
                     </li>
                     <li>

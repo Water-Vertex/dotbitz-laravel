@@ -21,6 +21,9 @@ class Order extends Model
         'discount',
         'coupon_code',
         'payment_method',
+        'payment_intent_id',
+        'payment_status',
+        'paid_at',
         'note',
     ];
 

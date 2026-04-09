@@ -82,11 +82,12 @@ Table of contents
 :root {
   --body-font: "Roboto", sans-serif;
   --heading-font: "Sansation", sans-serif;
-  --theme-color: #d58215;
+  --theme-color: #FECE09;
   --theme-color2: #f7931e;
   --theme-bg-light: #f6f6f6;
   --body-text-color: #757f95;
   --color-white: #ffffff;
+  --color-logoblue: #063989;
   --color-dark: #000d83;
   --color-green: #15d4c9;
   --color-blue: #2075fe;
@@ -107,7 +108,7 @@ Table of contents
   --footer-bg: #000d83;
   --footer-text-color: #f5faff;
   --gradient: linear-gradient(to bottom right, #d4923b 0%, #d58215 100%);
-  --gradient2: linear-gradient(to bottom right, #d4923b 0%, #d58215 100%);
+  --gradient2: linear-gradient(to bottom right, #FECE09 0%, #FECE09 100%);
   --gradient3: linear-gradient(90deg, #d58215 10%, #d4923b 35%, #e6a23e 100%);
 }
 
@@ -1006,7 +1007,7 @@ label {
 }
 .site-heading .site-title-tagline {
   display: inline-block;
-  color: var(--color-white);
+  color: var(--color-logoblue);
   font-weight: 500;
   text-transform: capitalize;
   font-size: 18px;

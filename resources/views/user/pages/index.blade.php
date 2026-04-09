@@ -17,7 +17,7 @@
                   </p>
                   <div class="hero-btn wow fadeInUp" data-delay="1s">
                     <a href="{{route('user.about')}}" class="theme-btn" style="background: #FF6500 !important">About More<i class="fas fa-arrow-right"></i></a>
-                    <a href="https://portal.dotbitz.com/student/registration" target="_blank" class="theme-btn2" style="background: #FF6500 !important">Enroll Now<i class="fas fa-arrow-right"></i></a>
+                    <a href="https://portal.dotbitz.com/student/registration" target="_blank" class="theme-btn2" style="background: #FF6500 !important">Register Now<i class="fas fa-arrow-right"></i></a>
                   </div>
                 </div>
               </div>
@@ -82,7 +82,7 @@
                 <div class="about-img">
                   <div class="row g-0">
                     <div class="col-6">
-                      <img class="img-1" src="{{asset('assets/images/about.jpg')}}" alt="" />
+                      <img class="img-1" src="{{asset('assets/images/kids1.png')}}" alt="" />
                     </div>
                     <div class="col-6">
                       <img class="img-2" src="{{asset('assets/images/about2.jpg')}}" alt="" />
@@ -270,7 +270,7 @@
    -webkit-box-orient: vertical;">{{$course->short_description}}</p>
                 </div>
                 <div class="course-bottom">
-                  <a href="javascript:void(0)" class="open-assessment-modal" data-course-id="{{ $course->id }}"
+                  <a href="{{route('user.book-assessment',$course->id)}}" class="" data-course-id="{{ $course->id }}"
                                         data-course-name="{{ $course->course_name }}">
                     <div class="course-instructor">
 
@@ -302,7 +302,7 @@
                     We make learning to code creative, practical, and career-ready. Here's how we bring it to life
                   </p>
                   <div class="choose-img">
-                    <img src="{{asset('assets/images/about3.jpg')}}" alt="" />
+                    <img src="{{asset('assets/images/kids3.jpg')}}" alt="" />
                   </div>
                 </div>
               </div>
