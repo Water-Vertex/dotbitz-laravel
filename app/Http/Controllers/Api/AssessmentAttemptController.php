@@ -175,91 +175,217 @@ class AssessmentAttemptController extends Controller
     /**
      * Show comprehensive details of a specific attempt for review and grading.
      */
-    public function show($id)
-    {
-        $attempt = AssessmentAttempt::with([
-            'answers.question:id,question,answer,marks,assessment_type',
-            'student:id,first_name,last_name,email,student_uid',
-            'assignAssessment.assessment.course'
-        ])->findOrFail($id);
+    // public function show($id)
+    // {
+    //     $attempt = AssessmentAttempt::with([
+    //         'answers.question:id,question,answer,marks,assessment_type',
+    //         'student:id,first_name,last_name,email,student_uid',
+    //         'assignAssessment.assessment.course'
+    //     ])->findOrFail($id);
 
-        $assign = $attempt->assignAssessment;
-        $assessment = $assign ? $assign->assessment : null;
+    //     $assign = $attempt->assignAssessment;
+    //     $assessment = $assign ? $assign->assessment : null;
 
-        $data = [
-            'id'               => $attempt->id,
-            'student_id'       => $attempt->student->student_uid ?? $attempt->student->id,
-            'student_name'     => trim($attempt->student->first_name . ' ' . $attempt->student->last_name),
-            'course_name'      => $assessment->course->course_name ?? 'N/A',
-            'assessment_title' => $assessment->assessment_title ?? 'N/A',
-            'total_marks'      => $assign->total_marks ?? 0,
-            'obtain_marks'     => $assign->obtain_marks ?? 0,
-            'remarks'          => $assign->remarks,
-            'answers'          => $attempt->answers->map(function($ans) {
-                return [
-                    'question_id'     => $ans->question_id,
-                    'question'        => $ans->question->question ?? 'Question Deleted',
-                    'student_answer'  => $ans->student_answer,
-                    'correct_answer'  => $ans->question->answer ?? 'N/A',
-                    'is_correct'      => $ans->is_correct,
-                    'assessment_type' => $ans->question->assessment_type ?? 'mcq',
-                    'marks'           => $ans->question->marks ?? 0,
-                ];
-            })
-        ];
+    //     $data = [
+    //         'id'               => $attempt->id,
+    //         'student_id'       => $attempt->student->student_uid ?? $attempt->student->id,
+    //         'student_name'     => trim($attempt->student->first_name . ' ' . $attempt->student->last_name),
+    //         'course_name'      => $assessment->course->course_name ?? 'N/A',
+    //         'assessment_title' => $assessment->assessment_title ?? 'N/A',
+    //         'total_marks'      => $assign->total_marks ?? 0,
+    //         'obtain_marks'     => $assign->obtain_marks ?? 0,
+    //         'remarks'          => $assign->remarks,
+    //         'answers'          => $attempt->answers->map(function($ans) {
+    //             return [
+    //                 'question_id'     => $ans->question_id,
+    //                 'question'        => $ans->question->question ?? 'Question Deleted',
+    //                 'student_answer'  => $ans->student_answer,
+    //                 'correct_answer'  => $ans->question->answer ?? 'N/A',
+    //                 'is_correct'      => $ans->is_correct,
+    //                 'assessment_type' => $ans->question->assessment_type ?? 'mcq',
+    //                 'marks'           => $ans->question->marks ?? 0,
+    //             ];
+    //         })
+    //     ];
 
-        return response()->json($data);
-    }
+    //     return response()->json($data);
+    // }
+
+    /**
+ * Show comprehensive details of a specific attempt for review and grading.
+ */
+public function show($id)
+{
+    $attempt = AssessmentAttempt::with([
+        'answers.question:id,question,answer,marks,assessment_type',
+        'student:id,first_name,last_name,email,student_uid',
+        'assignAssessment.assessment.course'
+    ])->findOrFail($id);
+
+    $assign = $attempt->assignAssessment;
+    $assessment = $assign ? $assign->assessment : null;
+
+    $data = [
+        'id'               => $attempt->id,
+        'student_id'       => $attempt->student->student_uid ?? $attempt->student->id,
+        'student_name'     => trim($attempt->student->first_name . ' ' . $attempt->student->last_name),
+        'course_name'      => $assessment->course->course_name ?? 'N/A',
+        'assessment_title' => $assessment->assessment_title ?? 'N/A',
+        'total_marks'      => $assign->total_marks ?? 0,
+        'obtain_marks'     => $assign->obtain_marks ?? 0,
+        'remarks'          => $assign->remarks,
+        'answers'          => $attempt->answers->map(function($ans) {
+            return [
+                'question_id'     => $ans->question_id,
+                'question'        => $ans->question->question ?? 'Question Deleted',
+                'student_answer'  => $ans->student_answer,
+                'answer'          => $ans->question->answer ?? 'N/A',  // Changed from 'correct_answer' to 'answer'
+                'is_correct'      => $ans->is_correct,
+                'assessment_type' => $ans->question->assessment_type ?? 'qna', // Default to 'qna' if null
+                'marks'           => $ans->question->marks ?? 0,
+                'options'         => $ans->question->options ?? [], // Add options for MCQ
+            ];
+        })
+    ];
+
+    return response()->json($data);
+}
 
     /**
      * Update the grading status and marks for a student's assessment attempt.
      */
-    public function grade(Request $request, $id)
-    {
-        $request->validate([
-            'obtain_marks'          => 'required|numeric',
-            'remarks'               => 'nullable|string',
-            'answers'               => 'required|array',
-            'answers.*.question_id' => 'required|exists:assessment_questions,id',
-            'answers.*.is_correct'  => 'required|boolean',
+    // public function grade(Request $request, $id)
+    // {
+    //     $request->validate([
+    //         'obtain_marks'          => 'required|numeric',
+    //         'remarks'               => 'nullable|string',
+    //         'answers'               => 'required|array',
+    //         'answers.*.question_id' => 'required|exists:assessment_questions,id',
+    //         'answers.*.is_correct'  => 'required|boolean',
+    //     ]);
+
+    //     $attempt = AssessmentAttempt::findOrFail($id);
+
+    //     DB::beginTransaction();
+    //     try {
+    //         foreach ($request->answers as $a) {
+    //             AssessmentAttemptAnswer::where('assessment_attempt_id', $id)
+    //                 ->where('question_id', $a['question_id'])
+    //                 ->update(['is_correct' => $a['is_correct']]);
+    //         }
+
+    //         $attempt->update([
+    //             'obtained_marks' => $request->obtain_marks,
+    //         ]);
+
+    //         $assignAssessment = AssignAssessment::find($attempt->assign_assessment_id);
+
+    //         if ($assignAssessment) {
+    //             $assignAssessment->update([
+    //                 'obtain_marks' => $request->obtain_marks,
+    //                 'remarks'      => $request->remarks,
+    //                 'status'       => 'marked',
+    //             ]);
+    //         }
+
+    //         DB::commit();
+    //         return response()->json([
+    //             'success' => true,
+    //             'message' => 'Grading saved. Both tables updated successfully.'
+    //         ]);
+
+    //     } catch (\Exception $e) {
+    //         DB::rollBack();
+    //         return response()->json([
+    //             'success' => false,
+    //             'message' => 'Update failed: ' . $e->getMessage()
+    //         ], 500);
+    //     }
+    // }
+
+   public function grade(Request $request, $id)
+{
+    $request->validate([
+        'obtain_marks'          => 'required|numeric',
+        'remarks'               => 'nullable|string',
+        'answers'               => 'required|array',
+        'answers.*.question_id' => 'required|exists:assessment_questions,id',
+        'answers.*.is_correct'  => 'required', // Can be boolean OR numeric (marks)
+    ]);
+
+    $attempt = AssessmentAttempt::findOrFail($id);
+
+    // Load attempt answers with question details
+    $attemptAnswers = AssessmentAttemptAnswer::where('assessment_attempt_id', $id)
+        ->with('question')
+        ->get()
+        ->keyBy('question_id');
+
+    DB::beginTransaction();
+    try {
+        foreach ($request->answers as $a) {
+            $attemptAnswer = $attemptAnswers->get($a['question_id']);
+
+            // For MCQ questions (assessment_type = 'mcqs')
+            if ($attemptAnswer && $attemptAnswer->question->assessment_type === 'mcqs') {
+                // Auto-calculate if student answer matches correct answer
+                $studentAnswer = trim($attemptAnswer->student_answer ?? '');
+                $correctAnswer = trim($attemptAnswer->question->answer ?? '');
+                $isActuallyCorrect = ($studentAnswer === $correctAnswer);
+
+                // Use the auto-calculated result, ignore manual override
+                $isCorrectValue = $isActuallyCorrect ? 1 : 0;
+            }
+            // For Q&A questions (assessment_type = 'q-a')
+            else {
+                // is_correct contains the marks obtained (can be 0 to max marks)
+                $isCorrectValue = $a['is_correct'];
+            }
+
+            AssessmentAttemptAnswer::where('assessment_attempt_id', $id)
+                ->where('question_id', $a['question_id'])
+                ->update(['is_correct' => $isCorrectValue]);
+        }
+
+        // Recalculate total obtained marks based on all answers
+        $totalObtainedMarks = AssessmentAttemptAnswer::where('assessment_attempt_id', $id)
+            ->join('assessment_questions', 'assessment_attempt_answers.question_id', '=', 'assessment_questions.id')
+            ->selectRaw('SUM(
+                CASE
+                    WHEN assessment_questions.assessment_type = "mcqs" AND assessment_attempt_answers.is_correct = 1 THEN assessment_questions.marks
+                    WHEN assessment_questions.assessment_type = "q-a" THEN assessment_attempt_answers.is_correct
+                    ELSE 0
+                END
+            ) as total')
+            ->value('total');
+
+        $attempt->update([
+            'obtained_marks' => $totalObtainedMarks,
         ]);
 
-        $attempt = AssessmentAttempt::findOrFail($id);
+        $assignAssessment = AssignAssessment::find($attempt->assign_assessment_id);
 
-        DB::beginTransaction();
-        try {
-            foreach ($request->answers as $a) {
-                AssessmentAttemptAnswer::where('assessment_attempt_id', $id)
-                    ->where('question_id', $a['question_id'])
-                    ->update(['is_correct' => $a['is_correct']]);
-            }
-
-            $attempt->update([
-                'obtained_marks' => $request->obtain_marks,
+        if ($assignAssessment) {
+            $assignAssessment->update([
+                'obtain_marks' => $totalObtainedMarks,
+                'remarks'      => $request->remarks,
+                'status'       => 'marked',
             ]);
-
-            $assignAssessment = AssignAssessment::find($attempt->assign_assessment_id);
-
-            if ($assignAssessment) {
-                $assignAssessment->update([
-                    'obtain_marks' => $request->obtain_marks,
-                    'remarks'      => $request->remarks,
-                    'status'       => 'marked',
-                ]);
-            }
-
-            DB::commit();
-            return response()->json([
-                'success' => true,
-                'message' => 'Grading saved. Both tables updated successfully.'
-            ]);
-
-        } catch (\Exception $e) {
-            DB::rollBack();
-            return response()->json([
-                'success' => false,
-                'message' => 'Update failed: ' . $e->getMessage()
-            ], 500);
         }
+
+        DB::commit();
+        return response()->json([
+            'success' => true,
+            'message' => 'Grading saved successfully. MCQ auto-marked, Q&A manually marked.',
+            'obtained_marks' => $totalObtainedMarks
+        ]);
+
+    } catch (\Exception $e) {
+        DB::rollBack();
+        return response()->json([
+            'success' => false,
+            'message' => 'Update failed: ' . $e->getMessage()
+        ], 500);
     }
+}
 }

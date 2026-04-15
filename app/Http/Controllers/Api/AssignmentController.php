@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use App\Models\Assignment;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Str;
 
 class AssignmentController extends Controller
@@ -32,26 +33,37 @@ class AssignmentController extends Controller
         $request->validate([
             'course_id'       => 'required|exists:courses,id',
             'title'           => 'required|string|max:255',
+            'description'     => 'nullable|string',
             'assignment_file' => 'nullable|file',
             'due_date'        => 'nullable|date',
+            'start_date'      => 'nullable|date',
+            'active_status'   => 'nullable|string|in:active,inactive',
             'total_marks'     => 'nullable|integer',
+            'batch_id'        => 'nullable|exists:batches,id',
+
         ]);
 
         $data = $request->only([
             'course_id',
             'title',
+            'description',
             'due_date',
+            'start_date',
             'total_marks',
+            'batch_id',
         ]);
 
-        // --- Handle file upload ---
+        // Convert active_status string to integer
+        $data['active_status'] = ($request->input('active_status', 'active') === 'active') ? 1 : 0;
+
+        // Handle file upload
         if ($request->hasFile('assignment_file')) {
             $file = $request->file('assignment_file');
             $filename = time() . '_' . Str::slug(pathinfo($file->getClientOriginalName(), PATHINFO_FILENAME)) . '.' . $file->getClientOriginalExtension();
             $file->move(public_path('assets/assignments'), $filename);
 
             $data['assignment_file'] = $filename;
-            $data['uploaded_at'] = now(); // uploaded timestamp
+            $data['uploaded_at'] = now();
         }
 
         $assignment = Assignment::create($data);
@@ -96,19 +108,33 @@ class AssignmentController extends Controller
         $request->validate([
             'course_id'       => 'sometimes|required|exists:courses,id',
             'title'           => 'sometimes|required|string|max:255',
+            'description'     => 'nullable|string',
             'assignment_file' => 'nullable|file',
             'due_date'        => 'nullable|date',
+            'start_date'      => 'nullable|date',
+            'active_status'   => 'nullable|string|in:active,inactive',
             'total_marks'     => 'nullable|integer',
+            'batch_id' => 'nullable|exists:batches,id',
+
         ]);
 
         $data = $request->only([
             'course_id',
             'title',
+            'description',
             'due_date',
+            'start_date',
             'total_marks',
+            'batch_id',
+
         ]);
 
-        // --- Handle file upload ---
+        // Convert active_status string to integer
+        if ($request->has('active_status')) {
+            $data['active_status'] = ($request->input('active_status') === 'active') ? 1 : 0;
+        }
+
+        // Handle file upload
         if ($request->hasFile('assignment_file')) {
             $file = $request->file('assignment_file');
             $filename = time() . '_' . Str::slug(pathinfo($file->getClientOriginalName(), PATHINFO_FILENAME)) . '.' . $file->getClientOriginalExtension();
@@ -120,7 +146,7 @@ class AssignmentController extends Controller
             }
 
             $data['assignment_file'] = $filename;
-            $data['uploaded_at'] = now(); // update uploaded timestamp
+            $data['uploaded_at'] = now();
         }
 
         $assignment->update($data);
@@ -157,6 +183,7 @@ class AssignmentController extends Controller
         ]);
     }
 
+    // Get assignments by course
     public function getAssignmentsByCourse($courseId)
     {
         $assignments = Assignment::where('course_id', $courseId)
@@ -169,4 +196,23 @@ class AssignmentController extends Controller
             'data'    => $assignments,
         ]);
     }
+public function instructorIndex()
+{
+    $user = Auth::user();
+    $instructor = \App\Models\Instructor::where('email', $user->email)->first();
+
+    if (!$instructor) {
+        return response()->json(['success' => false, 'message' => 'Instructor not found.'], 404);
+    }
+
+    $courseIds = \App\Models\CourseInstructor::where('instructor_id', $instructor->id)
+        ->pluck('course_id');
+
+    $assignments = Assignment::whereIn('course_id', $courseIds)
+        ->with(['course', 'batch'])
+        ->orderBy('created_at', 'desc')
+        ->get();
+
+    return response()->json(['success' => true, 'data' => $assignments]);
+}
 }

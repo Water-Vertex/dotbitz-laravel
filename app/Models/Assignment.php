@@ -13,10 +13,23 @@ class Assignment extends Model
         'due_date',
         'uploaded_at',
         'total_marks',
+        'batch_id',
+        'start_date',
+        'active_status',
+        'description',
     ];
 
      public function course()
     {
         return $this->belongsTo(Course::class);
     }
+    public function batch()
+{
+    return $this->belongsTo(Batch::class);
+}
+
+public function attempts()
+{
+    return $this->hasMany(AssignmentAttempt::class);
+}
 }

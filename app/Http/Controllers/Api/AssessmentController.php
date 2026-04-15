@@ -29,6 +29,7 @@ class AssessmentController extends Controller
             'course_id' => $request->course_id,
             'assessment_title' => $request->assessment_title,
             'total_marks' => $totalMarks,
+            'due_date' => $request->due_date,
         ]);
 
         foreach ($request->questions as $q) {
@@ -78,6 +79,8 @@ class AssessmentController extends Controller
         $assessment->update([
             'course_id' => $request->course_id,
             'assessment_title' => $request->assessment_title,
+            'total_marks' => collect($request->questions)->sum('marks'),
+            'due_date' => $request->due_date,
         ]);
 
         AssessmentQuestion::where('assessment_id', $assessment->id)->delete();

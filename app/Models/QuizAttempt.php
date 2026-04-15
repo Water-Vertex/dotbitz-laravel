@@ -14,7 +14,8 @@ class QuizAttempt extends Model
         'status',
         'obtained_marks',
         'remarks',
-        'is_checked',  
+        'is_checked',
+        'is_overdue',
     ];
 
     public function student()

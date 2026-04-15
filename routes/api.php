@@ -24,6 +24,7 @@ use App\Http\Controllers\Api\OrderController;
 use App\Http\Controllers\Api\QuizAttemptController;
 use App\Http\Controllers\Api\QuizController;
 use App\Http\Controllers\Api\AssessmentAttemptController;
+use App\Http\Controllers\Api\AssignmentAttemptController;
 use App\Http\Controllers\User\HomeController;
 
 use App\Models\Student;
@@ -35,9 +36,10 @@ Route::post('/logout', [AuthController::class, 'logout'])->middleware('auth:sanc
 // Protected routes
 Route::middleware('auth:sanctum')->prefix('admin')->group(function () {
 
+Route::get('assessments/{id}/', [HomeController::class, 'getAssessmentsForAppointment']);
     Route::get('/assessments/queries', [HomeController::class, 'Assessmentindex']);
     Route::get('/assessments/course/{course}', [AssessmentController::class, 'getByCourse']);
-    Route::get('assessments/{id}/', [HomeController::class, 'getAssessmentsForAppointment']);
+
 
     Route::get('/quiz-attempts', [QuizAttemptController::class, 'attemptedList']);
     Route::get('/quiz-attempts/{attemptId}', [QuizAttemptController::class, 'attemptDetail']);
@@ -130,7 +132,9 @@ Route::middleware('auth:sanctum')->prefix('student')->group(function () {
     Route::get('/profile', [StudentController::class, 'profile']);
     Route::put('/profile', [StudentController::class, 'updateProfile']);
 
-
+    Route::get('/assignment-attempts/check/{assignmentId}', [AssignmentAttemptController::class, 'checkAttempt']);
+    Route::post('/assignment-attempts/submit/{assignmentId}', [AssignmentAttemptController::class, 'submit']);
+    Route::get('/assignment-attempts/my', [AssignmentAttemptController::class, 'myAttempts']);
       // Quiz Attempt routes — specific pehle
     Route::get('/quiz-attempts/check/{quizId}', [QuizAttemptController::class, 'checkAttempt']);
     Route::post('/quiz-attempts/start/{quizId}', [QuizAttemptController::class, 'startQuiz']);
@@ -199,6 +203,12 @@ Route::post('/instructor/logout', [AuthController::class, 'logout'])->middleware
 Route::middleware('auth:sanctum')->prefix('instructor')->group(function () {
     // GET /api/instructor -> returns currently authenticated instructor's profile
     Route::get('/', [InstructorController::class, 'index']);
+
+    Route::get('/assignments', [AssignmentController::class, 'instructorIndex']);
+    Route::get('/assignments/{id}', [AssignmentController::class, 'show']);
+    Route::post('/assignments', [AssignmentController::class, 'store']);
+    Route::post('/assignments/{id}', [AssignmentController::class, 'update']); // POST for file upload
+    Route::delete('/assignments/{id}', [AssignmentController::class, 'destroy']);
     // MCQ routes
     Route::get('/mcqs', [McqController::class, 'instructorIndex']);
     Route::get('/mcqs/{id}', [McqController::class, 'show']);

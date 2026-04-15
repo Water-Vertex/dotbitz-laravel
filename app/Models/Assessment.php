@@ -12,6 +12,7 @@ class Assessment extends Model
     'course_id',
     'assessment_title',
     'total_marks',
+    'due_date'
 ];
 protected $casts = [
     'options' => 'array',
