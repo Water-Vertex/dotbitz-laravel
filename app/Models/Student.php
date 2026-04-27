@@ -34,8 +34,13 @@ class Student extends Authenticatable
         return $this->hasMany(StudentDetail::class);
     }
 
-   public function guardians()
-    {
-        return $this->belongsToMany(Guardian::class,  'student_id', 'guardian_id');
-    }
+//    public function guardian()
+//     {
+//         return $this->belongsToMany(Guardian::class,  'student_id', 'guardian_id');
+//     }
+
+public function guardian()
+{
+    return $this->belongsTo(Guardian::class, 'guardian_id');
+}
 }

@@ -13,6 +13,8 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
 use App\Services\StripeService;
+use App\Models\Student;       
+use App\Models\Guardian; 
 use Illuminate\Support\Facades\Log;
 
 class OrderController extends Controller
@@ -978,5 +980,168 @@ class OrderController extends Controller
     }
 
 
-    
+    // ============ ADMIN ============
+
+    // Admin — saare students ke orders
+    public function adminIndex(Request $request)
+    {
+        $query = Order::with([
+            'student',
+            'student.guardian',
+            'orderDetails.course',
+        ])->orderBy('created_at', 'desc');
+
+        // Filter by status
+        if ($request->has('status') && $request->status) {
+            $query->where('status', $request->status);
+        }
+
+        // Filter by student name
+        if ($request->has('search') && $request->search) {
+            $search = $request->search;
+            $query->whereHas('student', function($q) use ($search) {
+                $q->where('first_name', 'like', "%{$search}%")
+                  ->orWhere('last_name', 'like', "%{$search}%")
+                  ->orWhere('email', 'like', "%{$search}%");
+            });
+        }
+
+        $orders = $query->get()->map(function($order) {
+            return $this->formatOrderList($order);
+        });
+
+        return response()->json(['success' => true, 'data' => $orders]);
+    }
+
+    // Admin — single order detail
+    public function adminShow($orderId)
+    {
+        $order = Order::with([
+            'student',
+            'student.guardian',
+            'orderDetails.course',
+        ])->find($orderId);
+
+        if (!$order) {
+            return response()->json(['success' => false, 'message' => 'Order not found.'], 404);
+        }
+
+        return response()->json([
+            'success' => true,
+            'data'    => $this->formatOrderDetail($order),
+        ]);
+    }
+
+    // ============ STUDENT ============
+
+    // Student — apne orders
+    public function studentIndex()
+    {
+        $user    = Auth::user();
+        $student = Student::where('email', $user->email)->first();
+        if (!$student) $student = $user;
+
+        $orders = Order::with([
+            'student',
+            'student.guardian',
+            'orderDetails.course',
+        ])
+        ->where('student_id', $student->id)
+        ->orderBy('created_at', 'desc')
+        ->get()
+        ->map(fn($order) => $this->formatOrderDetail($order));
+
+        return response()->json(['success' => true, 'data' => $orders]);
+    }
+
+    // ============ GUARDIAN ============
+
+    // Guardian — apne students ke orders
+    public function guardianIndex()
+    {
+        $user     = Auth::user();
+        $guardian = \App\Models\Guardian::where('email', $user->email)->first();
+
+        if (!$guardian) {
+            return response()->json(['success' => false, 'message' => 'Guardian not found.'], 404);
+        }
+
+        // Guardian ke saare students
+        $studentIds = Student::where('guardian_id', $guardian->id)->pluck('id');
+
+        $orders = Order::with([
+            'student',
+            'student.guardian',
+            'orderDetails.course',
+        ])
+        ->whereIn('student_id', $studentIds)
+        ->orderBy('created_at', 'desc')
+        ->get()
+        ->map(fn($order) => $this->formatOrderDetail($order));
+
+        return response()->json(['success' => true, 'data' => $orders]);
+    }
+
+    // ============ HELPERS ============
+
+    private function formatOrderList($order): array
+    {
+        $guardian = $order->student?->guardian;
+
+        return [
+            'id'             => $order->id,
+            'order_number'   => $order->order_number,
+            'student_name'   => trim(($order->student->first_name ?? '') . ' ' . ($order->student->last_name ?? '')),
+            'student_email'  => $order->student->email ?? '-',
+            'guardian_name'  => $guardian
+                ? trim(($guardian->first_name ?? '') . ' ' . ($guardian->last_name ?? ''))
+                : '--',
+            'total_amount'   => $order->total_amount,
+            'sub_amount'     => $order->sub_amount,
+            'discount'       => $order->discount,
+            'coupon_code'    => $order->coupon_code,
+            'payment_method' => $order->payment_method,
+            'status'         => $order->status,
+            'ordered_at'     => $order->ordered_at,
+            'created_at'     => $order->created_at,
+        ];
+    }
+
+    private function formatOrderDetail($order): array
+    {
+        $guardian = $order->student?->guardian;
+
+        $courses = $order->orderDetails->map(function($detail) {
+            return [
+                'course_id'   => $detail->course_id,
+                'course_name' => $detail->course->course_name ?? '-',
+                'price'       => $detail->price,
+            ];
+        });
+
+        return [
+            'id'             => $order->id,
+            'order_number'   => $order->order_number,
+            'student_name'   => trim(($order->student->first_name ?? '') . ' ' . ($order->student->last_name ?? '')),
+            'student_email'  => $order->student->email ?? '-',
+            'student_phone'  => $order->student->phone ?? '-',
+            'guardian_name'  => $guardian
+                ? trim(($guardian->first_name ?? '') . ' ' . ($guardian->last_name ?? ''))
+                : '--',
+            'guardian_email' => $guardian->email ?? null,
+            'courses'        => $courses,
+            'sub_amount'     => $order->sub_amount,
+            'discount'       => $order->discount ?? 0,
+            'coupon_code'    => $order->coupon_code,
+            'total_amount'   => $order->total_amount,
+            'payment_method' => $order->payment_method,
+            'status'         => $order->status,
+            'is_financed'    => $order->is_financeed,
+            'finance_id'     => $order->finance_id,
+            'finance_provider' => $order->finance_provider,
+            'note'           => $order->note,
+            'ordered_at'     => $order->ordered_at,
+            'created_at'     => $order->created_at,
+        ];
+    }
 }
