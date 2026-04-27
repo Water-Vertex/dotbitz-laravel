@@ -143,7 +143,7 @@ Route::middleware('auth:sanctum')->prefix('guardian')->group(function () {
      Route::get('results/courses/{studentId}',            [ResultController::class, 'guardianStudentCourses']);
     Route::get('results/quiz/{studentId}/{courseId}',    [ResultController::class, 'guardianQuizResults']);
     Route::get('results/assignment/{studentId}/{courseId}', [ResultController::class, 'guardianAssignmentResults']);
-
+Route::get('student/{studentId}/schedules', [ClassScheduleController::class, 'getSchedulesByStudentId']);
 });
 
 // Student routes ----------------- //

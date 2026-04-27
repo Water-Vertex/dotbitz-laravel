@@ -11,7 +11,11 @@ class AssessmentAttemptAnswer extends Model
      'student_answer', 
      'is_correct'];
 
+   protected $casts = [
    
+    'obtained_marks' => 'decimal:2',
+];
+
     public function question()
     {
         return $this->belongsTo(AssessmentQuestion::class, 'question_id');

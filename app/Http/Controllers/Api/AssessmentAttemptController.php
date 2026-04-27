@@ -96,20 +96,143 @@ class AssessmentAttemptController extends Controller
                 'correct_answer'  => $ans->question->answer ?? 'N/A',
                 'is_correct'      => $ans->is_correct,
                 'assessment_type' => $ans->question->assessment_type ?? 'mcq',
+                 'obtained_marks'  => $ans->obtained_marks, 
                 'marks'           => $ans->question->marks ?? 0,
             ])->values()
         ]);
     }
 
     /** Grade an attempt and send result email */
-    public function grade(Request $request, $id)
+//     public function grade(Request $request, $id)
+// {
+//     $request->validate([
+//         'obtain_marks'          => 'required|numeric',
+//         'remarks'               => 'nullable|string',
+//         'answers'               => 'required|array',
+//         'answers.*.question_id' => 'required|exists:assessment_questions,id',
+//        'answers.*.is_correct' => 'required|numeric',
+//     ]);
+
+//     $attempt = AssessmentAttempt::with([
+//         'guest',
+//         'student',
+//         'assignAssessment.assessment.course',
+//         'assignAssessment.assessment'
+//     ])->findOrFail($id);
+
+//     DB::beginTransaction();
+//     try {
+//         // Update answers
+//      foreach ($request->answers as $ans) {
+//     $question = \App\Models\AssessmentQuestion::find($ans['question_id']);
+    
+//     if ($question && $question->assessment_type === 'mcqs') {
+//         AssessmentAttemptAnswer::where('assessment_attempt_id', $id)
+//             ->where('question_id', $ans['question_id'])
+//             ->update([
+//                 'is_correct' => (int) $ans['is_correct'],
+//                 'obtained_marks' => null
+//             ]);
+//     } else {
+//         AssessmentAttemptAnswer::where('assessment_attempt_id', $id)
+//             ->where('question_id', $ans['question_id'])
+//             ->update([
+//                  'is_correct' => 0,
+//                 'obtained_marks' => round((float) $ans['is_correct'], 2)
+//             ]);
+//     }
+// }
+
+//         // Update attempt marks
+//         $attempt->update(['obtained_marks' => $request->obtain_marks]);
+
+//         // Update assign assessment
+//         $assignAssessment = AssignAssessment::find($attempt->assign_assessment_id);
+//         if ($assignAssessment) {
+//             $assignAssessment->update([
+//                 'obtain_marks' => $request->obtain_marks,
+//                 'remarks'      => $request->remarks,
+//                 'status'       => 'marked',
+//             ]);
+//         }
+
+//         // Prepare email data
+//         $emailData = [
+//             'course' => $attempt->assignAssessment->assessment->course->course_name ?? 'Course',
+//             'title'  => $assignAssessment->assessment->assessment_title ?? 'Assessment',
+//             'total'  => $assignAssessment->total_marks ?? 0,
+//         ];
+
+//         // ========== EMAIL LOGIC (from first version) ==========
+//         $email = null;
+//         $name = 'User';
+
+//         if ($attempt->student_id && $attempt->student) {
+//             $email = $attempt->student->email;
+//             $name = trim($attempt->student->first_name . ' ' . $attempt->student->last_name);
+//             if (empty($name)) {
+//                 $name = 'Student';
+//             }
+//         } elseif ($attempt->guest_id) {
+//             if ($attempt->guest && $attempt->guest->email) {
+//                 $email = $attempt->guest->email;
+//                 $name = $attempt->guest->full_name ?? 'Guest User';
+//             } else {
+//                 // Guest might be using email as identifier
+//                 $email = $attempt->guest_id;
+//                 $name = 'Guest User';
+//             }
+//         }
+
+//         // Send email only if valid email exists
+//         if ($email && filter_var($email, FILTER_VALIDATE_EMAIL)) {
+//             try {
+//                 Mail::to($email)->send(new AssessmentResultMail(
+//                     $name,
+//                     $emailData['course'],
+//                     $emailData['title'],
+//                     $request->obtain_marks,
+//                     $emailData['total'],
+//                     $request->remarks,
+//                     $email
+//                 ));
+//             } catch (\Exception $mailError) {
+//                 Log::error('Email sending failed: ' . $mailError->getMessage());
+//                 // Continue execution - grading is still successful
+//             }
+//         } else {
+//             Log::warning('No valid email found for attempt ID: ' . $id . ', Email: ' . ($email ?? 'null'));
+//         }
+//         // =======================================================
+
+//         DB::commit();
+
+//         return response()->json([
+//             'success' => true,
+//             'message' => "Grading completed successfully." . ($email ? " Result email sent." : "")
+//         ]);
+
+//     } catch (\Exception $e) {
+//         DB::rollBack();
+//         Log::error('Grading failed for attempt ID ' . $id . ': ' . $e->getMessage());
+
+//         return response()->json([
+//             'success' => false,
+//             'message' => 'Failed to grade assessment: ' . $e->getMessage()
+//         ], 500);
+//     }
+// }
+
+
+/** Grade an attempt and send result email */
+public function grade(Request $request, $id)
 {
     $request->validate([
         'obtain_marks'          => 'required|numeric',
         'remarks'               => 'nullable|string',
         'answers'               => 'required|array',
         'answers.*.question_id' => 'required|exists:assessment_questions,id',
-        'answers.*.is_correct'  => 'required|boolean', // Added boolean validation
+        'answers.*.is_correct'  => 'required|numeric',
     ]);
 
     $attempt = AssessmentAttempt::with([
@@ -123,9 +246,23 @@ class AssessmentAttemptController extends Controller
     try {
         // Update answers
         foreach ($request->answers as $ans) {
-            AssessmentAttemptAnswer::where('assessment_attempt_id', $id)
-                ->where('question_id', $ans['question_id'])
-                ->update(['is_correct' => $ans['is_correct']]);
+            $question = \App\Models\AssessmentQuestion::find($ans['question_id']);
+            
+            if ($question && $question->assessment_type === 'mcqs') {
+                AssessmentAttemptAnswer::where('assessment_attempt_id', $id)
+                    ->where('question_id', $ans['question_id'])
+                    ->update([
+                        'is_correct' => (int) $ans['is_correct'],
+                        'obtained_marks' => null
+                    ]);
+            } else {
+                AssessmentAttemptAnswer::where('assessment_attempt_id', $id)
+                    ->where('question_id', $ans['question_id'])
+                    ->update([
+                        'is_correct' => 0,
+                        'obtained_marks' => round((float) $ans['is_correct'], 2)
+                    ]);
+            }
         }
 
         // Update attempt marks
@@ -148,13 +285,15 @@ class AssessmentAttemptController extends Controller
             'total'  => $assignAssessment->total_marks ?? 0,
         ];
 
-        // ========== EMAIL LOGIC (from first version) ==========
+        // ========== EMAIL LOGIC ==========
         $email = null;
         $name = 'User';
+        $userType = 'guest'; // Default guest
 
         if ($attempt->student_id && $attempt->student) {
             $email = $attempt->student->email;
             $name = trim($attempt->student->first_name . ' ' . $attempt->student->last_name);
+            $userType = 'student';  // ✅ YAHAN SET KARO
             if (empty($name)) {
                 $name = 'Student';
             }
@@ -163,10 +302,10 @@ class AssessmentAttemptController extends Controller
                 $email = $attempt->guest->email;
                 $name = $attempt->guest->full_name ?? 'Guest User';
             } else {
-                // Guest might be using email as identifier
                 $email = $attempt->guest_id;
                 $name = 'Guest User';
             }
+            $userType = 'guest';  // ✅ YAHAN SET KARO
         }
 
         // Send email only if valid email exists
@@ -179,11 +318,11 @@ class AssessmentAttemptController extends Controller
                     $request->obtain_marks,
                     $emailData['total'],
                     $request->remarks,
-                    $email
+                    $email,
+                    $userType  // ✅ YAHAN PASS KARO
                 ));
             } catch (\Exception $mailError) {
                 Log::error('Email sending failed: ' . $mailError->getMessage());
-                // Continue execution - grading is still successful
             }
         } else {
             Log::warning('No valid email found for attempt ID: ' . $id . ', Email: ' . ($email ?? 'null'));
@@ -373,18 +512,19 @@ class AssessmentAttemptController extends Controller
             'remarks'          => $assign->remarks ?? null,
             'assessment_title' => $assign->assessment->assessment_title ?? 'N/A',
             'course_name'      => $assign->assessment_query->course->course_name ?? 'N/A',
-            'answers'          => $uniqueAnswers->map(function ($ans) {
-                return [
-                    'question_id'     => $ans->question_id,
-                    'question'        => $ans->question->question ?? 'Question Deleted',
-                    'assessment_type' => $ans->question->assessment_type ?? 'mcq',
-                    'options'         => $ans->question->options ?? [],
-                    'correct_answer'  => $ans->question->answer ?? null,
-                    'student_answer'  => $ans->student_answer,
-                    'is_correct'      => $ans->is_correct,
-                    'marks'           => $ans->question->marks ?? 0,
-                ];
-            })->values(),
+           'answers' => $uniqueAnswers->map(function ($ans) {
+    return [
+        'question_id'     => $ans->question_id,
+        'question'        => $ans->question->question ?? 'Question Deleted',
+        'assessment_type' => $ans->question->assessment_type ?? 'mcq',
+        'options'         => $ans->question->options ?? [],
+        'correct_answer'  => $ans->question->answer ?? null,
+        'student_answer'  => $ans->student_answer,
+        'is_correct'      => $ans->is_correct,
+        'obtained_marks'  => $ans->obtained_marks,  // ← YEH LINE ADD KARO
+        'marks'           => $ans->question->marks ?? 0,
+    ];
+})->values(),
         ],
     ]);
 }
@@ -525,6 +665,7 @@ class AssessmentAttemptController extends Controller
                     'options'         => $ans->question->options ?? [],
                     'correct_answer'  => $ans->question->answer ?? null,
                     'student_answer'  => $ans->student_answer,
+                    'obtained_marks'  => $ans->obtained_marks,
                     'is_correct'      => $ans->is_correct,
                     'marks'           => $ans->question->marks ?? 0,
                 ]),

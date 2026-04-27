@@ -36,7 +36,6 @@
             background: linear-gradient(135deg, #073a89 0%, #0091b9 100%);
             padding: 40px 32px;
             text-align: center;
-            position: relative;
         }
 
         .header-logo {
@@ -46,23 +45,19 @@
             letter-spacing: 2px;
             text-transform: uppercase;
             margin-bottom: 16px;
-            position: relative;
         }
 
         .header h1 {
             color: #ffffff;
             font-size: 26px;
             font-weight: 700;
-            line-height: 1.3;
             margin: 0;
-            position: relative;
         }
 
         .header-sub {
             color: rgba(255,255,255,0.85);
             font-size: 14px;
             margin-top: 8px;
-            position: relative;
         }
 
         .content {
@@ -203,6 +198,21 @@
             box-shadow: 0 4px 14px rgba(7, 58, 137, 0.3);
         }
 
+        .login-box {
+            background: #e6f0fa;
+            border-radius: 12px;
+            padding: 20px;
+            text-align: center;
+            margin: 20px 0;
+            border: 1px solid #cbd5e1;
+        }
+
+        .login-text {
+            font-size: 14px;
+            color: #1e293b;
+            margin-bottom: 8px;
+        }
+
         .divider {
             height: 1px;
             background: linear-gradient(to right, #e2e8f0, transparent);
@@ -252,14 +262,12 @@
 <div class="email-wrapper">
     <div class="email-container">
 
-        {{-- Header --}}
         <div class="header">
             <div class="header-logo">DotBitz</div>
             <h1>Assessment Result</h1>
             <p class="header-sub">{{ $courseName }}</p>
         </div>
 
-        {{-- Content --}}
         <div class="content">
 
             <p class="greeting">Dear <strong>{{ $recipientName }}</strong>,</p>
@@ -268,20 +276,17 @@
                 Here are your results:
             </p>
 
-            {{-- Assessment Title --}}
             <div class="assessment-title">
                 <span class="assessment-label">Assessment</span>
                 <span class="assessment-name">{{ $assessmentTitle }}</span>
             </div>
 
-            {{-- Score Card --}}
             <div class="score-card">
                 <span class="score-label">Your Score</span>
                 <span class="score-value">{{ $obtainedMarks }}</span>
                 <span class="score-outof">out of {{ $totalMarks }}</span>
             </div>
 
-            {{-- Percentage --}}
             @php
                 $percentage = ($obtainedMarks / $totalMarks) * 100;
                 $grade = '';
@@ -297,7 +302,6 @@
                 <div class="grade">{{ $grade }}</div>
             </div>
 
-           {{-- Remarks section ke thora niche --}}
             @if($remarks)
             <div class="remarks-box">
                 <span class="remarks-label">Remarks</span>
@@ -305,28 +309,35 @@
             </div>
             @endif
 
-            {{-- Check Result Button (Exactly as your reference) --}}
-            <div class="register-btn" style="margin-top: -10px;">
-                <a href="https://portal.dotbitz.com/guest/assessment-result?email={{ $email }}"
-                   style="background: linear-gradient(135deg, #0091b9 0%, #007291 100%); text-decoration: none; display: inline-block; padding: 12px 25px; color: white; border-radius: 5px; font-weight: bold;">
-                    Check Result →
-                </a>
-            </div>
+            {{-- ✅ CONDITION: Student ho to login message, Guest ho to buttons --}}
+            @if($userType === 'student')
+                <div class="login-box">
+                    <p class="login-text"> To view your complete assessment results,</p>
+                    <p class="login-text">please log in to your student portal.</p>
+                </div>
+            @else
+                <div class="register-btn" style="margin-top: -10px;">
+                    <a href="https://portal.dotbitz.com/guest/assessment-result?email={{ $email }}"
+                       style="background: linear-gradient(135deg, #0091b9 0%, #007291 100%); text-decoration: none; display: inline-block; padding: 12px 25px; color: white; border-radius: 5px; font-weight: bold;">
+                        Check Result →
+                    </a>
+                </div>
+                <div class="register-btn" style="margin-top: 10px;">
+                    <a href="https://portal.dotbitz.com/student/registration">
+                        Register Yourself Now →
+                    </a>
+                </div>
+            @endif
 
-            {{-- Original Register Button (Niche thora gap de kar) --}}
-            <div class="register-btn" style="margin-top: 10px;">
-                <a href="https://portal.dotbitz.com/student/registration">
-                    Register Yourself Now →
-                </a>
-            </div>
             <div class="divider"></div>
 
+            @if($userType !== 'student')
             <p class="footer-note">
                 Once registered, our team will contact you for further details and course enrollment.
             </p>
+            @endif
         </div>
 
-        {{-- Footer --}}
         <div class="footer">
             <p class="footer-brand">DotBitz Learning Platform</p>
             <p class="footer-text">
