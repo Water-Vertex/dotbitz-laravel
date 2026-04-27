@@ -7,7 +7,7 @@ use App\Models\Assignment;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Str;
-
+use Illuminate\Support\Facades\DB;
 class AssignmentController extends Controller
 {
     // GET all assignments (optional filter by course_id)
@@ -184,7 +184,7 @@ class AssignmentController extends Controller
     }
 
     // Get assignments by course
-    public function getAssignmentsByCourse($courseId)
+    public function getAssignmentsByCourseId($courseId)
     {
         $assignments = Assignment::where('course_id', $courseId)
             ->orderBy('due_date', 'asc')
@@ -196,6 +196,28 @@ class AssignmentController extends Controller
             'data'    => $assignments,
         ]);
     }
+
+   public function getAssignmentsByCourse($batchId)
+{
+    $now = now();
+
+    $assignments = Assignment::where('batch_id', $batchId)
+        ->where('active_status', 1)
+        ->where(function($q) use ($now) {
+            $q->whereNull('start_date')
+              ->orWhere('start_date', '<=', $now);
+        })
+        ->get()
+        ->map(function($a) {
+            $a->total_marks = (int) $a->total_marks;
+            return $a;
+        });
+
+    return response()->json([
+        'success' => true,
+        'data'    => $assignments,
+    ]);
+}
 public function instructorIndex()
 {
     $user = Auth::user();

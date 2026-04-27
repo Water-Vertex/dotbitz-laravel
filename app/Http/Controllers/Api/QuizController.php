@@ -6,23 +6,56 @@ use App\Http\Controllers\Controller;
 use App\Models\Quiz;
 use App\Models\QuizMcq;
 use App\Models\Mcq;
+use App\Models\QuizAttempt;
+use App\Models\Student;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-
+use Illuminate\Support\Facades\DB;
 class QuizController extends Controller
 {
-     public function getByBatch($batchId)
-{
-    $quizzes = Quiz::with(['mcqs'])
-        ->where('batch_id', $batchId)
-        ->where('status', 'active')
-        ->orderBy('created_at', 'desc')
-        ->get();
+//      public function getByBatch($batchId)
+// {
+//     $quizzes = Quiz::with(['mcqs'])
+//         ->where('batch_id', $batchId)
+//         ->where('status', 'active')
+//         ->orderBy('created_at', 'desc')
+//         ->get();
 
-    return response()->json([
-        'success' => true,
-        'data'    => $quizzes,
-    ]);
+//     return response()->json([
+//         'success' => true,
+//         'data'    => $quizzes,
+//     ]);
+// }
+public function getByBatch($batchId)
+{
+    try {
+        $now = now();
+
+        $quizzes = Quiz::where('batch_id', $batchId)
+            ->where('status', 'active')
+            ->where(function($q) use ($now) {
+                $q->whereNull('start_date')
+                  ->orWhere('start_date', '<=', $now);
+            })
+          ->with(['mcqs' => function($q) {
+    $q->select('mcqs.id', 'mcqs.question', 'mcqs.is_single', 'mcqs.marks');
+}])
+            ->orderBy('created_at', 'desc')
+            ->get();
+
+        return response()->json([
+            'success' => true,
+            'data'    => $quizzes,
+        ]);
+
+    } catch (\Exception $e) {
+        return response()->json([
+            'success' => false,
+            'error'   => $e->getMessage(),
+            'line'    => $e->getLine(),
+            'file'    => $e->getFile(),
+        ], 500);
+    }
 }
     public function instructorIndex(Request $request)
 {
@@ -207,6 +240,103 @@ class QuizController extends Controller
     return response()->json([
         'success' => true,
         'data'    => $mcqs,
+    ]);
+}
+public function batchStudentStatus(Request $request)
+{
+    $request->validate([
+        'course_id' => 'required|exists:courses,id',
+        'batch_id'  => 'required|exists:batches,id',
+    ]);
+
+    $courseId = $request->course_id;
+    $batchId  = $request->batch_id;
+
+    $enrolledStudents = DB::table('courses_by_students')
+        ->where('course_id', $courseId)
+        ->where('batch_id', $batchId)
+        ->pluck('student_id');
+
+    $students = Student::whereIn('id', $enrolledStudents)->get();
+
+    $quizzes = Quiz::where('course_id', $courseId)
+        ->where('batch_id', $batchId)
+        ->get();
+
+    $result = $students->map(function($student) use ($quizzes) {
+        $studentQuizzes = $quizzes->map(function($quiz) use ($student) {
+
+            $attempt = QuizAttempt::where('student_id', $student->id)
+                ->where('quiz_id', $quiz->id)
+                ->first();
+
+            $status = 'not_attempted';
+
+            if ($attempt) {
+                if ($attempt->status === 'pending') {
+                    $status = 'in_progress';
+                } elseif ($attempt->status === 'time_up') {
+                    $status = 'time_up';
+                } elseif ($attempt->is_overdue) {
+                    $status = 'overdue_submitted';
+                } else {
+                    $status = 'submitted';
+                }
+            } else {
+                // ✅ 1 week check
+                if ($quiz->due_date) {
+                    $oneWeekAfter = \Carbon\Carbon::parse($quiz->due_date)->addWeek();
+
+                    if (now()->gt($oneWeekAfter)) {
+                        $status = 'expired';
+
+                        // ✅ Auto insert 0 marks agar attempt nahi hua
+                        QuizAttempt::firstOrCreate(
+                            [
+                                'student_id' => $student->id,
+                                'quiz_id'    => $quiz->id,
+                            ],
+                            [
+                                'status'         => 'expired',
+                                'obtained_marks' => 0,
+                                'remarks'        => 'Not attempted — auto marked 0',
+                                'is_checked'     => true,
+                            ]
+                        );
+
+                        // Reload attempt
+                        $attempt = QuizAttempt::where('student_id', $student->id)
+                            ->where('quiz_id', $quiz->id)
+                            ->first();
+                    }
+                }
+            }
+
+            return [
+                'quiz_id'   => $quiz->id,
+                'quiz_name' => $quiz->name,
+                'due_date'  => $quiz->due_date,
+                'marks'     => $quiz->marks,
+                'status'    => $status,
+                'attempt'   => $attempt,
+            ];
+        });
+
+        return [
+            'student_id' => $student->id,
+            'first_name' => $student->first_name,
+            'last_name'  => $student->last_name,
+            'email'      => $student->email,
+            'quizzes'    => $studentQuizzes,
+        ];
+    });
+
+    return response()->json([
+        'success' => true,
+        'data'    => [
+            'students' => $result,
+            'quizzes'  => $quizzes,
+        ],
     ]);
 }
 }

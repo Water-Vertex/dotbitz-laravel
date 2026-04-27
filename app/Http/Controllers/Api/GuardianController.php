@@ -42,6 +42,23 @@ class GuardianController extends Controller
         ]);
     }
 
+     public function Adminindex()
+    {
+        // Get the currently logged-in guardian
+        $guardians = Guardian::all();
+
+        if (!$guardians || $guardians->isEmpty()) {
+            return response()->json([
+                'message' => 'Unauthorized'
+            ], 401);
+        }
+
+        // Return important fields only
+        return response()->json([
+            'data' => $guardians
+        ]);
+    }
+
     /**
      * Store a newly created resource in storage.
      */

@@ -5,6 +5,8 @@ use App\Http\Controllers\Controller;
 use App\Mail\StudentEnrollmentMail;
 use App\Mail\StudentEnrollmentToAdminMail;
 use App\Mail\StudentEnrollmentToGuardianMail;
+use App\Models\CourseInstructor;
+use App\Models\CoursesByStudent;
 use App\Models\Guardian;
 use App\Models\Student;
 use App\Models\StudentDetail;
@@ -32,6 +34,29 @@ class StudentController extends Controller
     //     $request->merge(['student.status' => 1]);
     //     return $this->register($request);
     // }
+
+    public function InstructorIndex(Request $request)
+    {
+        $instructorId = $request->user()->id;
+
+        // Get all course IDs assigned to this instructor
+        $courseIds = CourseInstructor::where('instructor_id', $instructorId)->pluck('course_id');
+
+        // Get student IDs from courses_by_student table
+        $studentIds = CoursesByStudent::whereIn('course_id', $courseIds)
+            ->distinct()
+            ->pluck('student_id');
+
+        // Get student details
+        $students = Student::whereIn('id', $studentIds)
+            ->with(['studentDetails', 'guardian'])
+            ->get();
+
+        return response()->json([
+            'success' => true,
+            'data' => $students
+        ]);
+    }
 
 
     public function update(Request $request, $id)
@@ -193,9 +218,9 @@ public function destroy($id)
                 $guardianData['student_id'] = $student->id;
                 $pwd = 'PWD'.mt_rand(9999,99999);
                 $guardianData['password'] = Hash::make($pwd);
-                
+
                 $guardian = Guardian::create($guardianData);
-                
+
                 Mail::to($guardian->email)->send(new StudentEnrollmentToGuardianMail($student,$guardian,$pwd));
             }
 
@@ -204,7 +229,7 @@ public function destroy($id)
 
             // Generate token for immediate login (optional)
             $token = $student->createToken('student-auth-token')->plainTextToken;
-            
+
             return response()->json([
                 'success' => true,
                 'message' => 'Student registered successfully',
@@ -217,7 +242,7 @@ public function destroy($id)
         } catch (\Exception $e) {
             // Rollback transaction on error
             DB::rollBack();
-            
+
             return response()->json([
                 'success' => false,
                 'message' => 'Registration failed',

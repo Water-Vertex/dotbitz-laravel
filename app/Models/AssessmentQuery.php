@@ -24,5 +24,9 @@ class AssessmentQuery extends Model
         // Relationship name 'assigned' as you requested
         return $this->hasOne(AssignAssessment::class, 'appointment_id');
     }
-    
+    // In AssessmentAttempt.php Model
+public function guest()
+{
+    return $this->belongsTo(AssessmentQuery::class, 'guest_id', 'email');
+}
 }

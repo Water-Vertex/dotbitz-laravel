@@ -76,7 +76,7 @@ class Course extends Model
     {
         return $this->hasMany(Announcement::class);
     }
-    
+
     public function assessmentQueries()
     {
         return $this->hasMany(AssessmentQuery::class);
@@ -86,4 +86,9 @@ class Course extends Model
 {
     return $this->belongsToMany(Instructor::class, 'course_instructor', 'course_id', 'instructor_id');
 }
+
+public function curriculums()
+    {
+        return $this->hasMany(CourseCurriculum::class)->orderBy('sorting_order');
+    }
 }

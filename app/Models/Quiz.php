@@ -13,6 +13,7 @@ class Quiz extends Model
         'duration',
         'course_id',
         'batch_id',
+        'start_date',
         'due_date',
     ];
 
@@ -33,10 +34,9 @@ class Quiz extends Model
         return $this->belongsTo(Batch::class);
     }
 
-   public function mcqs()
-    {
-        return $this->belongsToMany(Mcq::class, 'quiz_mcqs', 'quiz_id', 'mcq_id');
-    }
-
+public function mcqs()
+{
+    return $this->belongsToMany(Mcq::class, 'quiz_mcqs', 'quiz_id', 'mcq_id');
+}
 
 }

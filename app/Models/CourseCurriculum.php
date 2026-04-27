@@ -10,8 +10,8 @@ class CourseCurriculum extends Model
     'course_id',
     'title',
     'description',
-    'type',
-    'documents',
+    // 'type',
+    // 'documents',
     'duration',
     'sorting_order',
 ];
@@ -23,5 +23,4 @@ public function course()
     return $this->belongsTo(Course::class);
 }
 }
-
 

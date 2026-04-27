@@ -6,6 +6,7 @@ class AssessmentAttempt extends Model
 {
     protected $fillable = [
         'student_id',
+        'guest_id',
         'assign_assessment_id',
         'status',
         'obtained_marks',
@@ -26,5 +27,8 @@ class AssessmentAttempt extends Model
     {
         return $this->belongsTo(AssignAssessment::class, 'assign_assessment_id');
     }
-
+public function guest()
+{
+    return $this->belongsTo(AssessmentQuery::class, 'guest_id', 'email');
+}
 }

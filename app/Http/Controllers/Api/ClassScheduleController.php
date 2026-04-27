@@ -4,6 +4,8 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Models\ClassSchedule;
+use App\Models\Course;
+use App\Models\CoursesByStudent;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
@@ -169,4 +171,54 @@ class ClassScheduleController extends Controller
             'message' => count($request->ids) . ' class schedule(s) deleted successfully'
         ]);
     }
+
+    public function getStudentCourses(Request $request)
+{
+    $studentId = $request->user()->id;
+
+    // Get course IDs from courses_by_student table
+    $courseIds = CoursesByStudent::where('student_id', $studentId)
+        ->pluck('course_id');
+    
+    // Fetch actual course data
+    $courses = Course::whereIn('id', $courseIds)
+        ->select('id', 'course_name', 'course_code', 'course_level', 'thumbnail_image')
+        ->get();
+    
+    return response()->json([
+        'message' => 'Courses retrieved successfully',
+        'data' => $courses
+    ]);
+}
+
+
+    public function getStudentSchedulesByCourse(Request $request, $courseId)
+{
+    $studentId = $request->user()->id;
+    
+    // Get student's enrolled batches for this course
+    $batch = CoursesByStudent::where('student_id', $studentId)
+        ->where('course_id', $courseId)
+        ->pluck('batch_id');
+    
+    if ($batch->isEmpty()) {
+        return response()->json([
+            'message' => 'No batch found for this course',
+            'data' => []
+        ]);
+    }
+    
+    // Get all schedules for these batches
+    $schedules = ClassSchedule::whereIn('batch_id', $batch)
+        ->with(['course', 'batch', 'instructor'])
+        ->orderByRaw("FIELD(day, 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday')")
+        ->orderBy('start_time', 'asc')
+        ->where('course_id', $courseId)
+        ->get();
+    
+    return response()->json([
+        'message' => 'Class schedules retrieved successfully',
+        'data' => $schedules
+    ]);
+}
 }

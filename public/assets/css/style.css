@@ -110,6 +110,7 @@ Table of contents
   --gradient: linear-gradient(to bottom right, #d4923b 0%, #d58215 100%);
   --gradient2: linear-gradient(to bottom right, #FECE09 0%, #FECE09 100%);
   --gradient3: linear-gradient(90deg, #d58215 10%, #d4923b 35%, #e6a23e 100%);
+  --bg-orange: #ff6500;
 }
 
 /*====================
@@ -168,6 +169,11 @@ ul {
 
 li {
   list-style: none;
+}
+
+.padding{
+    padding-top:70px;
+    padding-bottom:70px;
 }
 
 h1,
@@ -1041,10 +1047,11 @@ label {
   color: var(--theme-color);
 }
 .site-heading .site-title .text-gradient {
-  color: transparent;
-  background-image: var(--gradient3);
-  -webkit-background-clip: text;
-          background-clip: text;
+  /*color: transparent;*/
+  /*background-image: var(--gradient3);*/
+  /*-webkit-background-clip: text;*/
+  /*        background-clip: text;*/
+  color: #FF6500;
 }
 .site-heading p {
   margin-top: 15px;
@@ -1108,7 +1115,7 @@ label {
   vertical-align: middle;
   overflow: hidden;
   border: none;
-  background: var(--gradient);
+  background: #FF6500;
   box-shadow: 0 10px 30px 0 rgba(142, 121, 249, 0.25);
   z-index: 1;
 }
@@ -1151,7 +1158,7 @@ label {
 }
 
 .theme-btn:hover {
-  color: var(--color-white);
+  color: white !important;
 }
 
 .theme-btn2 {
@@ -1163,7 +1170,7 @@ label {
   background: var(--color-dark);
 }
 .theme-btn2:hover {
-  color: var(--color-white);
+  color: white !important;
 }
 
 .theme-border-btn {
@@ -1182,19 +1189,43 @@ label {
   color: var(--color-white);
 }
 
+.theme-btn-course {
+    font-size: 14px;
+    color: var(--color-white);
+    padding: 5px 10px;
+    transition: all 0.5s;
+    text-transform: capitalize;
+    position: relative;
+    border-radius: 10px;
+    font-weight: 500;
+    cursor: pointer;
+    text-align: center;
+    vertical-align: middle;
+    overflow: hidden;
+    border: none;
+    background: var(--gradient);
+    box-shadow: 0 10px 30px 0 rgba(142, 121, 249, 0.25);
+    z-index: 1;
+}
+.theme-btn-course:hover {
+  color: white !important;
+  background: #063989 !important;
+}
+
 /*====================
 14. Header top css
 ======================*/
 .header-top {
   padding: 10px 0;
-  background: var(--gradient3);
+  background: #FECE09;
   position: relative;
   z-index: 3;
+  color:#063989;
 }
 .header-top-wrap {
   display: flex;
   align-items: center;
-  justify-content: space-between;
+  justify-content: center;
   flex-wrap: wrap;
   position: relative;
 }
@@ -2199,10 +2230,11 @@ label {
   color: var(--theme-color);
 }
 .hs-1 .hero-single .hero-content .hero-title .text-gradient {
-  color: transparent;
-  background-image: var(--gradient3);
-  -webkit-background-clip: text;
-          background-clip: text;
+  /*color: transparent;*/
+  /*background-image: var(--gradient3);*/
+  /*-webkit-background-clip: text;*/
+  /*        background-clip: text;*/
+  color: #FF6500;
 }
 .hs-1 .hero-single .hero-content p {
   color: var(--color-dark);
@@ -2246,10 +2278,10 @@ label {
   }
 }
 .hs-2 .hero-single .hero-content .hero-title .text-gradient {
-  color: transparent;
-  background-image: var(--gradient3);
-  -webkit-background-clip: text;
-          background-clip: text;
+  /*color: transparent;*/
+  color: #FF6500;
+  /*-webkit-background-clip: text;*/
+  /*        background-clip: text;*/
 }
 .hs-2 .hero-single .hero-content .hero-sub-title {
   color: var(--theme-color2);
@@ -2291,10 +2323,11 @@ label {
   color: var(--color-dark);
 }
 .hs-3 .hero-single .hero-content .hero-title .text-gradient {
-  color: transparent;
-  background-image: var(--gradient3);
-  -webkit-background-clip: text;
-          background-clip: text;
+  /*color: transparent;*/
+  /*background-image: var(--gradient3);*/
+  /*-webkit-background-clip: text;*/
+  /*        background-clip: text;*/
+  color: #FF6500;
 }
 .hs-3 .hero-single .hero-content .hero-sub-title {
   background: var(--gradient2);
@@ -4291,7 +4324,7 @@ label {
   width: 35px;
   height: 35px;
   line-height: 35px;
-  background: var(--gradient);
+  background: #FF6500;
   border-radius: 50px;
   text-align: center;
 }
@@ -4557,7 +4590,7 @@ label {
 }
 .footer-area.light .footer-social li a i {
   background: var(--theme-color);
-  color: var(--color-white);
+  color: #063989;
 }
 .footer-area.light .footer-social li a i:hover {
   background: var(--theme-color);
@@ -4844,7 +4877,7 @@ label {
   z-index: 1;
 }
 .course-tag.c1 {
-  background: var(--color-skyblue);
+  background: #FF6500;
 }
 .course-tag.c2 {
   background: var(--color-red);
@@ -4910,6 +4943,7 @@ label {
 }
 .course-info {
   margin-top: 12px;
+  height:150px;
 }
 .course-info ul {
   display: flex;
@@ -5285,8 +5319,8 @@ label {
   margin-right: 20px;
 }
 .course-single-tab .nav .nav-link.active {
-  color: var(--theme-color);
-  border-bottom: 2px solid var(--theme-color);
+  color: #FF6500;
+  border-bottom: 2px solid #000D83;
 }
 .course-single-tab .course-details .course-list {
   margin-top: 20px;
@@ -5324,15 +5358,17 @@ label {
   width: unset;
   height: unset;
   margin-right: 3px;
+  display:none;
 }
 .course-single-tab .course-curriculum .accordion-item .accordion-button:not(.collapsed) {
-  color: var(--theme-color);
-  background: transparent;
+  color: #fff;
+  background: #FF6500;
   box-shadow: inset 0 -1px 0 var(--border-info-color);
 }
 .course-single-tab .course-curriculum .accordion-item .accordion-button:not(.collapsed)::after {
   content: "\f107";
   transform: rotate(-180deg);
+  display:none;
 }
 .course-single-tab .course-curriculum .curriculum-item {
   display: flex;
@@ -5386,13 +5422,13 @@ label {
   color: var(--color-green);
 }
 .course-single-tab .course-curriculum .curriculum-item.unlock .lock {
-  color: var(--color-green);
+  color: #FF6500;
 }
 .course-single-tab .course-curriculum .curriculum-item.unlock:hover {
-  border-color: var(--color-green);
+  border-color: #FF6500;
 }
 .course-single-tab .course-curriculum .curriculum-item.unlock.completed {
-  border-color: var(--color-green);
+  border-color: #FF6500;
 }
 .course-single-tab .course-instructor {
   background: var(--color-white);

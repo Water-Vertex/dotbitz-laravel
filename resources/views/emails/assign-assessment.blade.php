@@ -60,7 +60,7 @@
                 </p>
             @endif
 
-            {{-- Info Box --}}
+           {{-- Info Box --}}
             <div class="info-row">
                 @if($isAdmin)
                     <div class="info-item">
@@ -80,18 +80,37 @@
                     <span class="info-label">Total Marks</span>
                     <span class="info-value">{{ $totalMarks }}</span>
                 </div>
+                <div class="info-item">
+                    <span class="info-label">Due Date</span>
+                    <span class="info-value">
+                        {{ $dueDate ? \Carbon\Carbon::parse($dueDate)->format('d M Y') : 'N/A' }}
+                    </span>
+                </div>
             </div>
 
-            {{-- Register Button Section --}}
-            @if($pdfPath)
+            {{-- Expiry Note --}}
+            <p style="font-size: 11px; color: #e11d48; text-align: center; margin-top: -15px; margin-bottom: 20px;">
+                Note: Once this due date passes, the assessment will expire and you will have to re-book it.
+            </p>
+
+
+            {{-- BUTTON LOGIC: Sirf Non-Registered (isGuest) bacho ke liye --}}
+            @if(!$isAdmin && $isGuest)
                 <div class="register-btn">
                     <a href="https://portal.dotbitz.com/student/registration">
                         Register Yourself Now →
                     </a>
-                    <p class="register-note">
-                        Create your account to attempt assessments online.
-                    </p>
                 </div>
+
+            <div class="register-btn" style="margin-top: -10px;">
+    <a href="https://portal.dotbitz.com/guest/guest-assessments?email={{ $email }}"
+       style="background: linear-gradient(135deg, #0091b9 0%, #007291 100%); text-decoration: none; display: inline-block; padding: 12px 25px; color: white; border-radius: 5px; font-weight: bold;">
+       Start test now →
+    </a>
+    <p class="register-note">
+        Complete your account to track your progress online.
+    </p>
+</div>
             @endif
 
             <div class="divider"></div>
@@ -102,10 +121,10 @@
                     Please check your admin panel for more details.<br>
                     This is an automated notification.
                 </p>
-            @elseif($pdfPath)
+            @elseif($isGuest)
                 <div class="footer-note">
-                    <strong>Instructions:</strong><br>
-                    Your assessment is attached as a PDF. Please complete your assessment and send it back in PDF format to <strong>info@dotbitz.com</strong>.
+                    <strong>Note:</strong><br>
+                    You can attempt the assessment directly. However, we recommend registering your account to save your results permanently.
                 </div>
             @else
                 <p class="footer-note">

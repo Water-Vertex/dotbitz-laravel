@@ -12,8 +12,9 @@ use App\Models\Student;
 use App\Models\AssessmentAttempt;
 use App\Mail\AssignAssessmentMail;
 use Illuminate\Support\Facades\Mail;
-use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Support\Facades\Auth;
+use Exception;
+use Carbon\Carbon;
 
 class AssignAssessmentController extends Controller
 {
@@ -23,234 +24,163 @@ class AssignAssessmentController extends Controller
             ->orderBy('created_at', 'desc')
             ->get();
 
-        return response()->json([
-            'success' => true,
-            'data' => $assignments
-        ], 200);
+        return response()->json(['success' => true, 'data' => $assignments], 200);
     }
 
     public function store(Request $request)
     {
-
         $request->validate([
             'appointment_id'   => 'required|exists:assessment_queries,id',
             'assessment_id'    => 'required|exists:assessments,id',
             'time_to_complete' => 'required|integer',
             'total_marks'      => 'required|integer',
-            'obtain_marks'     => 'nullable|integer',
-            'remarks'          => 'nullable|string',
+            'due_date'         => 'required|date', // Sirf date lega
         ]);
 
-        $exists = AssignAssessment::where('appointment_id', $request->appointment_id)
-            ->where('assessment_id', $request->assessment_id)
-            ->exists();
+       
+        $dueDateOnly = Carbon::parse($request->due_date)->format('Y-m-d') . ' 00:00:00';
 
-        if ($exists) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Assessment already assigned to this appointment'
-            ], 409);
-        }
-
-        $assignment = AssignAssessment::create([
+        $assignedAssessment = AssignAssessment::create([
             'appointment_id'   => $request->appointment_id,
             'assessment_id'    => $request->assessment_id,
             'time_to_complete' => $request->time_to_complete,
             'total_marks'      => $request->total_marks,
-            'obtain_marks'     => $request->obtain_marks,
-            'remarks'          => $request->remarks,
+            'due_date'         => $dueDateOnly, // Database mein sirf date save
             'status'           => 'pending',
         ]);
 
         $assessment_query = AssessmentQuery::with('course')->find($request->appointment_id);
-        $assessment  = Assessment::find($request->assessment_id);
-        $questions   = AssessmentQuestion::where('assessment_id', $request->assessment_id)->get();
+        $assessment       = Assessment::find($request->assessment_id);
+        $studentExists    = Student::where('email', $assessment_query->email)->exists();
 
-        $studentExists = Student::where('email', $assessment_query->email)->exists();
-
-        if ($studentExists) {
-            Mail::to($assessment_query->email)->send(new AssignAssessmentMail(
-                $assessment_query->name,
-                $assessment_query->course->course_name,
-                $assessment->assessment_title,
-                $request->time_to_complete,
-                $request->total_marks,
-                false,
-                null
-            ));
-        } else {
-            if (!file_exists(public_path('assets/assessment-pdf'))) {
-                mkdir(public_path('assets/assessment-pdf'), 0755, true);
-            }
-
-            $pdfPath = public_path('assets/assessment-pdf/temp_assessment_' . $assessment->id . '.pdf');
-
-            $pdf = Pdf::loadView('emails.assessment-pdf', [
-                'assessmentTitle' => $assessment->assessment_title,
-                'courseName'      => $assessment_query->course->course_name,
-                'timeToComplete'  => $request->time_to_complete,
-                'totalMarks'      => $request->total_marks,
-                'questions'       => $questions,
-            ]);
-
-            $pdf->save($pdfPath);
-
-            Mail::to($assessment_query->email)->send(new AssignAssessmentMail(
-                $assessment_query->name,
-                $assessment_query->course->course_name,
-                $assessment->assessment_title,
-                $request->time_to_complete,
-                $request->total_marks,
-                false,
-                $pdfPath
-            ));
-
-            if (file_exists($pdfPath)) {
-                unlink($pdfPath);
-            }
-        }
-
-        Mail::to('info@dotbitz.com')->send(new AssignAssessmentMail(
-            $assessment_query->name,
+        Mail::to($assessment_query->email)->send(new AssignAssessmentMail(
+            $assessment_query->full_name, 
             $assessment_query->course->course_name,
             $assessment->assessment_title,
             $request->time_to_complete,
             $request->total_marks,
-            true,
-            null
+            false, 
+            !$studentExists, 
+            $assignedAssessment->id, 
+            $assessment_query->email,
+            $dueDateOnly 
         ));
+        
+        return response()->json(['success' => true, 'assignment' => $assignedAssessment], 201);
+    }
+
+    // ================= GUEST ASSESSMENTS =================
+    public function getGuestAssessments(Request $request)
+    {
+        try {
+            $email = $request->header('X-Guest-Email');
+
+            if (!$email) {
+                return response()->json(['success' => false, 'message' => 'Guest email is required'], 400);
+            }
+
+            $assessments = AssignAssessment::with(['assessment_query.course', 'assessment'])
+                ->whereHas('assessment_query', function ($query) use ($email) {
+                    $query->where('email', $email);
+                })
+                ->orderBy('created_at', 'desc')
+                ->get()
+                ->map(function ($item) use ($email) {
+                    $item->attempt = AssessmentAttempt::where('assign_assessment_id', $item->id)
+                        ->where('guest_id', $email) 
+                        ->first();
+                   
+                    if ($item->due_date) {
+                        $item->due_date = Carbon::parse($item->due_date)->format('Y-m-d');
+                    }
+                    return $item;
+                });
+
+            return response()->json([
+                'success' => true, 
+                'count'   => $assessments->count(),
+                'data'    => $assessments
+            ], 200);
+
+        } catch (Exception $e) {
+            return response()->json(['success' => false, 'message' => $e->getMessage()], 500);
+        }
+    }
+
+    // ================= STUDENT ASSESSMENTS =================
+    public function getStudentAssessments(Request $request)
+    {
+        $student = $request->user();
+        if (!$student) return response()->json(['success' => false, 'message' => 'Unauthorized'], 401);
+
+        $assessments = AssignAssessment::with(['assessment_query.course', 'assessment'])
+            ->whereHas('assessment_query', function ($query) use ($student) {
+                $query->where('email', $student->email);
+            })
+            ->orderBy('created_at', 'desc')
+            ->get()
+            ->map(function ($item) use ($student) {
+                $item->attempt = AssessmentAttempt::where('assign_assessment_id', $item->id)
+                    ->where('student_id', $student->id)
+                    ->first();
+                // ✅ Sirf date part return karo
+                if ($item->due_date) {
+                    $item->due_date = Carbon::parse($item->due_date)->format('Y-m-d');
+                }
+                return $item;
+            });
+
+        return response()->json(['success' => true, 'data' => $assessments], 200);
+    }
+
+    // ================= GUARDIAN ASSESSMENTS =================
+    public function getGuardianAssessments()
+    {
+        $guardian = Auth::guard('guardian')->user();
+        if (!$guardian) return response()->json(['message' => 'Unauthorized'], 401);
+
+        $student = Student::find($guardian->student_id);
+        if (!$student) return response()->json(['message' => 'Student not found'], 404);
+
+        $assessments = AssignAssessment::with(['assessment_query.course', 'assessment'])
+            ->whereHas('assessment_query', function ($query) use ($student) {
+                $query->where('email', $student->email);
+            })->get()
+            ->map(function ($item) {
+                if ($item->due_date) {
+                    $item->due_date = Carbon::parse($item->due_date)->format('Y-m-d');
+                }
+                return $item;
+            });
 
         return response()->json([
-            'success'    => true,
-            'message'    => 'Assessment assigned successfully',
-            'assignment' => $assignment,
-            'questions'  => $questions
-        ], 201);
+            'student_name' => $student->first_name . ' ' . $student->last_name,
+            'assessments'  => $assessments
+        ]);
     }
 
     public function show($id)
     {
-        $assignment = AssignAssessment::with(['assessment_queries.course', 'assessment.questions','assessments'])->find($id);
-
-        if (!$assignment) {
-            return response()->json(['success' => false, 'message' => 'Assignment not found'], 404);
+        $assignment = AssignAssessment::with(['assessment_query.course', 'assessment.questions'])->find($id);
+        if (!$assignment) return response()->json(['success' => false, 'message' => 'Not found'], 404);
+        
+        if ($assignment->due_date) {
+            $assignment->due_date = Carbon::parse($assignment->due_date)->format('Y-m-d');
         }
-
+        
         return response()->json(['success' => true, 'data' => $assignment], 200);
     }
 
     public function update(Request $request, $id)
     {
         $assignment = AssignAssessment::findOrFail($id);
-
-        $request->validate([
-            'obtain_marks'     => 'nullable|integer',
-            'remarks'          => 'nullable|string',
-            'time_to_complete' => 'sometimes|integer',
-            'status'           => 'sometimes|in:pending,marked',
-        ]);
-
-        $assignment->update($request->only(['obtain_marks', 'remarks', 'time_to_complete', 'status']));
-
-        return response()->json([
-            'success' => true,
-            'message' => 'Assignment updated successfully',
-            'data'    => $assignment
-        ], 200);
+        $assignment->update($request->only(['obtain_marks', 'remarks', 'status']));
+        return response()->json(['success' => true, 'data' => $assignment], 200);
     }
 
     public function destroy($id)
     {
-        $assignment = AssignAssessment::find($id);
-
-        if (!$assignment) {
-            return response()->json(['success' => false, 'message' => 'Assignment not found'], 404);
-        }
-
-        $assignment->delete();
-
-        return response()->json([
-            'success' => true,
-            'message' => 'Assignment deleted successfully'
-        ], 200);
+        AssignAssessment::destroy($id);
+        return response()->json(['success' => true, 'message' => 'Deleted successfully'], 200);
     }
-
-
-
-//     public function getStudentAssessments(Request $request)
-// {
-//     // 1. Get the authenticated student
-//     $student = $request->user();
-
-//     if (!$student) {
-//         return response()->json([
-//             'success' => false,
-//             'message' => 'Unauthorized'
-//         ], 401);
-//     }
-
-//     // 2. Fetch assessments where the Appointment email matches the Student email
-//     $assessments = AssignAssessment::with(['assessment_query.course', 'assessment'])
-//         ->whereHas('assessment_query', function($query) use ($student) {
-//             $query->where('email', $student->email);
-//         })
-//         ->orderBy('created_at', 'desc')
-//         ->get();
-
-//     return response()->json([
-//         'success' => true,
-//         'data' => $assessments
-//     ], 200);
-// }
-
-public function getStudentAssessments(Request $request)
-{
-    $student = $request->user();
-
-    if (!$student) {
-        return response()->json(['success' => false, 'message' => 'Unauthorized'], 401);
-    }
-
-    $assessments = AssignAssessment::with(['assessment_query.course', 'assessment'])
-        ->whereHas('assessment_query', function ($query) use ($student) {
-            $query->where('email', $student->email);
-        })
-        ->orderBy('created_at', 'desc')
-        ->get()
-        ->map(function ($item) use ($student) {
-            // Sirf is student ka attempt attach karo
-            $item->attempt =AssessmentAttempt::where('assign_assessment_id', $item->id)
-                ->where('student_id', $student->id)
-                ->first();
-            return $item;
-        });
-
-    return response()->json(['success' => true, 'data' => $assessments], 200);
-}
-
-
-
-public function getGuardianAssessments()
-{
-    // 1. Logged-in guardian
-    $guardian = Auth::guard('guardian')->user();
-     if (!$guardian) {
-        return response()->json(['message' => 'Unauthorized'], 401);
-    }
-    $student = Student::find($guardian->student_id);
-     if (!$student) {
-        return response()->json(['message' => 'Student not found'], 404);}
-
-    // 3. Assessments fetch
-    $assessments = AssignAssessment::with(['appointment.course', 'assessment'])
-        ->whereHas('appointment', function ($query) use ($student) {
-            $query->where('email', $student->email);
-        }) ->get();
-      return response()->json([
-        'guardian_id'  => $guardian->id,
-        'student_id'   => $student->id,
-        'student_name' => $student->first_name . ' ' . $student->last_name,
-        'assessments'  => $assessments
-    ]);
-}
 }

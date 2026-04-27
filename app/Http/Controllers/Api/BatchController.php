@@ -20,6 +20,15 @@ class BatchController extends Controller
 
     }
 
+    public function InstructorIndex(Request $request)
+    {
+        //
+        $batches = Batch::where('instructor_id', $request->user()->id)->get();
+        return response()->json($batches);
+
+    }
+
+
     /**
      * Store a newly created resource in storage.
      */
@@ -141,7 +150,7 @@ public function update(Request $request, string $id)
             ])
             ->get()
             ->map(function ($batch) {
-                $batch->is_full = $batch->students !== null && 
+                $batch->is_full = $batch->students !== null &&
                                 $batch->enrolled_count >= $batch->students;
                 return $batch;
             });

@@ -71,168 +71,169 @@ class OrderController extends Controller
      * Store order for guardian (parent purchasing for student)
      */
     public function GuardianOrderstore(Request $request)
-    {
-        $request->validate([
-            'guardian_id'      => 'required|exists:guardians,id',
-            'student_id'       => 'required|exists:students,id',
-            'course_id'        => 'required|exists:courses,id',
-            'batch_id'         => 'required|exists:batches,id',
-            'sub_amount'       => 'required|numeric',
-            'total_amount'     => 'required|numeric',
-            'payment_method'   => 'required|string',
-            'discount'         => 'nullable|numeric',
-            'coupon_code'      => 'nullable|string',
-            'note'             => 'nullable|string',
-            'is_financed'      => 'nullable|boolean',
-            'finance_id'       => 'required_if:is_financed,true|nullable|string',
-            'finance_provider' => 'required_if:is_financed,true|nullable|string',
-            'success_url'      => 'required_if:payment_method,stripe|nullable|url',
-            'cancel_url'       => 'required_if:payment_method,stripe|nullable|url',
-        ]);
+{
+    $request->validate([
+        'guardian_id'      => 'required|exists:guardians,id',
+        'student_id'       => 'required|exists:students,id',
+        'course_id'        => 'required|exists:courses,id',
+        'batch_id'         => 'required|exists:batches,id',
+        'sub_amount'       => 'required|numeric',
+        'total_amount'     => 'required|numeric',
+        'payment_method'   => 'required|string',
+        'discount'         => 'nullable|numeric',
+        'coupon_code'      => 'nullable|string',
+        'note'             => 'nullable|string',
+        'is_financed'      => 'nullable|boolean',
+        'finance_id'       => 'required_if:is_financed,true|nullable|string',
+        'finance_provider' => 'required_if:is_financed,true|nullable|string',
+        'success_url'      => 'required_if:payment_method,stripe|nullable|url',
+        'cancel_url'       => 'required_if:payment_method,stripe|nullable|url',
+    ]);
 
-        try {
-            return DB::transaction(function () use ($request) {
+    // 1. Already enrolled check
+    $alreadyEnrolled = CoursesByStudent::where('student_id', $request->student_id)
+        ->where('course_id', $request->course_id)
+        ->where('status', 'enrolled')
+        ->exists();
 
-                // 1. Already enrolled check
-                $alreadyEnrolled = CoursesByStudent::where('student_id', $request->student_id)
-                    ->where('course_id', $request->course_id)
-                    ->where('status', 'enrolled')
-                    ->exists();
+    if ($alreadyEnrolled) {
+        return response()->json([
+            'success' => false,
+            'message' => 'This student is already enrolled in this course.',
+        ], 409);
+    }
 
-                if ($alreadyEnrolled) {
-                    return response()->json([
-                        'success' => false,
-                        'message' => 'Student already enrolled in this course.',
-                    ], 422);
-                }
+    // 2. Batch limit check
+    $batch = Batch::findOrFail($request->batch_id);
+    if ($batch->students !== null) {
+        $enrolledCount = CoursesByStudent::where('batch_id', $request->batch_id)
+            ->where('status', 'enrolled')
+            ->count();
 
-                // 2. Batch limit check
-                $batch = Batch::findOrFail($request->batch_id);
-                if ($batch->students !== null) {
-                    $enrolledCount = CoursesByStudent::where('batch_id', $request->batch_id)
-                        ->where('status', 'enrolled')
-                        ->count();
-
-                    if ($enrolledCount >= $batch->students) {
-                        return response()->json([
-                            'success' => false,
-                            'message' => 'This batch is full. No more enrollments allowed.',
-                        ], 422);
-                    }
-                }
-
-                // 3. Coupon check
-                if ($request->coupon_code) {
-                    $coupon = Coupon::where('code', $request->coupon_code)
-                        ->where('is_active', true)
-                        ->where(function ($q) {
-                            $q->whereNull('valid_until')
-                              ->orWhere('valid_until', '>=', now());
-                        })
-                        ->where(function ($q) {
-                            $q->whereNull('valid_from')
-                              ->orWhere('valid_from', '<=', now());
-                        })
-                        ->where(function ($q) {
-                            $q->whereNull('usage_limit')
-                              ->orWhereColumn('used_count', '<', 'usage_limit');
-                        })
-                        ->lockForUpdate()
-                        ->first();
-
-                    if (!$coupon) {
-                        return response()->json([
-                            'success' => false,
-                            'message' => 'Coupon code is no longer valid.',
-                        ], 422);
-                    }
-
-                    $coupon->increment('used_count');
-                }
-
-                // 4. Order create
-                $order = Order::create([
-                    'order_number'     => 'ORD-' . date('Ymd') . '-' . strtoupper(Str::random(6)),
-                    'guardian_id'      => $request->guardian_id,
-                    'student_id'       => $request->student_id,
-                    'sub_amount'       => $request->sub_amount,
-                    'total_amount'     => $request->total_amount,
-                    'discount'         => $request->discount ?? 0,
-                    'coupon_code'      => $request->coupon_code,
-                    'payment_method'   => $request->payment_method,
-                    'status'           => 'pending',
-                    'payment_status'   => 'pending',
-                    'note'             => $request->note,
-                    'is_financed'      => $request->is_financed ?? false,
-                    'finance_id'       => $request->finance_id,
-                    'finance_provider' => $request->finance_provider,
-                    'ordered_at'       => now(),
-                ]);
-
-                // 5. Order detail
-                OrderDetail::create([
-                    'order_id'   => $order->id,
-                    'course_id'  => $request->course_id,
-                    'student_id' => $request->student_id,
-                    'price'      => $request->total_amount,
-                ]);
-
-                // 6. Enrollment (temporary until payment is confirmed for Stripe)
-                // For non-Stripe payments, enroll immediately
-                if ($request->payment_method !== 'stripe') {
-                    CoursesByStudent::create([
-                        'course_id'   => $request->course_id,
-                        'student_id'  => $request->student_id,
-                        'batch_id'    => $request->batch_id,
-                        'order_id'    => $order->id,
-                        'enrolled_at' => now(),
-                        'status'      => 'enrolled',
-                    ]);
-
-                    return response()->json([
-                        'success' => true,
-                        'message' => 'Order placed and course enrolled successfully.',
-                        'data'    => $order,
-                    ], 201);
-                } else {
-                    // For Stripe, create enrollment with pending status
-                    CoursesByStudent::create([
-                        'course_id'   => $request->course_id,
-                        'student_id'  => $request->student_id,
-                        'batch_id'    => $request->batch_id,
-                        'order_id'    => $order->id,
-                        'enrolled_at' => null,
-                        'status'      => 'pending_payment',
-                    ]);
-
-                    // Create Stripe Checkout Session
-                    $checkoutUrl = $this->createStripeCheckoutSession($order, $request->success_url, $request->cancel_url);
-
-                    if (!$checkoutUrl) {
-                        throw new \Exception('Failed to create Stripe checkout session');
-                    }
-                    
-                    
-
-                    return response()->json([
-                        'success' => true,
-                        'message' => 'Redirect to Stripe checkout.',
-                        'data' => [
-                            'order' => $order,
-                            'checkout_url' => $checkoutUrl,
-                            'redirect' => true
-                        ],
-                    ], 201);
-                }
-            });
-
-        } catch (\Exception $e) {
+        if ($enrolledCount >= $batch->students) {
             return response()->json([
                 'success' => false,
-                'message' => 'Something went wrong: ' . $e->getMessage(),
-            ], 500);
+                'message' => 'This batch is full. No more enrollments allowed.',
+            ], 422);
         }
     }
+
+    // 3. Coupon check
+    if ($request->coupon_code) {
+        $coupon = Coupon::where('code', $request->coupon_code)
+            ->where('is_active', true)
+            ->where(function ($q) {
+                $q->whereNull('valid_until')
+                  ->orWhere('valid_until', '>=', now());
+            })
+            ->where(function ($q) {
+                $q->whereNull('valid_from')
+                  ->orWhere('valid_from', '<=', now());
+            })
+            ->where(function ($q) {
+                $q->whereNull('usage_limit')
+                  ->orWhereColumn('used_count', '<', 'usage_limit');
+            })
+            ->lockForUpdate()
+            ->first();
+
+        if (!$coupon) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Coupon code is invalid or expired.',
+            ], 422);
+        }
+
+        $coupon->increment('used_count');
+    }
+
+    try {
+        DB::beginTransaction();
+
+        // 4. Order create
+        $order = Order::create([
+            'order_number'     => 'ORD-' . date('Ymd') . '-' . strtoupper(Str::random(6)),
+            'guardian_id'      => $request->guardian_id,
+            'student_id'       => $request->student_id,
+            'sub_amount'       => $request->sub_amount,
+            'total_amount'     => $request->total_amount,
+            'discount'         => $request->discount ?? 0,
+            'coupon_code'      => $request->coupon_code,
+            'payment_method'   => $request->payment_method,
+            'status'           => 'pending',
+            'payment_status'   => 'pending',
+            'note'             => $request->note,
+            'is_financed'      => $request->is_financed ?? false,
+            'finance_id'       => $request->finance_id,
+            'finance_provider' => $request->finance_provider,
+            'ordered_at'       => now(),
+        ]);
+
+        // 5. Order detail
+        OrderDetail::create([
+            'order_id'   => $order->id,
+            'course_id'  => $request->course_id,
+            'student_id' => $request->student_id,
+            'price'      => $request->total_amount,
+        ]);
+
+        // 6. Enrollment (temporary until payment is confirmed for Stripe)
+        if ($request->payment_method !== 'stripe') {
+            CoursesByStudent::create([
+                'course_id'   => $request->course_id,
+                'student_id'  => $request->student_id,
+                'batch_id'    => $request->batch_id,
+                'order_id'    => $order->id,
+                'enrolled_at' => now(),
+                'status'      => 'enrolled',
+            ]);
+
+            DB::commit();
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Order placed successfully.',
+                'data'    => $order->load('orderDetails.course'),
+            ], 201);
+        } else {
+            // For Stripe, create enrollment with pending status
+            CoursesByStudent::create([
+                'course_id'   => $request->course_id,
+                'student_id'  => $request->student_id,
+                'batch_id'    => $request->batch_id,
+                'order_id'    => $order->id,
+                'enrolled_at' => null,
+                'status'      => 'pending_payment',
+            ]);
+
+            DB::commit();
+
+            // Create Stripe Checkout Session
+            $checkoutUrl = $this->createStripeCheckoutSession($order, $request->success_url, $request->cancel_url);
+
+            if (!$checkoutUrl) {
+                throw new \Exception('Failed to create Stripe checkout session');
+            }
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Redirect to Stripe checkout.',
+                'data' => [
+                    'order' => $order,
+                    'checkout_url' => $checkoutUrl,
+                    'redirect' => true
+                ],
+            ], 201);
+        }
+
+    } catch (\Exception $e) {
+        DB::rollBack();
+        return response()->json([
+            'success' => false,
+            'message' => 'Order failed: ' . $e->getMessage(),
+        ], 500);
+    }
+}
 
     /**
      * Store order for student (self purchase)

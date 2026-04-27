@@ -32,7 +32,7 @@
              <div class="course-item">
               <span class="course-tag c1">{{$course->course_level}}</span>
               <div class="course-img">
-                <a href="course-single.html"><img src="{{asset('assets/images/courses/' . $course->thumbnail_image)}}" alt="" /></a>
+                <a href="{{ route('user.course.details', $course->slug) }}"><img src="{{asset('assets/images/courses/' . $course->thumbnail_image)}}" alt="" /></a>
               </div>
               <div class="course-content">
                 {{-- <div class="course-meta">
@@ -51,13 +51,7 @@
    -webkit-box-orient: vertical;">{{$course->short_description}}</p>
                 </div>
                 <div class="course-bottom">
-                  <a href="javascript:void(0)" class="open-assessment-modal" data-course-id="{{ $course->id }}"
-                                        data-course-name="{{ $course->course_name }}">
-                    <div class="course-instructor">
-
-                      <h6>Book Free Assessment</h6>
-                    </div>
-                  </a>
+                  <a href="{{route('user.book-assessment',$course->id)}}" class="theme-btn" style="background: #FECE09 !important;color:#063989;padding: 5px 10px;font-size: 14px;">Book Free Assessment</a>
                   <div class="course-price">
 
                     <span style="font-size: 14px;">Age: {{$course->age_limit}}</span>

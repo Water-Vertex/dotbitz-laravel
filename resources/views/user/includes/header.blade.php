@@ -1,4 +1,13 @@
 <header class="header">
+  <div class="header-top">
+  <div class="container">
+    <div class="header-top-wrap text-center">
+      <p>
+        <b>🎉 Special Offer: Get an exclusive discount for the first 10 students! Hurry up and enroll now!</b>
+      </p>
+    </div>
+  </div>
+</div>
       <!-- navbar -->
       <div class="main-navigation">
         <nav class="navbar navbar-expand-lg">
@@ -51,7 +60,7 @@
                     <a href="https://portal.dotbitz.com/student/login" target="_blank" class="nav-link"><span class="far fa-sign-in"></span> Sign In</a>
                   </div>
                   <div class="nav-btn">
-                    <a href="javascript:void(0)" class="theme-btn open-consultation-modal" style="background: #FF6500 !important">Book Free Consultation</a>
+                    <a href="{{route('user.book-free-appointment')}}" class="theme-btn" style="background: #FF6500 !important">Book Free Consultation</a>
                   </div>
 
                 </div>

@@ -29,9 +29,9 @@ class Guardian extends Authenticatable
         'password',
     ];
 
-    public function student()
+     public function students()
     {
-        return $this->belongsTo(Student::class);
+        return $this->belongsToMany(Student::class,  'guardian_id', 'student_id');
     }
 
 }

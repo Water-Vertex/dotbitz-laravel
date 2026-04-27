@@ -34,8 +34,8 @@ class Student extends Authenticatable
         return $this->hasMany(StudentDetail::class);
     }
 
-    public function guardian()
+   public function guardians()
     {
-        return $this->hasOne(Guardian::class);
+        return $this->belongsToMany(Guardian::class,  'student_id', 'guardian_id');
     }
 }

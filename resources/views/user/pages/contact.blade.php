@@ -33,7 +33,7 @@
                   </div>
                   <div class="content">
                     <h5>Call Us</h5>
-                    <p>+1 323-888-4554</p>
+                    <p>+1 (380) 257-7761</p>
                   </div>
                 </div>
               </div>

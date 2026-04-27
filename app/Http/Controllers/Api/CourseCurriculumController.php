@@ -1,11 +1,13 @@
 <?php
 
+
+
+
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Models\CourseCurriculum;
 use Illuminate\Http\Request;
-use Illuminate\Support\Str;
 
 class CourseCurriculumController extends Controller
 {
@@ -25,40 +27,64 @@ class CourseCurriculumController extends Controller
         ]);
     }
 
+    /**
+     * Store one OR multiple curriculum items at once.
+     *
+     * Accepts either:
+     *   { course_id, items: [ { title, duration, description }, ... ] }
+     * OR a single flat object:
+     *   { course_id, title, duration, description }
+     */
     public function store(Request $request)
     {
         $request->validate([
-            'course_id'   => 'required|exists:courses,id',
-            'title'       => 'required|string|max:255',
-            'description' => 'nullable|string',
-            'type'        => 'required|string|max:50',
-            'documents'   => 'nullable',
-            'duration'    => 'nullable|integer',
-            'sorting_order'=> 'nullable|integer',
+        'course_id'              => 'required|exists:courses,id',
+        'items'                  => 'sometimes|array|min:1',
+        'items.*.title'          => 'required_with:items|string|max:255',
+        'items.*.duration'       => 'nullable|string|max:50',  
+        'items.*.description'    => 'nullable|string',
+        'items.*.sorting_order'  => 'nullable|integer',
+        'title'                  => 'required_without:items|string|max:255',
+        'duration'               => 'nullable|string|max:50',  
+        'description'            => 'nullable|string',
+        'sorting_order'          => 'nullable|integer',
         ]);
 
-        $data = $request->only([
-            'course_id', 'title', 'description', 'type', 'duration', 'sorting_order'
-        ]);
+        $courseId = $request->course_id;
 
-        // --- Documents handling ---
-        if ($request->type === 'video') {
-            $data['documents'] = $request->documents ?? null; // URL
-        } elseif ($request->hasFile('documents')) {
-            $file = $request->file('documents');
-            $filename = time() . '_' . Str::slug(pathinfo($file->getClientOriginalName(), PATHINFO_FILENAME)) . '.' . $file->getClientOriginalExtension();
-            $file->move(public_path('assets/course_documents'), $filename);
-            $data['documents'] = $filename;
-        } else {
-            $data['documents'] = null;
+        // ---- Bulk insert ----
+        if ($request->has('items') && is_array($request->items)) {
+            $created = [];
+            foreach ($request->items as $item) {
+                $created[] = CourseCurriculum::create([
+                    'course_id'     => $courseId,
+                    'title'         => $item['title'],
+                    'duration'      => $item['duration'] ?? null,
+                    'description'   => $item['description'] ?? null,
+                    'sorting_order' => $item['sorting_order'] ?? null,
+                ]);
+            }
+
+            return response()->json([
+                'success' => true,
+                'data'    => collect($created)->map->load('course'),
+                'message' => count($created) . ' curriculum item(s) created successfully',
+            ], 201);
         }
 
-        $curriculum = CourseCurriculum::create($data);
+        // ---- Single insert ----
+        $curriculum = CourseCurriculum::create([
+            'course_id'     => $courseId,
+            'title'         => $request->title,
+            'duration'      => $request->duration,
+            'description'   => $request->description,
+            'sorting_order' => $request->sorting_order,
+        ]);
 
         return response()->json([
             'success' => true,
             'data'    => $curriculum->load('course'),
-            'message' => 'Course curriculum created successfully'
+            'message' => 'Course curriculum created successfully',
         ], 201);
     }
 
@@ -91,42 +117,18 @@ class CourseCurriculumController extends Controller
         }
 
         $request->validate([
-            'title'       => 'sometimes|required|string|max:255',
-            'description' => 'nullable|string',
-            'type'        => 'sometimes|required|string|max:50',
-            'documents'   => 'nullable',
-            'duration'    => 'nullable|integer',
-            'sorting_order'=> 'nullable|integer',
+            'title'         => 'sometimes|required|string|max:255',
+             'duration'      => 'nullable|string|max:50',  
+            'description'   => 'nullable|string',
+            'sorting_order' => 'nullable|integer',
         ]);
 
-        $data = $request->only(['title', 'description', 'type', 'duration', 'sorting_order']);
-
-        // --- Documents handling ---
-        if ($request->type === 'video') {
-            // Video URL
-            $data['documents'] = $request->documents ?? $curriculum->documents;
-        } elseif ($request->hasFile('documents')) {
-            // Reading / Assignment file
-            $file = $request->file('documents');
-            $filename = time() . '_' . Str::slug(pathinfo($file->getClientOriginalName(), PATHINFO_FILENAME)) . '.' . $file->getClientOriginalExtension();
-            $file->move(public_path('assets/course_documents'), $filename);
-            $data['documents'] = $filename;
-
-            // Delete old file if exists
-            if ($curriculum->documents && file_exists(public_path('assets/course_documents/' . $curriculum->documents))) {
-                unlink(public_path('assets/course_documents/' . $curriculum->documents));
-            }
-        } else {
-            // No new file, keep old one
-            $data['documents'] = $curriculum->documents;
-        }
-
-        $curriculum->update($data);
+        $curriculum->update($request->only(['title', 'duration', 'description', 'sorting_order']));
 
         return response()->json([
             'success' => true,
             'data'    => $curriculum->load('course'),
-            'message' => 'Curriculum updated successfully'
+            'message' => 'Curriculum updated successfully',
         ]);
     }
 
@@ -141,15 +143,11 @@ class CourseCurriculumController extends Controller
             ], 404);
         }
 
-        if ($curriculum->documents && file_exists(public_path('assets/course_documents/' . $curriculum->documents))) {
-            unlink(public_path('assets/course_documents/' . $curriculum->documents));
-        }
-
         $curriculum->delete();
 
         return response()->json([
             'success' => true,
-            'message' => 'Curriculum deleted successfully'
+            'message' => 'Curriculum deleted successfully',
         ]);
     }
 }

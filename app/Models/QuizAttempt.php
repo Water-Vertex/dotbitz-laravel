@@ -16,12 +16,14 @@ class QuizAttempt extends Model
         'remarks',
         'is_checked',
         'is_overdue',
+
     ];
 
     public function student()
-    {
-        return $this->belongsTo(Student::class);
-    }
+{
+    return $this->belongsTo(Student::class, 'student_id');
+}
+
 
     public function quiz()
     {

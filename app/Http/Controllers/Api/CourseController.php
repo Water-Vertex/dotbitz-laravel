@@ -3,9 +3,16 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Models\Assessment;
+use App\Models\AssessmentAttempt;
+use App\Models\AssessmentQuery;
+use App\Models\AssignAssessment;
 use Illuminate\Http\Request;
 use App\Models\Course;
 use App\Models\CourseInstructor;
+use App\Models\CoursesByStudent;
+use App\Models\Student;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
@@ -82,25 +89,46 @@ public function index(Request $request)
     /**
      * Show single course
      */
-    public function show($id)
+    // public function show($id)
+    // {
+    //     Log::info("Fetching course with ID: {$id}");
+
+    //     $course = Course::with('instructor')->find($id);
+    //     Log::info("Course Record: " . json_encode($course));
+    //     if (!$course) {
+    //         return response()->json([
+    //             'success' => false,
+    //             'message' => 'Course not found'
+    //         ], 404);
+    //     }
+
+    //     return response()->json([
+    //         'success' => true,
+    //         'data' => $course
+    //     ]);
+    // }
+
+
+      // new update
+ public function show($id)
     {
         Log::info("Fetching course with ID: {$id}");
+        $course = Course::with(['instructor', 'curriculums','batches'])->find($id);
 
-        $course = Course::with('instructor')->find($id);
         Log::info("Course Record: " . json_encode($course));
+
         if (!$course) {
             return response()->json([
                 'success' => false,
-                'message' => 'Course not found'
+                'message' => 'Course not found',
             ], 404);
         }
 
         return response()->json([
             'success' => true,
-            'data' => $course
+            'data'    => $course,
         ]);
     }
-
     /**
      * Update a course
      */
@@ -280,5 +308,136 @@ public function index(Request $request)
                 'message' => 'Error: ' . $e->getMessage()
             ], 500);
         }
+    }
+
+     // Check if student has completed any assessment
+    public function checkAssessmentCompletion($studentId, $courseId)
+    {
+        $student = Student::find($studentId);
+         $alreadyEnrolled = CoursesByStudent::where('student_id', $studentId)
+            ->where('course_id', $courseId)
+            ->exists();
+
+        if ($alreadyEnrolled) {
+            return response()->json([
+                'success' => false,
+                'message' => 'You are already enrolled in this course'
+            ], 409);
+        }
+        $query = AssessmentQuery::where('email', $student->email)
+            ->where('course_id', $courseId)
+            ->first();
+
+            if(!$query) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'No query found for this course'
+                ], 404);
+            }
+
+        $assessmentIds = Assessment::where('course_id', $courseId)->get();
+        $assigned_assessmentIds = AssignAssessment::whereIn('assessment_id', $assessmentIds->pluck('id'))
+            ->where('appointment_id', $query->id)
+            ->get();
+
+        // Simply check if student has any completed assessment attempt
+        $assessmentCompleted = AssessmentAttempt::where('student_id', $studentId)
+            ->where('status', 'completed')
+            ->where('assign_assessment_id', $assigned_assessmentIds->pluck('id'))
+            ->exists();
+
+        return response()->json([
+            'success' => true,
+            'completed' => $assessmentCompleted,
+        ]);
+    }
+
+    // Enroll student in course
+    public function enrollStudent(Request $request)
+    {
+        $request->validate([
+            'course_id' => 'required|exists:courses,id'
+        ]);
+
+        $studentId = $request->user()->id;
+        $courseId = $request->course_id;
+
+        // Get student details
+        $student = Student::find($studentId);
+
+        if (!$student) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Student not found'
+            ], 404);
+        }
+
+        // Check if already enrolled
+        $alreadyEnrolled = CoursesByStudent::where('student_id', $studentId)
+            ->where('course_id', $courseId)
+            ->exists();
+
+        if ($alreadyEnrolled) {
+            return response()->json([
+                'success' => false,
+                'message' => 'You are already enrolled in this course'
+            ], 409);
+        }
+
+        // Check age eligibility (18 or above)
+        $age = Carbon::parse($student->date_of_birth)->age;
+
+        if ($age < 18) {
+            return response()->json([
+                'success' => false,
+                'message' => 'You must be 18 or older to enroll directly. Please ask your parent/guardian.'
+            ], 403);
+        }
+
+        $assessment = AssessmentQuery::where('email', Student::find($studentId)->email)
+            ->where('course_id', $courseId)
+            ->first();
+            if(!$assessment) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'No assessment found for this course'
+                ], 404);
+            }
+
+        // Simply check if student has any completed assessment attempt
+        $assessmentCompleted = AssessmentAttempt::where('student_id', $studentId)
+            ->where('status', 'completed')
+            ->where('assign_assessment_id', $assessment->id)
+            ->exists();
+
+        // Check if assessment is completed (for age 18+)
+
+
+        if (!$assessmentCompleted) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Please complete the assessment before enrolling.'
+            ], 403);
+        }
+
+        return response()->json([
+            'success' => true,
+            'completed' => $assessmentCompleted
+        ]);
+
+        // Enroll the student
+        // $enrollment = CoursesByStudent::create([
+        //     'student_id' => $studentId,
+        //     'course_id' => $courseId,
+        //     'batch_id' => null,
+        //     'status' => 'in-progress',
+        //     'enrolled_at' => Carbon::now()
+        // ]);
+
+        // return response()->json([
+        //     'success' => true,
+        //     'message' => 'Successfully enrolled in the course',
+        //     'data' => $enrollment
+        // ]);
     }
 }

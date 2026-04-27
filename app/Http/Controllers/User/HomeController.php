@@ -12,7 +12,9 @@ use App\Models\AssessmentQuery;
 use App\Models\Contact;
 use App\Models\Course;
 use App\Models\Policy;
+use App\Models\CoursesByStudent;
 use App\Models\Faq;
+use App\Models\PreRegistration;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Validation\Rule;
@@ -23,6 +25,7 @@ class HomeController extends Controller
     public function index()
     {
         $courses = Course::where('status', 'active')->get();
+        $faqs = Faq::all();
         return view('user.pages.index', get_defined_vars());
     }
 
@@ -57,7 +60,7 @@ class HomeController extends Controller
          // ✅ Send email to admin
         Mail::to('info@dotbitz.com')->send(new AdminContactMail($contact));
         flash()->success('Your message has been sent successfully!');
-        return redirect()->back();
+        return redirect()->route('user.contact-thankyou');
     }
     public function Faq()
     {
@@ -75,8 +78,12 @@ class HomeController extends Controller
     public function CourseDetails($slug)
     {
          $course = Course::where('slug', $slug)
-        ->with('instructor')
+        ->with('instructor','curriculums')
         ->firstOrFail();
+
+        // dd($course);
+
+        $student_count = CoursesByStudent::where('course_id',$course->id)->count();
 
     // Get related courses (same level or category)
     $relatedCourses = Course::where('id', '!=', $course->id)
@@ -150,7 +157,7 @@ public function Assessmentindex()
         // ✅ Send email to admin
         Mail::to('info@dotbitz.com')->send(new AdminAppointmentConfirmationMail($appointment));
 
-        return redirect()->back()->with('success', 'Appointment booked successfully!');
+        return redirect()->route('user.appointment-thankyou')->with('success', 'Appointment booked successfully!');
     }
 
      public function Policy($slug)
@@ -165,17 +172,17 @@ public function Assessmentindex()
         'full_name' => 'required|string|max:100',
         'email' => 'required|email|max:50',
         'phone' => 'required|string|max:20',
-        'course_id' => 'required|exists:courses,id',
+        'course_id' => 'required',
     ]);
 
     // Check duplicate registration
-    $exists = AssessmentQuery::where('email', $request->email)
-        ->where('course_id', $request->course_id)
-        ->exists();
+    // $exists = AssessmentQuery::where('email', $request->email)
+    //     ->where('course_id', $request->course_id)
+    //     ->exists();
 
-    if ($exists) {
-        return back()->with('error' , 'You have already booked this course.');
-    }
+    // if ($exists) {
+    //     return back()->with('error' , 'You have already booked this course.');
+    // }
 
     // Save the assessment
     AssessmentQuery::create([
@@ -186,7 +193,7 @@ public function Assessmentindex()
         'message' => $request->message,
     ]);
 
-    return redirect()->route('user.thankyou')->with('success', 'You have successfully registered for this course.');
+    return redirect()->route('user.assessment-thankyou')->with('success', 'You have successfully registered for this course.');
 }
 
  public function getAssessmentsForAppointment($id)
@@ -230,10 +237,53 @@ public function Assessmentindex()
         return view('user.pages.book-assessment', get_defined_vars());
     }
 
-    public function Thankyou()
+    public function BookFreeAppointment()
     {
-        return view('user.pages.thankyou');
+        $courses = Course::where('status','active')->get();
+        return view('user.pages.book-free-appointment', get_defined_vars());
     }
+
+    public function AssessmentThankyou()
+    {
+        return view('user.pages.assessment-thankyou');
+    }
+
+    public function AppointmentThankyou()
+    {
+        return view('user.pages.appointment-thankyou');
+    }
+
+    public function ContactThankyou()
+    {
+        return view('user.pages.contact-thankyou');
+    }
+
+    public function PreRegisThankyou()
+    {
+        return view('user.pages.pre-regis-thankyou');
+    }
+
+    public function PreRegistration()
+    {
+        return view('user.pages.pre-registration');
+    }
+
+    public function StorePreRegister(Request $request)
+    {
+        $preregister = new PreRegistration;
+        $preregister->name = $request->name;
+        $preregister->phone = $request->phone;
+        $preregister->email = $request->email;
+        $preregister->message = $request->message;
+        if($preregister->save())
+        {
+            return redirect()->route('user.pre-regis-thankyou')->with('success', 'Your Pre Registeration form Submitted successfully!');
+        }
+        else{
+            return redirect()->back()->with('error', 'Something went wrong!');
+        }
+    }
+
 
 
 }

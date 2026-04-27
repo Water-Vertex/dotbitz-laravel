@@ -10,33 +10,33 @@
             <div class="row">
               <div class="col-md-12 col-lg-6">
                 <div class="hero-content">
-                  <h6 class="hero-sub-title wow fadeInUp" data-delay=".25s"><i class="far fa-lightbulb-on"></i> Learn to Code</h6>
-                  <h1 class="hero-title wow fadeInRight" data-delay=".50s">Empowering Future <span class="text-gradient">Innovators,</span> One Dot at a Time</h1>
+                  <h6 class="hero-sub-title wow fadeInUp" data-delay=".25s" style="color:#FF6500"><i class="far fa-lightbulb-on"></i> Learn to Code</h6>
+                  <h1 class="hero-title wow fadeInRight" data-delay=".50s">Empowering Future <span class="" style="color:#FF6500">Innovators,</span> One Dot at a Time</h1>
                   <p class="wow fadeInLeft" data-delay=".75s">
                     Project-based coding courses — from game design to AI.
                   </p>
                   <div class="hero-btn wow fadeInUp" data-delay="1s">
-                    <a href="{{route('user.about')}}" class="theme-btn" style="background: #FF6500 !important">About More<i class="fas fa-arrow-right"></i></a>
-                    <a href="https://portal.dotbitz.com/student/registration" target="_blank" class="theme-btn2" style="background: #FF6500 !important">Register Now<i class="fas fa-arrow-right"></i></a>
+                    <a href="{{route('user.about')}}" class="theme-btn" style="background: #FECE09 !important;color:#063989">About More<i class="fas fa-arrow-right"></i></a>
+                    <a href="https://portal.dotbitz.com/student/registration" target="_blank" class="theme-btn2" style="background: #FECE09 !important;color:#063989">Register Now<i class="fas fa-arrow-right"></i></a>
                   </div>
                 </div>
               </div>
               <div class="col-md-12 col-lg-6">
                 <div class="hero-info-wrap">
                   <div class="hero-avatar-group">
-                    <h6><span>250k +</span> Students</h6>
-                    <span class="avatar"><img src="{{asset('assets/images/01.jpg')}}" alt="" /></span>
-                    <span class="avatar"><img src="{{asset('assets/images/02.jpg')}}" alt="" /></span>
-                    <span class="avatar"><img src="{{asset('assets/images/03.jpg')}}" alt="" /></span>
-                    <span class="avatar"><img src="{{asset('assets/images/04.jpg')}}" alt="" /></span>
-                    <span class="avatar"><img src="{{asset('assets/images/05.jpg')}}" alt="" /></span>
+                    <!--<h6><span>250k +</span> Students</h6>-->
+                    <!--<span class="avatar"><img src="{{asset('assets/images/01.jpg')}}" alt="" /></span>-->
+                    <!--<span class="avatar"><img src="{{asset('assets/images/02.jpg')}}" alt="" /></span>-->
+                    <!--<span class="avatar"><img src="{{asset('assets/images/03.jpg')}}" alt="" /></span>-->
+                    <!--<span class="avatar"><img src="{{asset('assets/images/04.jpg')}}" alt="" /></span>-->
+                    <!--<span class="avatar"><img src="{{asset('assets/images/05.jpg')}}" alt="" /></span>-->
                   </div>
-                  <div class="hero-course-info">
-                    <div class="icon">
-                      <img src="{{asset('assets/images/course.svg')}}" alt="" />
-                    </div>
-                    <h6 class="title"><span>160+</span> Courses</h6>
-                  </div>
+                  <!--<div class="hero-course-info">-->
+                  <!--  <div class="icon">-->
+                  <!--    <img src="{{asset('assets/images/course.svg')}}" alt="" />-->
+                  <!--  </div>-->
+                    <!--<h6 class="title"><span>160+</span> Courses</h6>-->
+                  <!--</div>-->
                 </div>
                 <div class="hero-img">
                   <img class="img-1" src="{{asset('assets/images/hero.png')}}" alt="" />
@@ -74,7 +74,7 @@
       <!--</div>-->
        <!-- partner area end -->
        <!-- about area -->
-      <div class="about-area py-120">
+      <div class="about-area padding">
         <div class="container">
           <div class="row">
             <div class="col-lg-6">
@@ -89,9 +89,9 @@
                     </div>
                   </div>
                 </div>
-                <div class="about-experience">
-                  <h5>10<span>+</span></h5>
-                  <p>Years Of Experience</p>
+                <div class="about-experience" >
+                  <h5 style="color:#063989">10<span>+</span></h5>
+                  <p style="color:#063989">Years Of Experience</p>
                 </div>
               </div>
             </div>
@@ -139,7 +139,7 @@
       </div>
       <!-- about area end -->
       <!-- category area -->
-      <div class="category-area pb-120">
+      <div class="category-area padding">
         <div class="container">
           <div class="row">
             <div class="col-lg-7 mx-auto">
@@ -236,7 +236,7 @@
       </div>
       <!-- category area end -->
        <!-- course area -->
-      <div class="course-area bg-img py-80">
+      <div class="course-area bg-img padding">
         <div class="container">
           <div class="row">
             <div class="col-lg-7 mx-auto">
@@ -251,7 +251,7 @@
             <div class="course-item">
               <span class="course-tag c1">{{$course->course_level}}</span>
               <div class="course-img">
-                <a href="course-single.html"><img src="{{asset('assets/images/courses/' . $course->thumbnail_image)}}" alt="" /></a>
+                <a href="{{ route('user.course.details', $course->slug) }}"><img src="{{asset('assets/images/courses/' . $course->thumbnail_image)}}" alt="" /></a>
               </div>
               <div class="course-content">
                 {{-- <div class="course-meta">
@@ -270,13 +270,14 @@
    -webkit-box-orient: vertical;">{{$course->short_description}}</p>
                 </div>
                 <div class="course-bottom">
-                  <a href="{{route('user.book-assessment',$course->id)}}" class="" data-course-id="{{ $course->id }}"
-                                        data-course-name="{{ $course->course_name }}">
-                    <div class="course-instructor">
+                  <!--<a href="{{route('user.book-assessment',$course->id)}}" class="" data-course-id="{{ $course->id }}"-->
+                  <!--                      data-course-name="{{ $course->course_name }}">-->
+                  <!--  <div class="course-instructor">-->
 
-                      <h6>Book Free Assessment</h6>
-                    </div>
-                  </a>
+                  <!--    <h6>Book Free Assessment</h6>-->
+                  <!--  </div>-->
+                  <!--</a>-->
+                  <a href="{{route('user.book-assessment',$course->id)}}" class="theme-btn" style="background: #FECE09 !important;color:#063989;padding: 5px 10px;font-size: 14px;">Book Free Assessment</a>
                   <div class="course-price">
 
                     <span style="font-size: 14px;">Age: {{$course->age_limit}}</span>
@@ -290,7 +291,7 @@
       </div>
       <!-- course area end -->
       <!-- choose area -->
-      <div class="choose-area py-120">
+      <div class="choose-area padding">
         <div class="container">
           <div class="row g-4">
             <div class="col-lg-5">
@@ -352,7 +353,7 @@
       </div>
       <!-- choose area end -->
       <!-- feature-area -->
-      <div class="feature-area pb-120">
+      <div class="feature-area padding">
         <div class="container">
           <div class="feature-wrap">
             <div class="row g-4">
@@ -404,7 +405,7 @@
       </div>
       <!-- feature-area end -->
       <!-- process area -->
-      <div class="process-area pb-120">
+      <div class="process-area padding">
         <div class="container">
           <div class="row">
             <div class="col-lg-7 mx-auto">
@@ -451,8 +452,55 @@
         </div>
       </div>
       <!-- process area end -->
+      <!-- faq area -->
+      <div class="faq-area padding">
+        <div class="container">
+          <div class="row">
+            <div class="col-lg-12">
+              <div class="faq-content wow fadeInUp" data-wow-delay=".25s">
+                <div class="site-heading mb-3">
+                  <span class="site-title-tagline"><i class="far fa-lightbulb-on"></i> Faq's</span>
+                  <h2 class="site-title my-3">General <span class="text-gradient">frequently</span> asked questions</h2>
+                </div>
+                <p class="mb-3">
+                 Got Questions? We’ve Got Answers
+                </p>
+
+              </div>
+            </div>
+            @foreach($faqs as $index => $faq)
+            <div class="col-lg-6">
+              <div class="accordion wow fadeInRight" data-wow-delay=".25s" id="accordionExample">
+
+                <div class="accordion-item">
+                  <h2 class="accordion-header" id="heading{{ $index + 1 }}">
+                    <button
+                      class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapse{{ $index + 1 }}" aria-expanded="false" aria-controls="collapse{{ $index + 1 }}"
+                    >
+                      <span><i class="far fa-question"></i></span> {{ $faq->question }}
+                    </button>
+                  </h2>
+                  <div
+                    id="collapse{{ $index + 1 }}"
+                    class="accordion-collapse collapse"
+                    aria-labelledby="heading{{ $index + 1 }}"
+                    data-bs-parent="#accordionExample"
+                  >
+                    <div class="accordion-body">
+                     {!! nl2br(e($faq->answer)) !!}
+                    </div>
+                  </div>
+                </div>
+
+              </div>
+            </div>
+             @endforeach
+          </div>
+        </div>
+      </div>
+      <!-- faq area end -->
       <!-- testimonial-area -->
-      <div class="testimonial-area ts-bg pt-80 pb-70">
+      <div class="testimonial-area ts-bg padding">
         <div class="container">
           <div class="row">
             <div class="col-lg-7 mx-auto">

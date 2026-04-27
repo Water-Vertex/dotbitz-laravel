@@ -13,8 +13,18 @@ class AssignAssessment extends Model
         'total_marks',
         'obtain_marks',
         'remarks',
-        'status'
+        'status',
+        'due_date'
+
     ];
+
+protected $casts = [
+        'due_date' => 'datetime',
+    ];
+
+
+
+
     public function assessment_query()
     {
         return $this->belongsTo(AssessmentQuery::class, 'appointment_id');

@@ -105,13 +105,13 @@ ul.custom-list li::before {
                 <span class="rating-avg">4.5</span>
                 <span>(1.5k Reviews)</span>
               </div>
-              <div class="info">
-                <div class="instructor">
-                  <img src="{{asset('assets/images/instructor.jpg')}}" alt="" />
-                  <h6>{{$course->instructor->first_name}} {{$course->instructor->last_name }}</h6>
-                </div>
+              <!--<div class="info">-->
+              <!--  <div class="instructor">-->
+              <!--    <img src="{{asset('assets/images/instructor.jpg')}}" alt="" />-->
+              <!--    <h6>{{$course->instructor->first_name}} {{$course->instructor->last_name }}</h6>-->
+              <!--  </div>-->
 
-              </div>
+              <!--</div>-->
             </div>
           </div>
         </div>
@@ -144,7 +144,7 @@ ul.custom-list li::before {
                       <button class="nav-link active" data-bs-toggle="tab" data-bs-target="#course-tab2" type="button">Curriculum</button>
                     </li>
                     <li class="nav-item">
-                      <button class="nav-link" data-bs-toggle="tab" data-bs-target="#course-tab3" type="button">Instructor</button>
+                      <!--<button class="nav-link" data-bs-toggle="tab" data-bs-target="#course-tab3" type="button">Instructor</button>-->
                     </li>
                     <li class="nav-item">
                       <button class="nav-link" data-bs-toggle="tab" data-bs-target="#course-tab4" type="button">Review</button>
@@ -158,7 +158,7 @@ ul.custom-list li::before {
                         <div class="mb-4">
                           <h5 class="mb-10">Description</h5>
                           <p>
-                            {!! $course->description !!}
+                            {!! $course->course_description !!}
                           </p>
                         </div>
                       </div>
@@ -176,203 +176,101 @@ ul.custom-list li::before {
                             </h2>
                             <div id="curriculum1" class="accordion-collapse collapse show" data-bs-parent="#course-accordion">
                               <div class="accordion-body">
-                                <div class="curriculum-item unlock completed">
-                                  <div class="left">
-                                    <h6><i class="fad fa-check-circle"></i> <span>Video:</span> Greetings and Introduction</h6>
-                                  </div>
-                                  <div class="right">
-                                    <span class="duration">12:43</span>
-                                    <span class="lock"><i class="fad fa-unlock"></i></span>
-                                  </div>
-                                </div>
+                                <!--<div class="curriculum-item unlock completed">-->
+                                <!--  <div class="left">-->
+                                <!--    <h6><i class="fad fa-check-circle"></i> <span>Video:</span> Greetings and Introduction</h6>-->
+                                <!--  </div>-->
+                                <!--  <div class="right">-->
+                                <!--    <span class="duration">12:43</span>-->
+                                <!--    <span class="lock"><i class="fad fa-unlock"></i></span>-->
+                                <!--  </div>-->
+                                <!--</div>-->
+                                @foreach($course->curriculums as $curriculum)
                                 <div class="curriculum-item unlock">
                                   <div class="left">
-                                    <h6><i class="fad fa-play-circle"></i> <span>Video:</span> Greetings and Introduction</h6>
+                                    <h6>{{$curriculum->title}}</h6>
                                   </div>
                                   <div class="right">
-                                    <span class="duration">12:43</span>
+                                    <span class="duration">{{$curriculum->duration}} Weeks</span>
                                     <span class="lock"><i class="fad fa-unlock"></i></span>
                                   </div>
                                 </div>
-                                <div class="curriculum-item unlock">
-                                  <div class="left">
-                                    <h6><i class="fad fa-play-circle"></i> <span>Video:</span> Greetings and Introduction</h6>
-                                  </div>
-                                  <div class="right">
-                                    <span class="duration">12:43</span>
-                                    <span class="lock"><i class="fad fa-unlock"></i></span>
-                                  </div>
-                                </div>
-                                <div class="curriculum-item">
-                                  <div class="left">
-                                    <h6><i class="fad fa-play-circle"></i> <span>Video:</span> Greetings and Introduction</h6>
-                                  </div>
-                                  <div class="right">
-                                    <span class="duration">12:43</span>
-                                    <span class="lock"><i class="fad fa-lock"></i></span>
-                                  </div>
-                                </div>
-                                <div class="curriculum-item">
-                                  <div class="left">
-                                    <h6><i class="fad fa-volume"></i> <span>Audio:</span> Interactive lesson</h6>
-                                  </div>
-                                  <div class="right">
-                                    <span class="duration">12:43</span>
-                                    <span class="lock"><i class="fad fa-lock"></i></span>
-                                  </div>
-                                </div>
-                                <div class="curriculum-item">
-                                  <div class="left">
-                                    <h6><i class="fad fa-file-alt"></i> <span>Reading:</span> Web Design &amp; Development</h6>
-                                  </div>
-                                  <div class="right">
-                                    <span class="duration">12:43</span>
-                                    <span class="lock"><i class="fad fa-lock"></i></span>
-                                  </div>
-                                </div>
+                                 @endforeach
                               </div>
                             </div>
                           </div>
-                          <div class="accordion-item">
-                            <h2 class="accordion-header">
-                              <button
-                                class="accordion-button collapsed"
-                                type="button"
-                                data-bs-toggle="collapse"
-                                data-bs-target="#curriculum2"
-                              >
-                                Course Project Overview
-                              </button>
-                            </h2>
-                            <div id="curriculum2" class="accordion-collapse collapse" data-bs-parent="#course-accordion">
-                              <div class="accordion-body">
-                                <div class="curriculum-item unlock completed">
-                                  <div class="left">
-                                    <h6><i class="fad fa-check-circle"></i> <span>Video:</span> Greetings and Introduction</h6>
-                                  </div>
-                                  <div class="right">
-                                    <span class="duration">12:43</span>
-                                    <span class="lock"><i class="fad fa-unlock"></i></span>
-                                  </div>
-                                </div>
-                                <div class="curriculum-item unlock">
-                                  <div class="left">
-                                    <h6><i class="fad fa-play-circle"></i> <span>Video:</span> Greetings and Introduction</h6>
-                                  </div>
-                                  <div class="right">
-                                    <span class="duration">12:43</span>
-                                    <span class="lock"><i class="fad fa-unlock"></i></span>
-                                  </div>
-                                </div>
-                                <div class="curriculum-item unlock">
-                                  <div class="left">
-                                    <h6><i class="fad fa-play-circle"></i> <span>Video:</span> Greetings and Introduction</h6>
-                                  </div>
-                                  <div class="right">
-                                    <span class="duration">12:43</span>
-                                    <span class="lock"><i class="fad fa-unlock"></i></span>
-                                  </div>
-                                </div>
-                                <div class="curriculum-item">
-                                  <div class="left">
-                                    <h6><i class="fad fa-play-circle"></i> <span>Video:</span> Greetings and Introduction</h6>
-                                  </div>
-                                  <div class="right">
-                                    <span class="duration">12:43</span>
-                                    <span class="lock"><i class="fad fa-lock"></i></span>
-                                  </div>
-                                </div>
-                                <div class="curriculum-item">
-                                  <div class="left">
-                                    <h6><i class="fad fa-volume"></i> <span>Audio:</span> Interactive lesson</h6>
-                                  </div>
-                                  <div class="right">
-                                    <span class="duration">12:43</span>
-                                    <span class="lock"><i class="fad fa-lock"></i></span>
-                                  </div>
-                                </div>
-                                <div class="curriculum-item">
-                                  <div class="left">
-                                    <h6><i class="fad fa-file-alt"></i> <span>Reading:</span> Web Design &amp; Development</h6>
-                                  </div>
-                                  <div class="right">
-                                    <span class="duration">12:43</span>
-                                    <span class="lock"><i class="fad fa-lock"></i></span>
-                                  </div>
-                                </div>
-                              </div>
-                            </div>
-                          </div>
-                          <div class="accordion-item">
-                            <h2 class="accordion-header">
-                              <button
-                                class="accordion-button collapsed"
-                                type="button"
-                                data-bs-toggle="collapse"
-                                data-bs-target="#curriculum3"
-                              >
-                                Development Advance Level
-                              </button>
-                            </h2>
-                            <div id="curriculum3" class="accordion-collapse collapse" data-bs-parent="#course-accordion">
-                              <div class="accordion-body">
-                                <div class="curriculum-item unlock completed">
-                                  <div class="left">
-                                    <h6><i class="fad fa-check-circle"></i> <span>Video:</span> Greetings and Introduction</h6>
-                                  </div>
-                                  <div class="right">
-                                    <span class="duration">12:43</span>
-                                    <span class="lock"><i class="fad fa-unlock"></i></span>
-                                  </div>
-                                </div>
-                                <div class="curriculum-item unlock">
-                                  <div class="left">
-                                    <h6><i class="fad fa-play-circle"></i> <span>Video:</span> Greetings and Introduction</h6>
-                                  </div>
-                                  <div class="right">
-                                    <span class="duration">12:43</span>
-                                    <span class="lock"><i class="fad fa-unlock"></i></span>
-                                  </div>
-                                </div>
-                                <div class="curriculum-item unlock">
-                                  <div class="left">
-                                    <h6><i class="fad fa-play-circle"></i> <span>Video:</span> Greetings and Introduction</h6>
-                                  </div>
-                                  <div class="right">
-                                    <span class="duration">12:43</span>
-                                    <span class="lock"><i class="fad fa-unlock"></i></span>
-                                  </div>
-                                </div>
-                                <div class="curriculum-item">
-                                  <div class="left">
-                                    <h6><i class="fad fa-play-circle"></i> <span>Video:</span> Greetings and Introduction</h6>
-                                  </div>
-                                  <div class="right">
-                                    <span class="duration">12:43</span>
-                                    <span class="lock"><i class="fad fa-lock"></i></span>
-                                  </div>
-                                </div>
-                                <div class="curriculum-item">
-                                  <div class="left">
-                                    <h6><i class="fad fa-volume"></i> <span>Audio:</span> Interactive lesson</h6>
-                                  </div>
-                                  <div class="right">
-                                    <span class="duration">12:43</span>
-                                    <span class="lock"><i class="fad fa-lock"></i></span>
-                                  </div>
-                                </div>
-                                <div class="curriculum-item">
-                                  <div class="left">
-                                    <h6><i class="fad fa-file-alt"></i> <span>Reading:</span> Web Design &amp; Development</h6>
-                                  </div>
-                                  <div class="right">
-                                    <span class="duration">12:43</span>
-                                    <span class="lock"><i class="fad fa-lock"></i></span>
-                                  </div>
-                                </div>
-                              </div>
-                            </div>
-                          </div>
+
+                          <!--<div class="accordion-item">-->
+                          <!--  <h2 class="accordion-header">-->
+                          <!--    <button-->
+                          <!--      class="accordion-button collapsed"-->
+                          <!--      type="button"-->
+                          <!--      data-bs-toggle="collapse"-->
+                          <!--      data-bs-target="#curriculum2"-->
+                          <!--    >-->
+                          <!--      Course Project Overview-->
+                          <!--    </button>-->
+                          <!--  </h2>-->
+                          <!--  <div id="curriculum2" class="accordion-collapse collapse" data-bs-parent="#course-accordion">-->
+                          <!--    <div class="accordion-body">-->
+                          <!--      <div class="curriculum-item unlock completed">-->
+                          <!--        <div class="left">-->
+                          <!--          <h6><i class="fad fa-check-circle"></i> <span>Video:</span> Greetings and Introduction</h6>-->
+                          <!--        </div>-->
+                          <!--        <div class="right">-->
+                          <!--          <span class="duration">12:43</span>-->
+                          <!--          <span class="lock"><i class="fad fa-unlock"></i></span>-->
+                          <!--        </div>-->
+                          <!--      </div>-->
+                          <!--      <div class="curriculum-item unlock">-->
+                          <!--        <div class="left">-->
+                          <!--          <h6><i class="fad fa-play-circle"></i> <span>Video:</span> Greetings and Introduction</h6>-->
+                          <!--        </div>-->
+                          <!--        <div class="right">-->
+                          <!--          <span class="duration">12:43</span>-->
+                          <!--          <span class="lock"><i class="fad fa-unlock"></i></span>-->
+                          <!--        </div>-->
+                          <!--      </div>-->
+                          <!--      <div class="curriculum-item unlock">-->
+                          <!--        <div class="left">-->
+                          <!--          <h6><i class="fad fa-play-circle"></i> <span>Video:</span> Greetings and Introduction</h6>-->
+                          <!--        </div>-->
+                          <!--        <div class="right">-->
+                          <!--          <span class="duration">12:43</span>-->
+                          <!--          <span class="lock"><i class="fad fa-unlock"></i></span>-->
+                          <!--        </div>-->
+                          <!--      </div>-->
+                          <!--      <div class="curriculum-item">-->
+                          <!--        <div class="left">-->
+                          <!--          <h6><i class="fad fa-play-circle"></i> <span>Video:</span> Greetings and Introduction</h6>-->
+                          <!--        </div>-->
+                          <!--        <div class="right">-->
+                          <!--          <span class="duration">12:43</span>-->
+                          <!--          <span class="lock"><i class="fad fa-lock"></i></span>-->
+                          <!--        </div>-->
+                          <!--      </div>-->
+                          <!--      <div class="curriculum-item">-->
+                          <!--        <div class="left">-->
+                          <!--          <h6><i class="fad fa-volume"></i> <span>Audio:</span> Interactive lesson</h6>-->
+                          <!--        </div>-->
+                          <!--        <div class="right">-->
+                          <!--          <span class="duration">12:43</span>-->
+                          <!--          <span class="lock"><i class="fad fa-lock"></i></span>-->
+                          <!--        </div>-->
+                          <!--      </div>-->
+                          <!--      <div class="curriculum-item">-->
+                          <!--        <div class="left">-->
+                          <!--          <h6><i class="fad fa-file-alt"></i> <span>Reading:</span> Web Design &amp; Development</h6>-->
+                          <!--        </div>-->
+                          <!--        <div class="right">-->
+                          <!--          <span class="duration">12:43</span>-->
+                          <!--          <span class="lock"><i class="fad fa-lock"></i></span>-->
+                          <!--        </div>-->
+                          <!--      </div>-->
+                          <!--    </div>-->
+                          <!--  </div>-->
+                          <!--</div>-->
+
                         </div>
                       </div>
                     </div>
@@ -625,14 +523,14 @@ ul.custom-list li::before {
                   <div class="price-amount"><span>${{$course->course_fee}}</span></div>
                   {{-- <span class="price-off">35% Off</span> --}}
                 </div>
-                <a href="#" class="theme-btn"> <span class="far fa-shopping-bag"></span> Add To Cart</a>
+                <a href="https://portal.dotbitz.com/student/registration" class="theme-btn"> <span class="far fa-shopping-bag"></span> Enroll Now</a>
                 <div class="more-info">
                   <ul>
-                    <li><i class="fad fa-user"></i> Instructor: <span>{{$course->instructor->first_name}} {{$course->instructor->last_name}}</span></li>
+                    <!--<li><i class="fad fa-user"></i> Instructor: <span>{{$course->instructor->first_name}} {{$course->instructor->last_name}}</span></li>-->
                     <li><i class="fad fa-layer-group"></i> Level : <span>{{$course->course_level}}</span></li>
-                    <li><i class="fad fa-book"></i> Lectures : <span>35 Lectures</span></li>
+                    <li><i class="fad fa-book"></i> Classes : <span>35 Lectures</span></li>
                     <li><i class="fad fa-clock"></i> Duration: <span>03 Months</span></li>
-                    <li><i class="fad fa-user-friends"></i> Enrolled: <span>259 Students</span></li>
+                    <li><i class="fad fa-user-friends"></i> Enrolled: <span>{{$student_count}} Students</span></li>
                     <li><i class="fad fa-globe"></i> Language: <span>English</span></li>
                   </ul>
                 </div>
@@ -642,8 +540,6 @@ ul.custom-list li::before {
                     <li><i class="fad fa-check-circle"></i> Full Lifetime Access</li>
                     <li><i class="fad fa-check-circle"></i> 35+ Downloadable Resources</li>
                     <li><i class="fad fa-check-circle"></i> Certificate Of Completion</li>
-                    <li><i class="fad fa-check-circle"></i> Free Trial 7 Days</li>
-                    <li><i class="fad fa-check-circle"></i> 15 Days Money Back Guarantee</li>
                   </ul>
                 </div>
                 <div class="share">
@@ -678,7 +574,7 @@ ul.custom-list li::before {
             <div class="course-item">
               <span class="course-tag c1">{{$course->course_level}}</span>
               <div class="course-img">
-                <a href="course-single.html"><img src="{{asset('assets/images/courses/' . $course->thumbnail_image)}}" alt="" /></a>
+                <a href="{{ route('user.course.details', $course->slug) }}"><img src="{{asset('assets/images/courses/' . $course->thumbnail_image)}}" alt="" /></a>
               </div>
               <div class="course-content">
                 {{-- <div class="course-meta">
@@ -697,13 +593,7 @@ ul.custom-list li::before {
                     -webkit-box-orient: vertical;">{{$course->short_description}}</p>
                 </div>
                 <div class="course-bottom">
-                  <a href="javascript:void(0)" data-course-id="{{ $course->id }}"
-                                        data-course-name="{{ $course->course_name }}">
-                    <div class="course-instructor">
-
-                      <h6>Book Free Assessment</h6>
-                    </div>
-                  </a>
+<a href="{{route('user.book-assessment',$course->id)}}" class="theme-btn" style="background: #FECE09 !important;color:#063989;padding: 5px 10px;font-size: 14px;">Book Free Assessment</a>
                   <div class="course-price">
 
                     <span style="font-size: 14px;">Age: {{$course->age_limit}}</span>
@@ -716,7 +606,7 @@ ul.custom-list li::before {
         </div>
       </div>
       <!-- course area end -->
-   
+
 @endsection
 
 @section('styles')

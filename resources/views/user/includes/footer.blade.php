@@ -1,7 +1,5 @@
 <footer class="footer-area light">
-      <div class="footer-shape">
-        <img src="assets/img/shape/02.png" alt="" />
-      </div>
+      
       <div class="footer-widget">
         <div class="container">
           <div class="footer-widget-wrap pt-100 pb-50">
@@ -81,7 +79,7 @@
                       </div>
                       <div class="content">
                         <h6>Call Us</h6>
-                        <a href="tel:+1 (614) 332-5066">+1 (614) 332-5066</a>
+                        <a href="tel:+1 (380) 257-7761">+1 (380) 257-7761</a>
                       </div>
                     </li>
                     <li>
@@ -93,11 +91,13 @@
                         <a href="mailto:info@dotbitz.com"><span class="" >info@dotbitz.com</span></a>
                       </div>
                     </li>
+                    <li>
+                        <a href="https://www.trustpilot.com/review/dotbitz.com" target="_blank"><img src="{{asset('assets/images/trustpilot-copy.jpg')}}" /></a>
+                    </li>
                   </ul>
                 </div>
               </div>
             </div>
-
           </div>
         </div>
       </div>
@@ -106,8 +106,12 @@
           <div class="row">
             <div class="col-md-6 align-self-center">
               <p class="copyright-text">&copy; Copyright <span id="date"></span> <a href="#"> Dotbitz </a> All Rights Reserved.</p>
+              
             </div>
+            
+            
             <div class="col-md-6 align-self-center">
+                
               <ul class="footer-social">
                 <li>
                   <a href="#"><i class="fab fa-facebook-f"></i></a>

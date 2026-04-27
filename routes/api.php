@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Api\AdminDashboardController;
 use App\Http\Controllers\Api\AnnouncementController;
 use App\Http\Controllers\Api\AssessmentController;
 use App\Http\Controllers\Api\AssignAssessmentController;
@@ -24,10 +25,15 @@ use App\Http\Controllers\Api\OrderController;
 use App\Http\Controllers\Api\QuizAttemptController;
 use App\Http\Controllers\Api\QuizController;
 use App\Http\Controllers\Api\AssessmentAttemptController;
-use App\Http\Controllers\Api\AssignmentAttemptController;
 use App\Http\Controllers\User\HomeController;
-
+use App\Http\Controllers\Api\AssignmentAttemptController;
+use App\Http\Controllers\Api\ResultController;
+use App\Http\Controllers\Api\GradeController;
+use App\Http\Controllers\Api\GuardianDashboardController;
+use App\Http\Controllers\Api\InstructorDashboardController;
+use App\Http\Controllers\Api\StudentDashboardController;
 use App\Models\Student;
+
 
 // Public routes
 Route::post('admin/login', [AuthController::class, 'login']);
@@ -36,10 +42,16 @@ Route::post('/logout', [AuthController::class, 'logout'])->middleware('auth:sanc
 // Protected routes
 Route::middleware('auth:sanctum')->prefix('admin')->group(function () {
 
-Route::get('assessments/{id}/', [HomeController::class, 'getAssessmentsForAppointment']);
+    Route::get('/dashboard', [AdminDashboardController::class, 'getStats']);
+
+    Route::get('/grade-history/courses', [GradeController::class, 'adminCourses']);
+    Route::get('/grade-history/courses/{courseId}/batches', [GradeController::class, 'batchesByCourse']);
+    Route::get('/grade-history/courses/{courseId}/batches/{batchId}/students', [GradeController::class, 'batchStudents']);
+    Route::get('/grade-history/courses/{courseId}/students/{studentId}', [GradeController::class, 'studentDetail']);
+
     Route::get('/assessments/queries', [HomeController::class, 'Assessmentindex']);
     Route::get('/assessments/course/{course}', [AssessmentController::class, 'getByCourse']);
-
+    Route::get('assessments/{id}/', [HomeController::class, 'getAssessmentsForAppointment']);
 
     Route::get('/quiz-attempts', [QuizAttemptController::class, 'attemptedList']);
     Route::get('/quiz-attempts/{attemptId}', [QuizAttemptController::class, 'attemptDetail']);
@@ -69,8 +81,14 @@ Route::get('assessments/{id}/', [HomeController::class, 'getAssessmentsForAppoin
     Route::get('/batches/course/{courseId}', [BatchController::class, 'getBatchesByCourse']);
     // Quiz specific routes — pehle
     Route::get('/quizzes/course/{courseId}/mcqs', [QuizController::class, 'getMcqsByCourse']);
+    Route::post('/quiz-attempts/batch-status', [QuizAttemptController::class, 'batchStudentStatus']);
+
     Route::apiResource('quizzes', QuizController::class);
 
+// Assignment Attempts — Admin
+Route::post('/assignment-attempts/batch-status', [AssignmentAttemptController::class, 'batchStudentStatus']);
+Route::get('/assignment-attempts/{attemptId}', [AssignmentAttemptController::class, 'attemptDetailForGrading']);
+Route::post('/assignment-attempts/{attemptId}/grade', [AssignmentAttemptController::class, 'gradeAttempt']);
     Route::apiResource('batches', BatchController::class);
     Route::get('announcements/instructors', [AnnouncementController::class, 'getInstructors']);
     Route::get('announcements/courses',     [AnnouncementController::class, 'getCourses']);
@@ -95,6 +113,8 @@ Route::get('assessments/{id}/', [HomeController::class, 'getAssessmentsForAppoin
     Route::get('assessment-attempts/{id}', [AssessmentAttemptController::class, 'show']);
     Route::put('assessment-attempts/{id}/grade', [AssessmentAttemptController::class, 'grade']);
 
+    Route::get('/guardians', [GuardianController::class, 'Adminindex']);
+
 
 });
 
@@ -105,6 +125,8 @@ Route::post('/guardian/logout', [AuthController::class, 'Guardianlogout'])->midd
 Route::middleware('auth:sanctum')->prefix('guardian')->group(function () {
     // GET /api/guardian -> returns currently authenticated guardian's profile
     Route::get('/', [GuardianController::class, 'index']);
+    Route::get('/dashboard', [GuardianDashboardController::class, 'getStats']);
+     Route::get('/grade-history/courses', [GradeController::class, 'guardianCourses']);
     Route::put('profile/update', [GuardianController::class, 'update']);
     Route::get('assessments', [AssignAssessmentController::class, 'getGuardianAssessments']);
     Route::get('courses', [CourseController::class, 'guardianIndex']);
@@ -118,6 +140,9 @@ Route::middleware('auth:sanctum')->prefix('guardian')->group(function () {
     Route::get('student-courses/{student_id}', [CoursesByStudentController::class, 'getCoursesByStudentForGuardian']);
     Route::get('courses/{courseId}/batches', [BatchController::class, 'getBatchesByCourse']);
     Route::get('batches/{batchId}/schedule', [ClassScheduleController::class, 'getByBatch']);
+     Route::get('results/courses/{studentId}',            [ResultController::class, 'guardianStudentCourses']);
+    Route::get('results/quiz/{studentId}/{courseId}',    [ResultController::class, 'guardianQuizResults']);
+    Route::get('results/assignment/{studentId}/{courseId}', [ResultController::class, 'guardianAssignmentResults']);
 
 });
 
@@ -127,18 +152,32 @@ Route::post('student/login', [AuthController::class, 'Studentlogin']);
 Route::post('/student/logout', [AuthController::class, 'Studentlogout'])->middleware('auth:student');
 
 Route::middleware('auth:sanctum')->prefix('student')->group(function () {
+    Route::get('/dashboard', [StudentDashboardController::class, 'getStats']);
 
     // Profile
     Route::get('/profile', [StudentController::class, 'profile']);
     Route::put('/profile', [StudentController::class, 'updateProfile']);
+    Route::get('check-assessment/{studentId}/{courseId}', [CourseController::class, 'checkAssessmentCompletion']);
+    Route::post('enroll-course', [CourseController::class, 'enrollStudent']);
+ Route::get('/assignments/course/{id}', [AssignmentController::class, 'getAssignmentsByCourseId']);
+Route::get('/assignment-attempts/check/{assignmentId}', [AssignmentAttemptController::class, 'checkAttempt']);
 
-    Route::get('/assignment-attempts/check/{assignmentId}', [AssignmentAttemptController::class, 'checkAttempt']);
-    Route::post('/assignment-attempts/submit/{assignmentId}', [AssignmentAttemptController::class, 'submit']);
-    Route::get('/assignment-attempts/my', [AssignmentAttemptController::class, 'myAttempts']);
+Route::post('/assignment-attempts/submit/{assignmentId}', [AssignmentAttemptController::class, 'submit']);
+Route::get('/assignment-attempts/my', [AssignmentAttemptController::class, 'myAttempts']);
+
+Route::get('/results/courses', [ResultController::class, 'myCourses']);
+ Route::get('/student-courses', [ClassScheduleController::class, 'getStudentCourses']);
+   Route::get('/courses/{courseId}/schedules', [ClassScheduleController::class, 'getStudentSchedulesByCourse']);
+
+Route::get('/results/quiz/{courseId}', [ResultController::class, 'quizResults']);
+Route::get('/quiz-attempts/result/{attemptId}', [QuizAttemptController::class, 'studentResult']);
+Route::get('/results/assignment/{courseId}', [ResultController::class, 'assignmentResults']);
       // Quiz Attempt routes — specific pehle
     Route::get('/quiz-attempts/check/{quizId}', [QuizAttemptController::class, 'checkAttempt']);
     Route::post('/quiz-attempts/start/{quizId}', [QuizAttemptController::class, 'startQuiz']);
+    Route::get('/quiz-attempts/resume/{quizId}', [QuizAttemptController::class, 'getResumeData']);
     Route::post('/quiz-attempts/submit/{attemptId}', [QuizAttemptController::class, 'submitQuiz']);
+    Route::post('/quiz-attempts/save-progress/{attemptId}', [QuizAttemptController::class, 'saveProgress']);
     Route::get('/quiz-attempts/my', [QuizAttemptController::class, 'myAttempts']);
 
     Route::post('/register', [StudentController::class, 'register']);
@@ -151,12 +190,23 @@ Route::middleware('auth:sanctum')->prefix('student')->group(function () {
     Route::post('/assessment-submit/{attemptId}', [AssessmentAttemptController::class, 'submitAssessment']);
     Route::get('/assessment-my-attempts', [AssessmentAttemptController::class, 'myAttempts']);
 
+    Route::get('/assessment-view/{assignAssessmentId}', [AssessmentAttemptController::class, 'studentViewAttempt']);
+  Route::post('assessment-save-progress/{attemptId}', [AssessmentAttemptController::class, 'saveProgress']);
+   Route::get('/assessment-my-results', [AssessmentAttemptController::class, 'myResults']);
+
+
+
+
+
+
     // Courses
     Route::get('/courses', [CourseController::class, 'studentIndex']);
     Route::get('/courses/{id}', [CourseController::class, 'show']);
+
     Route::get('/my-courses', [CoursesByStudentController::class, 'myEnrolledCourses']);
     Route::get('/my-courses/{id}', [CoursesByStudentController::class, 'show']);
-    Route::get('/assignments/course/{courseId}', [AssignmentController::class, 'getAssignmentsByCourse']);
+    // Route::get('/assignments/course/{courseId}', [AssignmentController::class, 'getAssignmentsByCourse']);
+    Route::get('/assignments/batch/{batchId}', [AssignmentController::class, 'getAssignmentsByCourse']);
     Route::get('/courses/{courseId}/batches', [BatchController::class, 'getBatchesByCourse']);
     Route::get('/class-schedules/batch/{batchId}', [ClassScheduleController::class, 'getByBatch']);
 
@@ -203,12 +253,24 @@ Route::post('/instructor/logout', [AuthController::class, 'logout'])->middleware
 Route::middleware('auth:sanctum')->prefix('instructor')->group(function () {
     // GET /api/instructor -> returns currently authenticated instructor's profile
     Route::get('/', [InstructorController::class, 'index']);
+    Route::get('/dashboard', [InstructorDashboardController::class, 'getStats']);
 
+
+    Route::get('/grade-history/courses', [GradeController::class, 'instructorCourses']);
+Route::get('/grade-history/courses/{courseId}/batches', [GradeController::class, 'batchesByCourse']);
+Route::get('/grade-history/courses/{courseId}/batches/{batchId}/students', [GradeController::class, 'batchStudents']);
+Route::get('/grade-history/courses/{courseId}/students/{studentId}', [GradeController::class, 'studentDetail']);
+
+    //assignment routes
     Route::get('/assignments', [AssignmentController::class, 'instructorIndex']);
-    Route::get('/assignments/{id}', [AssignmentController::class, 'show']);
-    Route::post('/assignments', [AssignmentController::class, 'store']);
-    Route::post('/assignments/{id}', [AssignmentController::class, 'update']); // POST for file upload
-    Route::delete('/assignments/{id}', [AssignmentController::class, 'destroy']);
+Route::get('/assignments/{id}', [AssignmentController::class, 'show']);
+Route::post('/assignments', [AssignmentController::class, 'store']);
+Route::post('/assignments/{id}', [AssignmentController::class, 'update']); // POST for file upload
+Route::delete('/assignments/{id}', [AssignmentController::class, 'destroy']);
+// Assignment Attempts — Instructor
+Route::post('/assignment-attempts/batch-status', [AssignmentAttemptController::class, 'batchStudentStatus']);
+Route::get('/assignment-attempts/{attemptId}', [AssignmentAttemptController::class, 'attemptDetailForGrading']);
+Route::post('/assignment-attempts/{attemptId}/grade', [AssignmentAttemptController::class, 'gradeAttempt']);
     // MCQ routes
     Route::get('/mcqs', [McqController::class, 'instructorIndex']);
     Route::get('/mcqs/{id}', [McqController::class, 'show']);
@@ -222,6 +284,7 @@ Route::middleware('auth:sanctum')->prefix('instructor')->group(function () {
 
     // Quiz routes
     Route::get('/quizzes/course/{courseId}/mcqs', [QuizController::class, 'getMcqsByCourse']);
+    Route::post('/quiz-attempts/batch-status', [QuizAttemptController::class, 'batchStudentStatus']);
     Route::get('/quizzes', [QuizController::class, 'instructorIndex']);
     Route::get('/quizzes/{id}', [QuizController::class, 'show']);
     Route::post('/quizzes', [QuizController::class, 'store']);
@@ -257,5 +320,18 @@ Route::middleware('auth:sanctum')->prefix('instructor')->group(function () {
     Route::delete('/announcements/{id}', [AnnouncementController::class, 'destroy']);
 
     Route::get('announcements/batches/{courseId}', [AnnouncementController::class, 'getBatches']);
+
+    Route::get('/students', [StudentController::class, 'InstructorIndex']);
+    Route::get('/batches', [BatchController::class, 'InstructorIndex']);
 });
 
+Route::prefix('guest')->group(function () {
+    Route::get('guest-assessments', [AssignAssessmentController::class, 'getGuestAssessments']);
+    Route::get('assessment-check-attempt/{assignId}',  [AssessmentAttemptController::class, 'checkGuestAttempt']);
+    Route::post('assessment-start/{assignId}',         [AssessmentAttemptController::class, 'guestStartAssessment']);
+    Route::post('assessment-submit/{attemptId}',       [AssessmentAttemptController::class, 'guestSubmitAssessment']);
+     Route::get('assessment-view/{assignAssessmentId}', [AssessmentAttemptController::class, 'guestViewAttempt']);
+     Route::get('assessment-my-results', [AssessmentAttemptController::class, 'guestMyResults']);
+      Route::post('assessment-submit/{attemptId}',       [AssessmentAttemptController::class, 'guestSubmitAssessment']);
+Route::post('assessment-save-progress/{attemptId}', [AssessmentAttemptController::class, 'guestSaveProgress']);
+});

@@ -27,4 +27,5 @@ class AssignmentAttempt extends Model
     {
         return $this->belongsTo(Student::class);
     }
+
 }

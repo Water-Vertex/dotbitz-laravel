@@ -11,23 +11,39 @@ class AssignAssessmentMail extends Mailable
     use Queueable, SerializesModels;
 
     public $recipientName;
-    public $courseName;
-    public $assessmentTitle;
-    public $timeToComplete;
-    public $totalMarks;
-    public $isAdmin;
-    public $pdfPath;
+public $courseName;
+public $assessmentTitle;
+public $timeToComplete;
+public $totalMarks;
+public $isAdmin;
+public $isGuest;
+public $assessmentId;
+public $email;
+public $dueDate;
 
-    public function __construct($recipientName, $courseName, $assessmentTitle, $timeToComplete, $totalMarks, $isAdmin = false, $pdfPath = null)
-    {
-        $this->recipientName   = $recipientName;
-        $this->courseName      = $courseName;
-        $this->assessmentTitle = $assessmentTitle;
-        $this->timeToComplete  = $timeToComplete;
-        $this->totalMarks      = $totalMarks;
-        $this->isAdmin         = $isAdmin;
-        $this->pdfPath         = $pdfPath;
-    }
+public function __construct(
+    $recipientName,
+    $courseName,
+    $assessmentTitle,
+    $timeToComplete,
+    $totalMarks,
+    $isAdmin = false,
+    $isGuest = false,
+    $assessmentId = null,
+    $email = null,
+    $dueDate = null
+) {
+    $this->recipientName   = $recipientName;
+    $this->courseName      = $courseName;
+    $this->assessmentTitle = $assessmentTitle;
+    $this->timeToComplete  = $timeToComplete;
+    $this->totalMarks      = $totalMarks;
+    $this->isAdmin         = $isAdmin;
+    $this->isGuest         = $isGuest;
+    $this->assessmentId    = $assessmentId;
+    $this->email           = $email;
+    $this->dueDate         = $dueDate;
+}
 
     public function build()
     {
@@ -35,16 +51,7 @@ class AssignAssessmentMail extends Mailable
             ? 'New Assessment Assigned - ' . $this->courseName
             : 'Assessment Assigned - ' . $this->courseName;
 
-        $mail = $this->subject($subject)
-                     ->view('emails.assign-assessment');
-
-        if ($this->pdfPath) {
-            $mail->attach($this->pdfPath, [
-                'as'   => 'assessment.pdf',
-                'mime' => 'application/pdf',
-            ]);
-        }
-
-        return $mail;
+        return $this->subject($subject)
+                    ->view('emails.assign-assessment');
     }
 }

@@ -9,6 +9,8 @@ use App\Models\QuizAttemptAnswer;
 use App\Models\Mcq;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use App\Models\Student;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\DB;
 
 class QuizAttemptController extends Controller
@@ -28,54 +30,7 @@ class QuizAttemptController extends Controller
         ]);
     }
 
-    // Quiz start karo
-    // public function startQuiz($quizId)
-    // {
-    //     $student = Auth::user();
 
-    //     $existing = QuizAttempt::where('student_id', $student->id)
-    //         ->where('quiz_id', $quizId)
-    //         ->first();
-
-    //     if ($existing) {
-    //         return response()->json([
-    //             'success' => false,
-    //             'message' => 'You have already attempted this quiz.',
-    //             'attempt' => $existing,
-    //         ], 409);
-    //     }
-
-    //     $quiz = Quiz::with(['mcqs'])->find($quizId);
-
-    //     if (!$quiz) {
-    //         return response()->json([
-    //             'success' => false,
-    //             'message' => 'Quiz not found.',
-    //         ], 404);
-    //     }
-
-    //     if ($quiz->due_date && now()->gt($quiz->due_date)) {
-    //         return response()->json([
-    //             'success' => false,
-    //             'message' => 'Due date has passed.',
-    //         ], 403);
-    //     }
-
-    //     $attempt = QuizAttempt::create([
-    //         'student_id' => $student->id,
-    //         'quiz_id'    => $quizId,
-    //         'status'     => 'pending',
-    //     ]);
-
-    //     return response()->json([
-    //         'success' => true,
-    //         'message' => 'Quiz started.',
-    //         'data'    => [
-    //             'attempt' => $attempt,
-    //             'quiz'    => $quiz,
-    //         ],
-    //     ], 201);
-    // }
 public function startQuiz($quizId)
 {
     $student = Auth::user();
@@ -117,19 +72,29 @@ public function startQuiz($quizId)
 
     // ✅ 1 week overdue check — sirf 1 week tak allow
     if ($quiz->due_date) {
-        $dueDate    = \Carbon\Carbon::parse($quiz->due_date);
+        $dueDate = \Carbon\Carbon::parse($quiz->due_date);
+
+        // ✅ Agar sirf date hai
+        if (strlen($quiz->due_date) <= 10) {
+            $dueDate = $dueDate->endOfDay();
+        }
+
+        // ✅ Overdue check
         $oneWeekAfter = $dueDate->copy()->addWeek();
 
         if (now()->gt($oneWeekAfter)) {
             return response()->json([
                 'success' => false,
-                'message' => 'Quiz deadline has passed (more than 1 week overdue). You cannot attempt this quiz.',
+                'message' => 'Quiz deadline has passed.',
             ], 403);
         }
     }
 
-    // ✅ Overdue check
-    $isOverdue = $quiz->due_date && now()->gt($quiz->due_date);
+    $isOverdue = $quiz->due_date && now()->gt(
+        strlen($quiz->due_date) <= 10
+            ? \Carbon\Carbon::parse($quiz->due_date)->endOfDay()
+            : \Carbon\Carbon::parse($quiz->due_date)
+    );
 
     $attempt = QuizAttempt::create([
         'student_id' => $student->id,
@@ -150,64 +115,9 @@ public function startQuiz($quizId)
         ],
     ], 201);
 }
-    // Quiz submit karo
-    // public function submitQuiz(Request $request, $attemptId)
-    // {
-    //     $request->validate([
-    //         'answers'                  => 'required|array',
-    //         'answers.*.mcq_id'         => 'required',
-    //         'answers.*.student_answer' => 'nullable|string',
-    //         'status'                   => 'required|in:completed,time_up',
-    //     ]);
-
-    //     $attempt = QuizAttempt::with('quiz.mcqs')->find($attemptId);
-
-    //     if (!$attempt) {
-    //         return response()->json(['success' => false, 'message' => 'Attempt not found.'], 404);
-    //     }
-
-    //     if ($attempt->status !== 'pending') {
-    //         return response()->json(['success' => false, 'message' => 'Already submitted.'], 409);
-    //     }
-
-    //     DB::beginTransaction();
-
-    //     try {
-    //         foreach ($request->answers as $answerData) {
-    //             QuizAttemptAnswer::create([
-    //                 'quiz_attempt_id' => $attempt->id,
-    //                 'mcq_id'          => $answerData['mcq_id'],
-    //                 'student_answer'  => $answerData['student_answer'] ?? null,
-    //                 'status'          => 'pending',
-    //             ]);
-    //         }
-
-    //         $attempt->update([
-    //             'status'  => $request->status,
-    //             'remarks' => $request->status === 'time_up'
-    //                 ? 'Time up — auto submitted'
-    //                 : 'Submitted by student',
-    //         ]);
-
-    //         DB::commit();
-
-    //         return response()->json([
-    //             'success' => true,
-    //             'message' => 'Quiz submitted.',
-    //             'status'  => $request->status,
-    //         ]);
-
-    //     } catch (\Exception $e) {
-    //         DB::rollBack();
-    //         return response()->json([
-    //             'success' => false,
-    //             'message' => 'Failed: ' . $e->getMessage(),
-    //         ], 500);
-    //     }
-    // }
 
     public function submitQuiz(Request $request, $attemptId)
-{
+    {
     $request->validate([
         'answers'                  => 'required|array',
         'answers.*.mcq_id'         => 'required',
@@ -270,52 +180,35 @@ public function startQuiz($quizId)
         return response()->json(['success' => false, 'message' => 'Failed: ' . $e->getMessage()], 500);
     }
 }
-    // ✅ Admin/Instructor — Attempted quizzes list
+
     public function attemptedList(Request $request)
-    {
-        $query = QuizAttempt::with(['student', 'quiz'])
-            ->whereIn('status', ['completed', 'time_up'])
-            ->orderBy('created_at', 'desc');
+{
+    $query = QuizAttempt::with(['student', 'quiz'])
+        ->whereIn('status', ['completed', 'time_up'])
+        ->orderBy('created_at', 'desc');
 
-        if ($request->has('quiz_id') && $request->quiz_id) {
-            $query->where('quiz_id', $request->quiz_id);
-        }
-
-        if ($request->has('course_id') && $request->course_id) {
-            $query->whereHas('quiz', function ($q) use ($request) {
-                $q->where('course_id', $request->course_id);
-            });
-        }
-
-        $attempts = $query->get();
-
-        return response()->json([
-            'success' => true,
-            'data'    => $attempts,
-        ]);
+    if ($request->has('quiz_id') && $request->quiz_id) {
+        $query->where('quiz_id', $request->quiz_id);
     }
 
-    // ✅ Admin/Instructor — Single attempt detail with answers
-    // public function attemptDetail($attemptId)
-    // {
-    //     $attempt = QuizAttempt::with([
-    //         'student',
-    //         'quiz',
-    //         'answers.mcq',
-    //     ])->find($attemptId);
+    if ($request->has('course_id') && $request->course_id) {
+        $query->whereHas('quiz', function ($q) use ($request) {
+            $q->where('course_id', $request->course_id);
+        });
+    }
 
-    //     if (!$attempt) {
-    //         return response()->json([
-    //             'success' => false,
-    //             'message' => 'Attempt not found.',
-    //         ], 404);
-    //     }
+    if ($request->has('batch_id') && $request->batch_id) {
+        $query->whereHas('quiz', function ($q) use ($request) {
+            $q->where('batch_id', $request->batch_id);
+        });
+    }
 
-    //     return response()->json([
-    //         'success' => true,
-    //         'data'    => $attempt,
-    //     ]);
-    // }
+    $attempts = $query->get();
+
+    return response()->json(['success' => true, 'data' => $attempts]);
+}
+
+
     public function attemptDetail($attemptId)
 {
     $attempt = QuizAttempt::with([
@@ -341,105 +234,6 @@ public function startQuiz($quizId)
     ]);
 }
 
-    // ✅ Admin/Instructor — Check quiz (mark correct/wrong + obtained marks + remarks)
-    // public function checkQuiz(Request $request, $attemptId)
-    // {
-    //     $request->validate([
-    //         'answers'              => 'required|array',
-    //         'answers.*.answer_id'  => 'required|exists:quiz_attempt_answers,id',
-    //         'answers.*.status'     => 'required|in:correct,wrong',
-    //         'obtained_marks'       => 'required|integer|min:0',
-    //         'remarks'              => 'nullable|string',
-    //     ]);
-
-    //     $attempt = QuizAttempt::find($attemptId);
-
-    //     if (!$attempt) {
-    //         return response()->json([
-    //             'success' => false,
-    //             'message' => 'Attempt not found.',
-    //         ], 404);
-    //     }
-
-    //     DB::beginTransaction();
-
-    //     try {
-    //         // Har answer ka status update karo
-    //         foreach ($request->answers as $answerData) {
-    //             QuizAttemptAnswer::where('id', $answerData['answer_id'])
-    //                 ->update(['status' => $answerData['status']]);
-    //         }
-
-    //         // Attempt update karo
-    //         $attempt->update([
-    //             'obtained_marks' => $request->obtained_marks,
-    //             'remarks'        => $request->remarks,
-    //         ]);
-
-    //         DB::commit();
-
-    //         return response()->json([
-    //             'success' => true,
-    //             'message' => 'Quiz checked successfully.',
-    //         ]);
-
-    //     } catch (\Exception $e) {
-    //         DB::rollBack();
-    //         return response()->json([
-    //             'success' => false,
-    //             'message' => 'Failed: ' . $e->getMessage(),
-    //         ], 500);
-    //     }
-    // }
-
-//     public function checkQuiz(Request $request, $attemptId)
-// {
-//     $request->validate([
-//         'answers'             => 'required|array',
-//         'answers.*.answer_id' => 'required|exists:quiz_attempt_answers,id',
-//         'answers.*.status'    => 'required|in:correct,wrong',
-//         'obtained_marks'      => 'required|integer|min:0',
-//         'remarks'             => 'nullable|string',
-//     ]);
-
-//     $attempt = QuizAttempt::find($attemptId);
-
-//     if (!$attempt) {
-//         return response()->json([
-//             'success' => false,
-//             'message' => 'Attempt not found.',
-//         ], 404);
-//     }
-
-//     DB::beginTransaction();
-
-//     try {
-//         foreach ($request->answers as $answerData) {
-//             QuizAttemptAnswer::where('id', $answerData['answer_id'])
-//                 ->update(['status' => $answerData['status']]);
-//         }
-
-//         $attempt->update([
-//             'obtained_marks' => $request->obtained_marks,
-//             'remarks'        => $request->remarks,
-//             'is_checked'     => true,  // ✅ checked mark karo
-//         ]);
-
-//         DB::commit();
-
-//         return response()->json([
-//             'success' => true,
-//             'message' => 'Quiz checked successfully.',
-//         ]);
-
-//     } catch (\Exception $e) {
-//         DB::rollBack();
-//         return response()->json([
-//             'success' => false,
-//             'message' => 'Failed: ' . $e->getMessage(),
-//         ], 500);
-//     }
-// }
 public function checkQuiz(Request $request, $attemptId)
 {
     $request->validate([
@@ -594,5 +388,110 @@ public function saveProgress(Request $request, $attemptId)
     }
 
     return response()->json(['success' => true, 'data' => $query->get()]);
+}
+
+public function batchStudentStatus(Request $request)
+{
+    $request->validate([
+        'course_id' => 'required|exists:courses,id',
+        'batch_id'  => 'required|exists:batches,id',
+    ]);
+
+    $courseId = $request->course_id;
+    $batchId  = $request->batch_id;
+
+    // Batch k enrolled students
+    $enrolledStudents = DB::table('courses_by_students')
+        ->where('course_id', $courseId)
+        ->where('batch_id', $batchId)
+        ->pluck('student_id');
+
+    $students = Student::whereIn('id', $enrolledStudents)->get();
+
+    // Is batch k quizzes
+    $quizzes = Quiz::where('course_id', $courseId)
+        ->where('batch_id', $batchId)
+        ->get();
+
+    $result = $students->map(function($student) use ($quizzes) {
+        $studentQuizzes = $quizzes->map(function($quiz) use ($student) {
+            $attempt = QuizAttempt::where('student_id', $student->id)
+                ->where('quiz_id', $quiz->id)
+                ->first();
+
+            $status = 'not_attempted';
+            if ($attempt) {
+                if ($attempt->status === 'pending') $status = 'in_progress';
+                elseif ($attempt->status === 'time_up') $status = 'time_up';
+                elseif ($attempt->is_overdue) $status = 'overdue_submitted';
+                else $status = 'submitted';
+            } else {
+                // 1 week check
+                if ($quiz->due_date) {
+                    $oneWeekAfter = \Carbon\Carbon::parse($quiz->due_date)->addWeek();
+                    if (now()->gt($oneWeekAfter)) {
+                        $status = 'expired';
+                    }
+                }
+            }
+
+            return [
+                'quiz_id'    => $quiz->id,
+                'quiz_name'  => $quiz->name,
+                'due_date'   => $quiz->due_date,
+                'marks'      => $quiz->marks,
+                'status'     => $status,
+                'attempt'    => $attempt,
+            ];
+        });
+
+        return [
+            'student_id' => $student->id,
+            'first_name' => $student->first_name,
+            'last_name'  => $student->last_name,
+            'email'      => $student->email,
+            'quizzes'    => $studentQuizzes,
+        ];
+    });
+
+    return response()->json([
+        'success' => true,
+        'data'    => [
+            'students' => $result,
+            'quizzes'  => $quizzes,
+        ],
+    ]);
+}
+
+public function studentResult($attemptId)
+{
+    $user      = Auth::user();
+    $student   = \App\Models\Student::where('email', $user->email)->first();
+    $studentId = $student ? $student->id : $user->id;
+
+    $attempt = QuizAttempt::with([
+        'quiz',
+        'answers' => function($q) {
+            $q->with(['mcq' => function($q2) {
+                $q2->select('id', 'question', 'answer', 'options', 'marks');
+            }]);
+        },
+    ])
+    ->where('id', $attemptId)
+    ->where('student_id', $studentId)
+    ->where('is_checked', true)
+    ->first();
+
+    if (!$attempt) {
+        return response()->json([
+            'success' => false,
+            'message' => 'Result not found.',
+        ], 404);
+    }
+
+    return response()->json([
+        'success' => true,
+        'data'    => $attempt,
+    ]);
 }
 }
