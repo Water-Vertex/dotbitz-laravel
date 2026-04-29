@@ -21,7 +21,8 @@ class RolesAndPermissionsSeeder extends Seeder
             'students', 'instructors', 'guardians', 'courses', 'batches',
             'assignments', 'assessments', 'quizzes', 'mcqs',
             'announcements', 'faqs', 'policies', 'contacts', 'appointments',
-            'class_schedules', 'orders', 'coupons',
+            'class_schedules', 'orders', 'coupons',  'assessment_queries',
+             'course_instructors', 'course_curricula','assessment_attempts' ,'reports','roles'
         ];
 
         // Create all permissions
@@ -60,7 +61,7 @@ class RolesAndPermissionsSeeder extends Seeder
             'name' => 'admin', 
             'guard_name' => $guard
         ]);
-        $admin->syncPermissions(Permission::all());
+      
         
         // 📊 MANAGER - NO PERMISSIONS (Admin will assign via UI)
         Role::firstOrCreate([
@@ -106,14 +107,9 @@ class RolesAndPermissionsSeeder extends Seeder
         );
         $executiveUser->assignRole('executive');
 
-        $this->command->info('=========================================');
-        $this->command->info('✅ Roles and Permissions Seeded Successfully!');
-        $this->command->info('=========================================');
-        $this->command->info('');
-        $this->command->info('🔐 Login Credentials:');
-        $this->command->info('   Admin:     admin@dotbitz.com (your existing password)');
-        $this->command->info('   Manager:   manager@dotbitz.com / password123');
-        $this->command->info('   Accounts:  accounts@dotbitz.com / password123');
-        $this->command->info('   Executive: executive@dotbitz.com / password123');
+        $admin->syncPermissions(Permission::all());
+        $this->command->info('✅ Admin ko saari ' . Permission::count() . ' permissions mil gayi');
     }
+
+    
 }
