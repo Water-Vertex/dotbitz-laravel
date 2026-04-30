@@ -33,6 +33,7 @@ use App\Http\Controllers\Api\GuardianDashboardController;
 use App\Http\Controllers\Api\InstructorDashboardController;
 use App\Http\Controllers\Api\StudentDashboardController;
 use App\Http\Controllers\Api\SettingController;
+use App\Http\Controllers\Api\SitemapController;
 
 use App\Models\Student;
 
@@ -54,6 +55,10 @@ Route::middleware('auth:sanctum')->prefix('admin')->group(function () {
 // SEO Settings
     Route::get('/seo-settings', [SettingController::class, 'getSeoSettings']);
     Route::post('/seo-settings', [SettingController::class, 'saveSeoSettings']);
+    
+// Sitemap API 
+Route::get('/sitemap', [SitemapController::class, 'getSitemapData']);
+Route::get('/sitemap/download', [SitemapController::class, 'downloadXml']);
     Route::get('/grade-history/courses', [GradeController::class, 'adminCourses']);
     Route::get('/grade-history/courses/{courseId}/batches', [GradeController::class, 'batchesByCourse']);
     Route::get('/grade-history/courses/{courseId}/batches/{batchId}/students', [GradeController::class, 'batchStudents']);

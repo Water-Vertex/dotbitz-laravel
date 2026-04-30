@@ -1,6 +1,8 @@
 <?php
 
 use App\Http\Controllers\User\HomeController;
+use App\Http\Controllers\Api\SitemapController;
+
 use Illuminate\Support\Facades\Route;
 
 
@@ -25,4 +27,5 @@ Route::get('/thank-you-for-requesting-free-assessment', [HomeController::class, 
 Route::get('/thank-you-for-requesting-free-appointment', [HomeController::class, 'AppointmentThankyou'])->name('user.appointment-thankyou');
 Route::get('/thank-you-for-contact', [HomeController::class, 'ContactThankyou'])->name('user.contact-thankyou');
 Route::get('/thank-you-for-requesting-pre-registration', [HomeController::class, 'PreRegisThankyou'])->name('user.pre-regis-thankyou');
-
+// Public XML sitemap
+Route::get('/sitemap.xml', [SitemapController::class, 'viewXml'])->name('sitemap.xml');
