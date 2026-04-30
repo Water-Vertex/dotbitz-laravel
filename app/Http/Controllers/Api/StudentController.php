@@ -363,4 +363,23 @@ public function destroy($id)
             'data' => $student
         ], 200);
     }
+
+    public function resetPassword(Request $request)
+{
+    $student = $request->user(); // logged-in student
+
+    $validated = $request->validate([
+        'new_password'          => 'required|string|min:6|max:255',
+        'confirm_password'      => 'required|same:new_password',
+    ]);
+
+    $student->update([
+        'password' => Hash::make($validated['new_password'])
+    ]);
+
+    return response()->json([
+        'success' => true,
+        'message' => 'Password reset successfully'
+    ], 200);
+}
 }

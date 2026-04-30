@@ -45,7 +45,7 @@ Route::post('/logout', [AuthController::class, 'logout'])->middleware('auth:sanc
 Route::middleware('auth:sanctum')->prefix('admin')->group(function () {
 
     Route::get('/dashboard', [AdminDashboardController::class, 'getStats']);
-
+Route::put('/reset-password', [AdminDashboardController::class, 'resetPassword']);
     Route::get('/grade-history/courses', [GradeController::class, 'adminCourses']);
     Route::get('/grade-history/courses/{courseId}/batches', [GradeController::class, 'batchesByCourse']);
     Route::get('/grade-history/courses/{courseId}/batches/{batchId}/students', [GradeController::class, 'batchStudents']);
@@ -155,6 +155,7 @@ Route::middleware('auth:sanctum')->prefix('guardian')->group(function () {
     Route::get('results/quiz/{studentId}/{courseId}',    [ResultController::class, 'guardianQuizResults']);
     Route::get('results/assignment/{studentId}/{courseId}', [ResultController::class, 'guardianAssignmentResults']);
 Route::get('student/{studentId}/schedules', [ClassScheduleController::class, 'getSchedulesByStudentId']);
+Route::post('/reset-password', [GuardianController::class, 'resetPassword']);
 });
 
 // Student routes ----------------- //
@@ -168,6 +169,9 @@ Route::middleware('auth:sanctum')->prefix('student')->group(function () {
     // Profile
     Route::get('/profile', [StudentController::class, 'profile']);
     Route::put('/profile', [StudentController::class, 'updateProfile']);
+
+    Route::post('/reset-password', [StudentController::class, 'resetPassword']);
+
     Route::get('check-assessment/{studentId}/{courseId}', [CourseController::class, 'checkAssessmentCompletion']);
     Route::post('enroll-course', [CourseController::class, 'enrollStudent']);
  Route::get('/assignments/course/{id}', [AssignmentController::class, 'getAssignmentsByCourseId']);
@@ -266,7 +270,7 @@ Route::middleware('auth:sanctum')->prefix('instructor')->group(function () {
     Route::get('/', [InstructorController::class, 'index']);
     Route::get('/dashboard', [InstructorDashboardController::class, 'getStats']);
 
-
+Route::put('/reset-password', [InstructorController::class, 'resetPassword']);
     Route::get('/grade-history/courses', [GradeController::class, 'instructorCourses']);
 Route::get('/grade-history/courses/{courseId}/batches', [GradeController::class, 'batchesByCourse']);
 Route::get('/grade-history/courses/{courseId}/batches/{batchId}/students', [GradeController::class, 'batchStudents']);

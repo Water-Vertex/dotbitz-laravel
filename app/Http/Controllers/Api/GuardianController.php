@@ -8,7 +8,7 @@ use Illuminate\Support\Facades\Auth;
 use App\Models\Guardian;
 use App\Models\Student;
 use App\Models\AssignAssessment;
-
+use Illuminate\Support\Facades\Hash;
 class GuardianController extends Controller
 {
     /**
@@ -146,6 +146,29 @@ public function update(Request $request)
     ]);
 }
 
+public function resetPassword(Request $request)
+{
+    // Logged-in guardian lein
+    $guardian = Auth::guard('guardian')->user();
 
+    if (!$guardian) {
+        return response()->json(['message' => 'Unauthorized'], 401);
+    }
+
+    $validated = $request->validate([
+        'new_password'     => 'required|string|min:6|max:255',
+        'confirm_password' => 'required|same:new_password',
+    ]);
+
+    // Password update karein
+    $guardian->update([
+       'password' => Hash::make($validated['new_password'])
+    ]);
+
+    return response()->json([
+        'success' => true,
+        'message' => 'Guardian password reset successfully'
+    ], 200);
+}
 
 }

@@ -222,5 +222,31 @@ class InstructorController extends Controller
         ], 200);
     }
 
-    
+    // InstructorController.php mein add karein
+public function resetPassword(Request $request)
+{
+    $instructor = $request->user(); // Authenticated instructor
+
+    $request->validate([
+        'new_password' => 'required|min:6',
+        'confirm_password' => 'required|same:new_password'
+    ]);
+
+    try {
+        $instructor->password = Hash::make($request->new_password);
+        $instructor->save();
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Password updated successfully'
+        ], 200);
+
+    } catch (\Exception $e) {
+        return response()->json([
+            'success' => false,
+            'message' => 'Failed to update password',
+            'error' => $e->getMessage()
+        ], 500);
+    }
+}
 }
