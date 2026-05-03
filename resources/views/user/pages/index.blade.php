@@ -1,8 +1,177 @@
  @extends('user.layouts.app')
- @section('styles')
+@section('styles')
+<style>
+    .pre-reg-modal .modal-dialog {
+        max-width: 500px;
+        margin: 30px auto;
+    }
+    .pre-reg-modal .modal-content {
+        border-radius: 20px;
+        border: none;
+    }
+    .pre-reg-modal .modal-header {
+        border-bottom: none;
+        padding: 15px 20px 0 20px;
+    }
+    .pre-reg-modal .modal-body {
+        padding: 10px 30px 30px 30px;
+    }
+    .pre-reg-modal .modal-header .btn-close {
+        background-color: #f0f0f0;
+        border-radius: 50%;
+        padding: 8px;
+        opacity: 1;
+    }
+    .pre-reg-modal .modal-header .btn-close:hover {
+        background-color: #FF6500;
+        opacity: 1;
+    }
+    .pre-reg-popup-icon {
+        width: 70px;
+        height: 70px;
+        background: linear-gradient(135deg, #FF6500, #FECE09);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0 auto 15px;
+    }
+    .pre-reg-popup-icon i {
+        font-size: 30px;
+        color: white;
+    }
+    .pre-reg-modal h3 {
+        font-size: 24px;
+        font-weight: 700;
+        margin-bottom: 10px;
+        color: #063989;
+    }
+    .pre-reg-seat-info {
+        background: #f8f9fa;
+        border-radius: 15px;
+        padding: 12px;
+        margin: 15px 0;
+        text-align: center;
+    }
+    .pre-reg-seat-info .seat-number {
+        font-size: 28px;
+        font-weight: 800;
+        color: #FF6500;
+        display: block;
+    }
+    .pre-reg-seat-info .seat-text {
+        font-size: 14px;
+        color: #666;
+    }
+    .seat-progress {
+        height: 8px;
+        border-radius: 4px;
+        margin: 10px 0 0 0;
+    }
+    .seat-progress .progress-bar {
+        background: linear-gradient(90deg, #FF6500, #FECE09);
+        border-radius: 4px;
+    }
+    .pre-reg-button {
+        background: #FF6500 !important;
+        color: white !important;
+        padding: 12px 20px !important;
+        border-radius: 8px !important;
+        text-decoration: none !important;
+        display: block !important;
+        width: 100% !important;
+        text-align: center !important;
+        font-weight: bold !important;
+        font-size: 16px !important;
+        border: none !important;
+        margin: 15px 0 8px 0 !important;
+        cursor: pointer !important;
+    }
+    .pre-reg-button:hover {
+        background: #e05a00 !important;
+        color: white !important;
+    }
+    .pre-reg-later {
+        background: none !important;
+        border: none !important;
+        color: #999 !important;
+        cursor: pointer !important;
+        padding: 8px !important;
+        display: inline-block !important;
+    }
+    .pre-reg-later:hover {
+        color: #FF6500 !important;
+    }
+    #preRegistrationModal {
+    z-index: 1055 !important;
+}
+.modal-backdrop {
+    z-index: 1050 !important;
+}
+.pre-reg-modal .btn-close {
+    background: transparent url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='%23000'%3e%3cpath d='M.293.293a1 1 0 011.414 0L8 6.586 14.293.293a1 1 0 111.414 1.414L9.414 8l6.293 6.293a1 1 0 01-1.414 1.414L8 9.414l-6.293 6.293a1 1 0 01-1.414-1.414L6.586 8 .293 1.707a1 1 0 010-1.414z'/%3e%3c/svg%3e") center/1em no-repeat;
+}
+#preRegistrationModal .modal-content {
+    pointer-events: all !important;
+}
+#preRegistrationModal .btn-close {
+    z-index: 1060 !important;
+    position: relative !important;
+}
+.pre-reg-button {
+    pointer-events: all !important;
+    z-index: 1060 !important;
+    position: relative !important;
+}
+</style>
+@endsection
 
- @endsection
  @section('content')
+ 
+<!-- Pre Registration Modal - Only show if seats are available -->
+@if($remainingSeats > 0)
+<div class="modal fade pre-reg-modal" id="preRegistrationModal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body text-center">
+                <!-- <div class="pre-reg-popup-icon">
+                  <i class="fas fa-graduation-cap"></i>
+                </div> -->
+                
+                <h3>Limited Seats Available!</h3>
+                
+                <p>Secure your spot before it's too late. Pre-register now to get early access and exclusive benefits.</p>
+                
+                <div class="pre-reg-seat-info">
+                    <span class="seat-number">Only {{ $remainingSeats }} Seats Remaining</span>
+                    <span class="seat-text">out of {{ $totalSeats }} total seats</span>
+                    <div class="progress seat-progress">
+                        @php
+                            $percentage = (($totalSeats - $remainingSeats) / $totalSeats) * 100;
+                        @endphp
+                        <div class="progress-bar" style="width: {{ $percentage }}%"></div>
+                    </div>
+                </div>
+                
+                <p>⭐ Limited seats available for our upcoming session!<br>Pre-register now to get early bird benefits and guaranteed admission.</p>
+                
+                <!-- ✅ SIMPLE BUTTON - Direct link -->
+                <a href="{{ route('user.pre-registration') }}" class="pre-reg-button">
+                    Pre-Register Now
+                    <!-- <i class="fas fa-arrow-right"></i> -->
+                </a>
+                
+                <button type="button" class="pre-reg-later" data-bs-dismiss="modal">
+                    Maybe Later
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+@endif
  <!-- hero area -->
       <div class="hero-section hs-1">
         <div class="hero-single" style="background-image: url({{asset('assets/images/01.png')}})">
@@ -664,10 +833,74 @@
 
  @endsection
  @section('scripts')
-      <!-- Swiper JS -->
-    <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
-    <script>
-    document.addEventListener('DOMContentLoaded', function() {
+    <!-- Swiper JS -->
+<script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
+
+<!-- ⭐⭐⭐ IMPORTANT: Bootstrap JS (Modal ke liye REQUIRED) ⭐⭐⭐ -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+<script>
+    // Wait for everything to load
+  // window.addEventListener('load', function() {
+  //       @if($remainingSeats > 0)
+  //           var modalElement = document.getElementById('preRegistrationModal');
+  //           if (modalElement) {
+  //               var myModal = new bootstrap.Modal(modalElement, {
+  //                   // backdrop: true,  
+  //                   keyboard: false
+  //               });
+  //               myModal.show();
+  //           }
+  //       @endif
+  //   });
+    window.addEventListener('load', function() {
+    @if($remainingSeats > 0)
+        var modalElement = document.getElementById('preRegistrationModal');
+        if (modalElement) {
+            var myModal = new bootstrap.Modal(modalElement, {
+                backdrop: true,
+                keyboard: true
+            });
+            myModal.show();
+            
+            // ✅ Force z-index fix
+            setTimeout(function() {
+                var backdrop = document.querySelector('.modal-backdrop');
+                if (backdrop) {
+                    backdrop.style.zIndex = '1040';
+                }
+                modalElement.style.zIndex = '1050';
+            }, 300);
+        }
+    @endif
+});
+    // Initialize Swiper (only once)
+    if (document.querySelector('.course-slider')) {
+        new Swiper('.course-slider', {
+            slidesPerView: 1,
+            spaceBetween: 20,
+            loop: true,
+            autoplay: {
+                delay: 5000,
+                disableOnInteraction: false,
+            },
+            breakpoints: {
+                640: { slidesPerView: 1, spaceBetween: 20 },
+                768: { slidesPerView: 2, spaceBetween: 30 },
+                1024: { slidesPerView: 3, spaceBetween: 30 }
+            },
+            pagination: {
+                el: '.swiper-pagination',
+                clickable: true,
+            },
+            navigation: {
+                nextEl: '.swiper-button-next',
+                prevEl: '.swiper-button-prev',
+            },
+        });
+    }
+
+     document.addEventListener('DOMContentLoaded', function() {
         // Initialize Swiper
         const coursesSwiper = new Swiper('.coursesSwiper', {
             // Optional parameters
