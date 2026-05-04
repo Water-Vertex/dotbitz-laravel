@@ -200,13 +200,13 @@
             </div>
 
             <!-- Add to Calendar Button -->
-           @php
+          @php
     $title    = urlencode('DotBitz Pre-Registration Meeting');
     $location = urlencode('Meeting Room 2A, Columbus Metropolitan Library, 4500 Hickory Chase Way, Hilliard OH');
     $details  = urlencode('Pre-registration session for DotBitz upcoming batch. Registered by: ' . $preRegistration->name);
     
-    // ✅ Date nahi — user khud select karega
-    $googleUrl = "https://calendar.google.com/calendar/render?action=TEMPLATE&text={$title}&details={$details}&location={$location}";
+    // ✅ May 18, 2026 — 5PM to 6PM EST (EST = UTC-5, so 22:00-23:00 UTC)
+    $googleUrl = "https://calendar.google.com/calendar/render?action=TEMPLATE&text={$title}&dates=20260518T220000Z/20260518T230000Z&details={$details}&location={$location}";
 @endphp
 
             <a href="{{ $googleUrl }}" class="calendar-btn" target="_blank">
