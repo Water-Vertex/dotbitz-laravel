@@ -15,6 +15,7 @@ use App\Models\Policy;
 use App\Models\CoursesByStudent;
 use App\Models\Faq;
 use App\Models\PreRegistration;
+use App\Mail\PreRegistrationConfirmationMail;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Validation\Rule;
@@ -268,42 +269,77 @@ class HomeController extends Controller
         return view('user.pages.pre-registration', get_defined_vars());
     }
 
-    // ✅ UPDATE THIS METHOD - Store PreRegister with limit check
-    public function StorePreRegister(Request $request)
-    {
-        // Validate request
-        $request->validate([
-            'name' => 'required|string|max:255',
-            'email' => 'required|email|max:255|unique:pre_registrations,email',
-            'phone' => 'required|string|max:20',
-            'message' => 'nullable|string',
-        ], [
-            'email.unique' => 'This email is already pre-registered!',
-        ]);
+    // public function StorePreRegister(Request $request)
+    // {
+    //     // Validate request
+    //     $request->validate([
+    //         'name' => 'required|string|max:255',
+    //         'email' => 'required|email|max:255|unique:pre_registrations,email',
+    //         'phone' => 'required|string|max:20',
+    //         'message' => 'nullable|string',
+    //     ], [
+    //         'email.unique' => 'This email is already pre-registered!',
+    //     ]);
         
-        // Check seat limit (maximum 20 seats)
-        $totalSeats = 20;
-        $registeredCount = PreRegistration::count();
+    //     // Check seat limit (maximum 20 seats)
+    //     $totalSeats = 20;
+    //     $registeredCount = PreRegistration::count();
         
-        if ($registeredCount >= $totalSeats) {
-            return redirect()->back()->with('error', 'Sorry! All 20 seats have been filled. Registration is now closed.');
-        }
+    //     if ($registeredCount >= $totalSeats) {
+    //         return redirect()->back()->with('error', 'Sorry! All 20 seats have been filled. Registration is now closed.');
+    //     }
         
-        // Create pre-registration
-        $preregister = new PreRegistration;
-        $preregister->name = $request->name;
-        $preregister->phone = $request->phone;
-        $preregister->email = $request->email;
-        $preregister->message = $request->message;
+    //     // Create pre-registration
+    //     $preregister = new PreRegistration;
+    //     $preregister->name = $request->name;
+    //     $preregister->phone = $request->phone;
+    //     $preregister->email = $request->email;
+    //     $preregister->message = $request->message;
         
-        if($preregister->save())
-        {
-            return redirect()->route('user.pre-regis-thankyou')->with('success', 'Your Pre-Registration form has been submitted successfully!');
-        }
-        else{
-            return redirect()->back()->with('error', 'Something went wrong!');
-        }
+    //     if($preregister->save())
+    //     {
+    //         return redirect()->route('user.pre-regis-thankyou')->with('success', 'Your Pre-Registration form has been submitted successfully!');
+    //     }
+    //     else{
+    //         return redirect()->back()->with('error', 'Something went wrong!');
+    //     }
+    // }
+
+public function StorePreRegister(Request $request)
+{
+    $request->validate([
+        'name'    => 'required|string|max:255',
+        'email'   => 'required|email|max:255|unique:pre_registrations,email',
+        'phone'   => 'required|string|max:20',
+        'message' => 'nullable|string',
+    ], [
+        'email.unique' => 'This email is already pre-registered!',
+    ]);
+
+    $totalSeats      = 20;
+    $registeredCount = PreRegistration::count();
+
+    if ($registeredCount >= $totalSeats) {
+        return redirect()->back()->with('error', 'Sorry! All 20 seats have been filled. Registration is now closed.');
     }
+
+    $preregister          = new PreRegistration;
+    $preregister->name    = $request->name;
+    $preregister->phone   = $request->phone;
+    $preregister->email   = $request->email;
+    $preregister->message = $request->message;
+
+    if ($preregister->save()) {
+        // ✅ Confirmation email bhejo
+        Mail::to($preregister->email)
+            ->send(new PreRegistrationConfirmationMail($preregister));
+
+        return redirect()->route('user.pre-regis-thankyou')
+            ->with('success', 'Your Pre-Registration form has been submitted successfully!');
+    }
+
+    return redirect()->back()->with('error', 'Something went wrong!');
+}
 
 //     public function index()
 //     {
