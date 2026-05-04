@@ -16,6 +16,7 @@ use App\Models\CoursesByStudent;
 use App\Models\Faq;
 use App\Models\PreRegistration;
 use App\Mail\PreRegistrationConfirmationMail;
+use App\Mail\AdminPreRegistrationMail;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Validation\Rule;
@@ -329,14 +330,18 @@ public function StorePreRegister(Request $request)
     $preregister->email   = $request->email;
     $preregister->message = $request->message;
 
-    if ($preregister->save()) {
-        // ✅ Confirmation email bhejo
-        Mail::to($preregister->email)
-            ->send(new PreRegistrationConfirmationMail($preregister));
+  if ($preregister->save()) {
+    // ✅ User ko confirmation email
+    Mail::to($preregister->email)
+        ->send(new PreRegistrationConfirmationMail($preregister));
 
-        return redirect()->route('user.pre-regis-thankyou')
-            ->with('success', 'Your Pre-Registration form has been submitted successfully!');
-    }
+    // ✅ Admin ko notification email
+    Mail::to('info@dotbitz.com')
+        ->send(new AdminPreRegistrationMail($preregister));
+
+    return redirect()->route('user.pre-regis-thankyou')
+        ->with('success', 'Your Pre-Registration form has been submitted successfully!');
+}
 
     return redirect()->back()->with('error', 'Something went wrong!');
 }
