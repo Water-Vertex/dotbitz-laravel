@@ -38,4 +38,8 @@ class Student extends Authenticatable
     {
         return $this->belongsToMany(Guardian::class,  'student_id', 'guardian_id');
     }
+    public function guardian()
+    {
+        return $this->belongsTo(Guardian::class, 'guardian_id');
+    }
 }

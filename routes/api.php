@@ -32,6 +32,9 @@ use App\Http\Controllers\Api\GradeController;
 use App\Http\Controllers\Api\GuardianDashboardController;
 use App\Http\Controllers\Api\InstructorDashboardController;
 use App\Http\Controllers\Api\StudentDashboardController;
+use App\Http\Controllers\Api\RolePermissionController;
+use App\Http\Controllers\Api\RoleController;
+use App\Http\Controllers\Api\SettingController;
 use App\Models\Student;
 
 
@@ -44,6 +47,15 @@ Route::middleware('auth:sanctum')->prefix('admin')->group(function () {
 
     Route::get('/dashboard', [AdminDashboardController::class, 'getStats']);
 
+    Route::get('/bills', [OrderController::class, 'adminIndex']);
+    Route::get('/bills/{orderId}', [OrderController::class, 'adminShow']);
+
+     Route::get('/settings', [SettingController::class, 'getSettings']);
+    Route::post('/settings', [SettingController::class, 'saveSettings']);
+
+// SEO Settings
+    Route::get('/seo-settings', [SettingController::class, 'getSeoSettings']);
+    Route::post('/seo-settings', [SettingController::class, 'saveSeoSettings']);
     Route::get('/grade-history/courses', [GradeController::class, 'adminCourses']);
     Route::get('/grade-history/courses/{courseId}/batches', [GradeController::class, 'batchesByCourse']);
     Route::get('/grade-history/courses/{courseId}/batches/{batchId}/students', [GradeController::class, 'batchStudents']);
@@ -116,6 +128,15 @@ Route::post('/assignment-attempts/{attemptId}/grade', [AssignmentAttemptControll
     Route::get('/guardians', [GuardianController::class, 'Adminindex']);
 
 
+
+    Route::get('/roles', [RolePermissionController::class, 'index']);
+    Route::get('/permissions', [RolePermissionController::class, 'allPermissions']);
+    Route::post('/roles/{role}/permissions', [RolePermissionController::class, 'updateRolePermissions']);
+    Route::get('/users-list', [RolePermissionController::class, 'users']);
+    Route::post('/users/{user}/assign-role', [RolePermissionController::class, 'assignRole']);
+    Route::post('/users/create', [RolePermissionController::class, 'createUser']);
+     Route::apiResource('roles-manage', RoleController::class);
+
 });
 
 // Guardian routes ----------------- //
@@ -126,6 +147,7 @@ Route::middleware('auth:sanctum')->prefix('guardian')->group(function () {
     // GET /api/guardian -> returns currently authenticated guardian's profile
     Route::get('/', [GuardianController::class, 'index']);
     Route::get('/dashboard', [GuardianDashboardController::class, 'getStats']);
+    Route::get('/my-bills', [OrderController::class, 'guardianIndex']);
      Route::get('/grade-history/courses', [GradeController::class, 'guardianCourses']);
     Route::put('profile/update', [GuardianController::class, 'update']);
     Route::get('assessments', [AssignAssessmentController::class, 'getGuardianAssessments']);
@@ -143,7 +165,7 @@ Route::middleware('auth:sanctum')->prefix('guardian')->group(function () {
      Route::get('results/courses/{studentId}',            [ResultController::class, 'guardianStudentCourses']);
     Route::get('results/quiz/{studentId}/{courseId}',    [ResultController::class, 'guardianQuizResults']);
     Route::get('results/assignment/{studentId}/{courseId}', [ResultController::class, 'guardianAssignmentResults']);
-
+Route::get('student/{studentId}/schedules', [ClassScheduleController::class, 'getSchedulesByStudentId']);
 });
 
 // Student routes ----------------- //
@@ -153,7 +175,7 @@ Route::post('/student/logout', [AuthController::class, 'Studentlogout'])->middle
 
 Route::middleware('auth:sanctum')->prefix('student')->group(function () {
     Route::get('/dashboard', [StudentDashboardController::class, 'getStats']);
-
+Route::get('/my-bills', [OrderController::class, 'studentIndex']);
     // Profile
     Route::get('/profile', [StudentController::class, 'profile']);
     Route::put('/profile', [StudentController::class, 'updateProfile']);

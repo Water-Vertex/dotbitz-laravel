@@ -221,4 +221,37 @@ class ClassScheduleController extends Controller
         'data' => $schedules
     ]);
 }
+
+
+
+
+public function getSchedulesByStudentId($studentId)
+    {
+        // 1. Student ki enrollments se batch IDs nikalna
+        $batchIds = CoursesByStudent::where('student_id', $studentId)
+            ->pluck('batch_id');
+
+        if ($batchIds->isEmpty()) {
+            return response()->json([
+                'message' => 'No schedules found',
+                'data' => []
+            ]);
+        }
+
+        // 2. Un batches ke schedules fetch karna relations ke sath
+        $schedules = ClassSchedule::whereIn('batch_id', $batchIds)
+            ->with([
+                'course:id,course_name', 
+                'batch:id,name', 
+                'instructor:id,first_name,last_name'
+            ])
+            ->orderByRaw("FIELD(day, 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday')")
+            ->orderBy('start_time', 'asc')
+            ->get();
+
+        return response()->json([
+            'message' => 'Schedules retrieved successfully',
+            'data' => $schedules
+        ]);
+    }
 }

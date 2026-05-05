@@ -523,7 +523,14 @@ ul.custom-list li::before {
                   <div class="price-amount"><span>${{$course->course_fee}}</span></div>
                   {{-- <span class="price-off">35% Off</span> --}}
                 </div>
-                <a href="https://portal.dotbitz.com/student/registration" class="theme-btn"> <span class="far fa-shopping-bag"></span> Enroll Now</a>
+                @php
+                  $curriculum = \App\Models\CourseCurriculum::where('course_id',$course->id)->get();
+                @endphp
+                @if($curriculum->isEmpty())
+                <a href="javascript:;" class="theme-btn"> <span class="far fa-shopping-bag"></span> Coming Soon...</a>
+                @else
+                 <a href="https://portal.dotbitz.com/student/registration" class="theme-btn"> <span class="far fa-shopping-bag"></span> Enroll Now</a>
+                @endif
                 <div class="more-info">
                   <ul>
                     <!--<li><i class="fad fa-user"></i> Instructor: <span>{{$course->instructor->first_name}} {{$course->instructor->last_name}}</span></li>-->

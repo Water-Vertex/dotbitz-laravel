@@ -86,25 +86,7 @@ class BatchController extends Controller
 
 public function update(Request $request, string $id)
 {
-    // Handle students - convert to array if it's a string
-    // $students = $request->students;
-
-    // // If it's a string, convert to array first
-    // if (is_string($students)) {
-    //     // If it's an empty string, make it empty array
-    //     if (empty($students)) {
-    //         $students = [];
-    //     } else {
-    //         // Split by comma and trim each value
-    //         $students = array_map('trim', explode(',', $students));
-    //     }
-    // }
-
-    // // Ensure it's an array and filter out empty values
-    // $studentsArray = is_array($students) ? $students : [];
-    // $studentsArray = array_filter($studentsArray, function($value) {
-    //     return $value !== '' && $value !== null;
-    // });
+   
 
     $batch = Batch::findOrFail($id);
     $batch->update([
