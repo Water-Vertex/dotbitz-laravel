@@ -249,7 +249,15 @@
           <div class="course-slider owl-carousel owl-theme wow fadeInUp" data-wow-delay=".25s">
             @foreach($courses as $index => $course)
             <div class="course-item">
-              <span class="course-tag c1">{{$course->course_level}}</span>
+
+              @php
+                  $curriculum = \App\Models\CourseCurriculum::where('course_id',$course->id)->get();
+              @endphp
+                @if($curriculum->isEmpty())
+                    <span class="course-tag c1">Coming soon...</span>
+                @else
+                <span class="course-tag c1">{{$course->course_level}}</span>
+                @endif
               <div class="course-img">
                 <a href="{{ route('user.course.details', $course->slug) }}"><img src="{{asset('assets/images/courses/' . $course->thumbnail_image)}}" alt="" /></a>
               </div>
@@ -525,8 +533,7 @@
                 </div>
                 <div class="quote">
                   <p>
-                    There are many variations of passage available the majority have suffered of alteration of the some humour words look
-                    even slightly form by the injected to default model believable.
+                    “DOTBITZ has completely changed the way I learn online. The courses are well-structured, easy to follow, and packed with practical knowledge. I was able to upgrade my skills much faster than expected.
                   </p>
                 </div>
                 <div class="author">
@@ -554,8 +561,7 @@
                 </div>
                 <div class="quote">
                   <p>
-                    There are many variations of passage available the majority have suffered of alteration of the some humour words look
-                    even slightly form by the injected to default model believable.
+                    As a student, I love how DOTBITZ provides a smooth and distraction-free learning experience. The dashboard, course tracking, and progress system keep me motivated throughout my learning journey.
                   </p>
                 </div>
                 <div class="author">
@@ -583,8 +589,7 @@
                 </div>
                 <div class="quote">
                   <p>
-                    There are many variations of passage available the majority have suffered of alteration of the some humour words look
-                    even slightly form by the injected to default model believable.
+                    DOTBITZ offers high-quality courses with real-world examples. The instructors explain complex topics in a simple way, making it perfect for beginners as well as professionals looking to upskill.
                   </p>
                 </div>
                 <div class="author">
@@ -592,8 +597,8 @@
                     <img src="assets/img/testimonial/03.jpg" alt="" />
                   </div>
                   <div class="author-info">
-                    <h5>Martha Brown</h5>
-                    <p>Student</p>
+                    <h5>Emily Carter</h5>
+                    <p>Parent</p>
                   </div>
                 </div>
               </div>
@@ -612,8 +617,7 @@
                 </div>
                 <div class="quote">
                   <p>
-                    There are many variations of passage available the majority have suffered of alteration of the some humour words look
-                    even slightly form by the injected to default model believable.
+                    The platform is fast, modern, and very easy to use. From enrolling in courses to tracking progress, everything is seamless. DOTBITZ truly feels like a premium learning platform.
                   </p>
                 </div>
                 <div class="author">
@@ -621,41 +625,13 @@
                     <img src="assets/img/testimonial/04.jpg" alt="" />
                   </div>
                   <div class="author-info">
-                    <h5>Robert Dese</h5>
-                    <p>Student</p>
+                    <h5>Sophia Williams</h5>
+                    <p>Guardian</p>
                   </div>
                 </div>
               </div>
             </div>
-            <div class="testimonial-item">
-              <div class="content">
-                <div class="icon">
-                  <img src="assets/img/icon/quote.svg" alt="" />
-                </div>
-                <div class="rating">
-                  <i class="fas fa-star"></i>
-                  <i class="fas fa-star"></i>
-                  <i class="fas fa-star"></i>
-                  <i class="fas fa-star"></i>
-                  <i class="fas fa-star"></i>
-                </div>
-                <div class="quote">
-                  <p>
-                    There are many variations of passage available the majority have suffered of alteration of the some humour words look
-                    even slightly form by the injected to default model believable.
-                  </p>
-                </div>
-                <div class="author">
-                  <div class="author-img">
-                    <img src="assets/img/testimonial/05.jpg" alt="" />
-                  </div>
-                  <div class="author-info">
-                    <h5>Buchan Conie</h5>
-                    <p>Student</p>
-                  </div>
-                </div>
-              </div>
-            </div>
+
           </div>
         </div>
       </div>

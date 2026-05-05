@@ -34,6 +34,7 @@ use App\Http\Controllers\Api\InstructorDashboardController;
 use App\Http\Controllers\Api\StudentDashboardController;
 use App\Http\Controllers\Api\RolePermissionController;
 use App\Http\Controllers\Api\RoleController;
+use App\Http\Controllers\Api\SettingController;
 use App\Models\Student;
 
 
@@ -45,7 +46,19 @@ Route::post('/logout', [AuthController::class, 'logout'])->middleware('auth:sanc
 Route::middleware('auth:sanctum')->prefix('admin')->group(function () {
 
     Route::get('/dashboard', [AdminDashboardController::class, 'getStats']);
+
 Route::put('/reset-password', [AdminDashboardController::class, 'resetPassword']);
+
+
+    Route::get('/bills', [OrderController::class, 'adminIndex']);
+    Route::get('/bills/{orderId}', [OrderController::class, 'adminShow']);
+
+     Route::get('/settings', [SettingController::class, 'getSettings']);
+    Route::post('/settings', [SettingController::class, 'saveSettings']);
+
+// SEO Settings
+    Route::get('/seo-settings', [SettingController::class, 'getSeoSettings']);
+    Route::post('/seo-settings', [SettingController::class, 'saveSeoSettings']);
     Route::get('/grade-history/courses', [GradeController::class, 'adminCourses']);
     Route::get('/grade-history/courses/{courseId}/batches', [GradeController::class, 'batchesByCourse']);
     Route::get('/grade-history/courses/{courseId}/batches/{batchId}/students', [GradeController::class, 'batchStudents']);
@@ -137,6 +150,7 @@ Route::middleware('auth:sanctum')->prefix('guardian')->group(function () {
     // GET /api/guardian -> returns currently authenticated guardian's profile
     Route::get('/', [GuardianController::class, 'index']);
     Route::get('/dashboard', [GuardianDashboardController::class, 'getStats']);
+    Route::get('/my-bills', [OrderController::class, 'guardianIndex']);
      Route::get('/grade-history/courses', [GradeController::class, 'guardianCourses']);
     Route::put('profile/update', [GuardianController::class, 'update']);
     Route::get('assessments', [AssignAssessmentController::class, 'getGuardianAssessments']);
@@ -165,7 +179,7 @@ Route::post('/student/logout', [AuthController::class, 'Studentlogout'])->middle
 
 Route::middleware('auth:sanctum')->prefix('student')->group(function () {
     Route::get('/dashboard', [StudentDashboardController::class, 'getStats']);
-
+Route::get('/my-bills', [OrderController::class, 'studentIndex']);
     // Profile
     Route::get('/profile', [StudentController::class, 'profile']);
     Route::put('/profile', [StudentController::class, 'updateProfile']);

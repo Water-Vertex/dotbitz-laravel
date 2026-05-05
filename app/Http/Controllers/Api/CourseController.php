@@ -63,7 +63,14 @@ public function index(Request $request)
             'is_featured' => 'boolean',
             'thumbnail_image' => 'required|image|mimes:jpeg,png,jpg|max:2048',
             'benefits'         => 'nullable|string',
-            'short_description' => 'nullable|string'
+            'short_description' => 'nullable|string',
+            'meta_title'       => 'nullable|string|max:255',
+'meta_description' => 'nullable|string',
+'meta_keyword'     => 'nullable|string|max:255',
+'meta_tags'        => 'nullable|string|max:255',
+'focus_keyword'    => 'nullable|string|max:255',
+'page_schema'      => 'nullable|string',
+
         ]);
 
         // Generate slug automatically
@@ -157,7 +164,14 @@ public function index(Request $request)
             'is_featured' => 'boolean',
             'thumbnail_image' => 'nullable|image|mimes:jpeg,png,jpg|max:2048',
             'benefits'         => 'nullable|string',
-            'short_description' => 'nullable|string'
+            'short_description' => 'nullable|string',
+
+            'meta_title'       => 'nullable|string|max:255',
+'meta_description' => 'nullable|string',
+'meta_keyword'     => 'nullable|string|max:255',
+'meta_tags'        => 'nullable|string|max:255',
+'focus_keyword'    => 'nullable|string|max:255',
+'page_schema'      => 'nullable|string',
         ]);
 
         // Update slug if course_name changes

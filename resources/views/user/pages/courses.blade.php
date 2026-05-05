@@ -30,7 +30,14 @@
             @foreach($courses as $index => $course)
            <div class="col-lg-4 col-md-6">
              <div class="course-item">
-              <span class="course-tag c1">{{$course->course_level}}</span>
+              @php
+                  $curriculum = \App\Models\CourseCurriculum::where('course_id',$course->id)->get();
+              @endphp
+                @if($curriculum->isEmpty())
+                    <span class="course-tag c1">Coming soon...</span>
+                @else
+                <span class="course-tag c1">{{$course->course_level}}</span>
+                @endif
               <div class="course-img">
                 <a href="{{ route('user.course.details', $course->slug) }}"><img src="{{asset('assets/images/courses/' . $course->thumbnail_image)}}" alt="" /></a>
               </div>
