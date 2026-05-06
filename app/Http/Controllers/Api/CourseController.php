@@ -342,13 +342,12 @@ public function index(Request $request)
             ->where('course_id', $courseId)
             ->first();
 
-            if(!$query) {
-                return response()->json([
-                    'success' => false,
-                    'message' => 'No query found for this course'
-                ], 404);
-            }
-
+          if(!$query) {
+    return response()->json([
+        'success' => true,
+        'completed' => false,
+    ]);
+}
         $assessmentIds = Assessment::where('course_id', $courseId)->get();
         $assigned_assessmentIds = AssignAssessment::whereIn('assessment_id', $assessmentIds->pluck('id'))
             ->where('appointment_id', $query->id)

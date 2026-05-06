@@ -170,6 +170,7 @@ Route::middleware('auth:sanctum')->prefix('guardian')->group(function () {
     Route::get('results/assignment/{studentId}/{courseId}', [ResultController::class, 'guardianAssignmentResults']);
 Route::get('student/{studentId}/schedules', [ClassScheduleController::class, 'getSchedulesByStudentId']);
 Route::post('/reset-password', [GuardianController::class, 'resetPassword']);
+Route::get('check-assessment/{studentId}/{courseId}', [CourseController::class, 'checkAssessmentCompletion']);
 });
 
 // Student routes ----------------- //
