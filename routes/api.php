@@ -35,6 +35,7 @@ use App\Http\Controllers\Api\StudentDashboardController;
 use App\Http\Controllers\Api\RolePermissionController;
 use App\Http\Controllers\Api\RoleController;
 use App\Http\Controllers\Api\SettingController;
+use App\Http\Controllers\Api\ProgramaticSeoController;
 use App\Models\Student;
 
 
@@ -139,7 +140,12 @@ Route::post('/assignment-attempts/{attemptId}/grade', [AssignmentAttemptControll
     Route::post('/users/{user}/assign-role', [RolePermissionController::class, 'assignRole']);
     Route::post('/users/create', [RolePermissionController::class, 'createUser']);
      Route::apiResource('roles-manage', RoleController::class);
-
+     Route::get('/programatic-seo', [ProgramaticSeoController::class, 'index']);
+    Route::get('/programatic-seo/{id}', [ProgramaticSeoController::class, 'show']);
+    Route::put('/programatic-seo/{id}', [ProgramaticSeoController::class, 'update']);
+    Route::delete('/programatic-seo/{id}', [ProgramaticSeoController::class, 'destroy']);
+    Route::post('/programatic-seo/import', [ProgramaticSeoController::class, 'import']);
+ 
 });
 
 // Guardian routes ----------------- //
