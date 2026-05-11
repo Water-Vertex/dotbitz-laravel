@@ -89,24 +89,103 @@ class HomeController extends Controller
         return view('user.pages.courses', get_defined_vars()); // pass to view
     }
 
-    public function CourseDetails($slug)
-    {
-         $course = Course::where('slug', $slug)
-        ->with('instructor','curriculums')
+    // public function CourseDetails($slug)
+    // {
+    //      $course = Course::where('slug', $slug)
+    //     ->with('instructor','curriculums')
+    //     ->firstOrFail();
+
+    //     $student_count = CoursesByStudent::where('course_id',$course->id)->count();
+
+    //     // Get related courses (same level or category)
+    //     $relatedCourses = Course::where('id', '!=', $course->id)
+    //         ->where('status', 'active')
+    //         ->inRandomOrder()
+    //         ->limit(3)
+    //         ->get();
+
+    //     return view('user.pages.course-details', get_defined_vars());
+    // }
+public function CourseDetails($slug)
+{
+    $course = Course::where('slug', $slug)
+        ->with([
+            'instructor',
+            'curriculums',
+            // ✅ CourseInstructor pivot se assigned instructors
+            'instructors' => function($q) {
+                $q->with(['details']);
+            },
+        ])
         ->firstOrFail();
 
-        $student_count = CoursesByStudent::where('course_id',$course->id)->count();
+    $student_count = CoursesByStudent::where('course_id', $course->id)->count();
 
-        // Get related courses (same level or category)
-        $relatedCourses = Course::where('id', '!=', $course->id)
+    // ✅ Instructors ke saath unke courses aur students bhi load karo
+    $courseInstructors = $course->instructors->map(function($instructor) use ($course) {
+
+        // Instructor k saray assigned courses
+        $instructorCourses = Course::whereHas('instructors', function($q) use ($instructor) {
+            $q->where('instructors.id', $instructor->id);
+        })
+        ->with(['students'])
+        ->where('status', 'active')
+        ->get();
+
+        // Total students un saray courses mein
+        $totalStudents = $instructorCourses->sum(fn($c) => $c->students->count());
+
+        return [
+            'id'             => $instructor->id,
+            'first_name'     => $instructor->first_name,
+            'last_name'      => $instructor->last_name,
+            'email'          => $instructor->email,
+            'phone'          => $instructor->phone,
+            'gender'         => $instructor->gender,
+            'work_experience'=> $instructor->work_experience,
+            'status'         => $instructor->status,
+            'details'        => $instructor->details,
+            'other_courses'  => $instructorCourses,
+            'total_courses'  => $instructorCourses->count(),
+            'total_students' => $totalStudents,
+        ];
+    });
+
+    // ✅ Agar course_instructor table na ho to fallback — direct instructor_id se
+    if ($courseInstructors->isEmpty() && $course->instructor) {
+        $instructor = $course->instructor->load('details');
+
+        $instructorCourses = Course::where('instructor_id', $instructor->id)
+            ->with(['students'])
             ->where('status', 'active')
-            ->inRandomOrder()
-            ->limit(3)
             ->get();
 
-        return view('user.pages.course-details', get_defined_vars());
+        $totalStudents = $instructorCourses->sum(fn($c) => $c->students->count());
+
+        $courseInstructors = collect([[
+            'id'             => $instructor->id,
+            'first_name'     => $instructor->first_name,
+            'last_name'      => $instructor->last_name,
+            'email'          => $instructor->email,
+            'phone'          => $instructor->phone,
+            'gender'         => $instructor->gender,
+            'work_experience'=> $instructor->work_experience,
+            'status'         => $instructor->status,
+            'details'        => $instructor->details,
+            'other_courses'  => $instructorCourses,
+            'total_courses'  => $instructorCourses->count(),
+            'total_students' => $totalStudents,
+        ]]);
     }
 
+    $relatedCourses = Course::where('id', '!=', $course->id)
+        ->where('status', 'active')
+        ->inRandomOrder()
+        ->limit(3)
+        ->get();
+
+    return view('user.pages.course-details', get_defined_vars());
+}
     public function Assessmentindex()
     {
         $assessment_queries = AssessmentQuery::with('course')

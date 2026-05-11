@@ -34,7 +34,7 @@ class Instructor extends Authenticatable
 
     public function details()
     {
-        return $this->hasMany(InstructorDetail::class);
+        return $this->hasMany(InstructorDetail::class,'instructor_id');
     }
     // public function courses()
     // {
@@ -49,4 +49,25 @@ class Instructor extends Authenticatable
 {
     return $this->belongsToMany(Course::class, 'course_instructor', 'instructor_id', 'course_id');
 }
+
+// public function courses()
+//     {
+//         return $this->hasMany(Course::class, 'instructor_id');
+//     }
+
+    // CourseInstructor pivot se bhi courses (agar course_instructor table use ho)
+    public function assignedCourses()
+    {
+        return $this->belongsToMany(Course::class, 'course_instructor', 'instructor_id', 'course_id');
+    }
+
+
+    public function getFullNameAttribute(): string
+    {
+        return trim(($this->first_name ?? '') . ' ' . ($this->last_name ?? ''));
+    }
+    public function getTotalStudentsAttribute(): int
+    {
+        return CoursesByStudent::whereIn('course_id', $this->courses->pluck('id'))->count();
+    }
 }

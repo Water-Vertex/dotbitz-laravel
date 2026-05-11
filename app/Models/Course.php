@@ -91,4 +91,8 @@ public function curriculums()
     {
         return $this->hasMany(CourseCurriculum::class)->orderBy('sorting_order');
     }
+    public function students()
+{
+    return $this->hasMany(CoursesByStudent::class, 'course_id');
+}
 }
