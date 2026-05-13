@@ -169,6 +169,7 @@ Route::post('/student/logout', [AuthController::class, 'Studentlogout'])->middle
 
 Route::middleware('auth:sanctum')->prefix('student')->group(function () {
     Route::get('/dashboard', [StudentDashboardController::class, 'getStats']);
+Route::post('/quiz/{quizId}/reattempt', [QuizAttemptController::class, 'reattempt']);
 Route::get('/my-bills', [OrderController::class, 'studentIndex']);
     // Profile
     Route::get('/profile', [StudentController::class, 'profile']);

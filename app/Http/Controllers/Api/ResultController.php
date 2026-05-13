@@ -71,6 +71,7 @@ class ResultController extends Controller
                     'percent'        => $percent,
                     'status'         => $attempt->status,
                     'is_overdue'     => $attempt->is_overdue,
+                    'is_reattempt'   => $attempt->is_reattempt ?? false,
                     'remarks'        => $attempt->remarks,
                 ];
             });
@@ -209,6 +210,7 @@ class ResultController extends Controller
                 'percent'        => $percent,
                 'status'         => $attempt->status,
                 'is_overdue'     => $attempt->is_overdue,
+                'is_reattempt'   => $attempt->is_reattempt ?? false, 
                 'remarks'        => $attempt->remarks,
             ];
         });

@@ -16,6 +16,7 @@ class QuizAttempt extends Model
         'remarks',
         'is_checked',
         'is_overdue',
+        'is_reattempt',
 
     ];
 

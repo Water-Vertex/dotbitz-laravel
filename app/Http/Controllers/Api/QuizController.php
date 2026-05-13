@@ -318,7 +318,15 @@ public function batchStudentStatus(Request $request)
                 'due_date'  => $quiz->due_date,
                 'marks'     => $quiz->marks,
                 'status'    => $status,
-                'attempt'   => $attempt,
+               'attempt'   => $attempt ? [
+        'id'             => $attempt->id,
+        'status'         => $attempt->status,
+        'obtained_marks' => $attempt->obtained_marks,
+        'is_checked'     => $attempt->is_checked,
+        'is_overdue'     => $attempt->is_overdue,
+        'is_reattempt'   => $attempt->is_reattempt ?? false,  // ✅
+        'remarks'        => $attempt->remarks,
+    ] : null,
             ];
         });
 

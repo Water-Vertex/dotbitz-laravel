@@ -16,106 +16,167 @@ use Illuminate\Support\Facades\DB;
 class QuizAttemptController extends Controller
 {
     // Student ka attempt check karo
-    public function checkAttempt($quizId)
-    {
-        $student = Auth::user();
-        $attempt = QuizAttempt::where('student_id', $student->id)
-            ->where('quiz_id', $quizId)
-            ->first();
+    // public function checkAttempt($quizId)
+    // {
+    //     $student = Auth::user();
+    //     $attempt = QuizAttempt::where('student_id', $student->id)
+    //         ->where('quiz_id', $quizId)
+    //         ->first();
 
+    //     return response()->json([
+    //         'success'   => true,
+    //         'attempted' => $attempt ? true : false,
+    //         'attempt'   => $attempt,
+    //     ]);
+    // }
+
+
+// public function startQuiz($quizId)
+// {
+//     $student = Auth::user();
+
+//     $existing = QuizAttempt::where('student_id', $student->id)
+//         ->where('quiz_id', $quizId)
+//         ->first();
+
+//     if ($existing) {
+//         // ✅ Agar pending hai to resume data return karo
+//         if ($existing->status === 'pending') {
+//             $quiz = Quiz::with(['mcqs'])->find($quizId);
+//             return response()->json([
+//                 'success'    => true,
+//                 'is_resume'  => true,
+//                 'message'    => 'Resuming quiz.',
+//                 'data'       => [
+//                     'attempt' => $existing,
+//                     'quiz'    => $quiz,
+//                 ],
+//             ]);
+//         }
+
+//         return response()->json([
+//             'success' => false,
+//             'message' => 'You have already attempted this quiz.',
+//             'attempt' => $existing,
+//         ], 409);
+//     }
+
+//     $quiz = Quiz::with(['mcqs'])->find($quizId);
+
+//     if (!$quiz) {
+//         return response()->json([
+//             'success' => false,
+//             'message' => 'Quiz not found.',
+//         ], 404);
+//     }
+
+//     // ✅ 1 week overdue check — sirf 1 week tak allow
+//     if ($quiz->due_date) {
+//         $dueDate = \Carbon\Carbon::parse($quiz->due_date);
+
+//         // ✅ Agar sirf date hai
+//         if (strlen($quiz->due_date) <= 10) {
+//             $dueDate = $dueDate->endOfDay();
+//         }
+
+//         // ✅ Overdue check
+//         $oneWeekAfter = $dueDate->copy()->addWeek();
+
+//         if (now()->gt($oneWeekAfter)) {
+//             return response()->json([
+//                 'success' => false,
+//                 'message' => 'Quiz deadline has passed.',
+//             ], 403);
+//         }
+//     }
+
+//     $isOverdue = $quiz->due_date && now()->gt(
+//         strlen($quiz->due_date) <= 10
+//             ? \Carbon\Carbon::parse($quiz->due_date)->endOfDay()
+//             : \Carbon\Carbon::parse($quiz->due_date)
+//     );
+
+//     $attempt = QuizAttempt::create([
+//         'student_id' => $student->id,
+//         'quiz_id'    => $quizId,
+//         'status'     => 'pending',
+//         'is_overdue' => $isOverdue,
+//     ]);
+
+//     return response()->json([
+//         'success'    => true,
+//         'is_resume'  => false,
+//         'message'    => $isOverdue
+//             ? 'Quiz started (Overdue — 5% penalty will be applied).'
+//             : 'Quiz started.',
+//         'data'       => [
+//             'attempt' => $attempt,
+//             'quiz'    => $quiz,
+//         ],
+//     ], 201);
+// }
+public function startQuiz(Request $request, $quizId)
+{
+    $user    = Auth::user();
+    $student = \App\Models\Student::where('email', $user->email)->first();
+    if (!$student) {
+        return response()->json(['success' => false, 'message' => 'Student not found.'], 404);
+    }
+
+    $quiz = \App\Models\Quiz::with('mcqs')->find($quizId);
+    if (!$quiz) {
+        return response()->json(['success' => false, 'message' => 'Quiz not found.'], 404);
+    }
+
+    // Existing attempt check
+    $attempt = QuizAttempt::where('student_id', $student->id)
+        ->where('quiz_id', $quizId)
+        ->latest()
+        ->first();
+
+    if ($attempt) {
+        // Completed ya time_up — reattempt nahi to block karo
+        if (in_array($attempt->status, ['completed', 'time_up']) && !$attempt->is_reattempt) {
+            return response()->json([
+                'success' => false,
+                'message' => 'You have already completed this quiz.',
+            ], 409);
+        }
+
+        // ✅ Reattempt pending — fresh duration return karo
         return response()->json([
-            'success'   => true,
-            'attempted' => $attempt ? true : false,
-            'attempt'   => $attempt,
+            'success'    => true,
+            'message'    => 'Resume quiz.',
+            'attempt_id' => $attempt->id,
+            'is_reattempt' => $attempt->is_reattempt,  
+            'duration'   => $quiz->duration,            
+            'data'       => [
+                'attempt'  => $attempt,
+                'quiz'     => $quiz,
+                'duration' => $quiz->duration,         
+            ],
         ]);
     }
 
-
-public function startQuiz($quizId)
-{
-    $student = Auth::user();
-
-    $existing = QuizAttempt::where('student_id', $student->id)
-        ->where('quiz_id', $quizId)
-        ->first();
-
-    if ($existing) {
-        // ✅ Agar pending hai to resume data return karo
-        if ($existing->status === 'pending') {
-            $quiz = Quiz::with(['mcqs'])->find($quizId);
-            return response()->json([
-                'success'    => true,
-                'is_resume'  => true,
-                'message'    => 'Resuming quiz.',
-                'data'       => [
-                    'attempt' => $existing,
-                    'quiz'    => $quiz,
-                ],
-            ]);
-        }
-
-        return response()->json([
-            'success' => false,
-            'message' => 'You have already attempted this quiz.',
-            'attempt' => $existing,
-        ], 409);
-    }
-
-    $quiz = Quiz::with(['mcqs'])->find($quizId);
-
-    if (!$quiz) {
-        return response()->json([
-            'success' => false,
-            'message' => 'Quiz not found.',
-        ], 404);
-    }
-
-    // ✅ 1 week overdue check — sirf 1 week tak allow
-    if ($quiz->due_date) {
-        $dueDate = \Carbon\Carbon::parse($quiz->due_date);
-
-        // ✅ Agar sirf date hai
-        if (strlen($quiz->due_date) <= 10) {
-            $dueDate = $dueDate->endOfDay();
-        }
-
-        // ✅ Overdue check
-        $oneWeekAfter = $dueDate->copy()->addWeek();
-
-        if (now()->gt($oneWeekAfter)) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Quiz deadline has passed.',
-            ], 403);
-        }
-    }
-
-    $isOverdue = $quiz->due_date && now()->gt(
-        strlen($quiz->due_date) <= 10
-            ? \Carbon\Carbon::parse($quiz->due_date)->endOfDay()
-            : \Carbon\Carbon::parse($quiz->due_date)
-    );
-
-    $attempt = QuizAttempt::create([
+    // New attempt
+    $newAttempt = QuizAttempt::create([
         'student_id' => $student->id,
         'quiz_id'    => $quizId,
         'status'     => 'pending',
-        'is_overdue' => $isOverdue,
     ]);
 
     return response()->json([
         'success'    => true,
-        'is_resume'  => false,
-        'message'    => $isOverdue
-            ? 'Quiz started (Overdue — 5% penalty will be applied).'
-            : 'Quiz started.',
+        'message'    => 'Quiz started.',
+        'attempt_id' => $newAttempt->id,
+        'duration'   => $quiz->duration,
         'data'       => [
-            'attempt' => $attempt,
-            'quiz'    => $quiz,
+            'attempt'  => $newAttempt,
+            'quiz'     => $quiz,
+            'duration' => $quiz->duration,
         ],
-    ], 201);
+    ]);
 }
-
     public function submitQuiz(Request $request, $attemptId)
     {
     $request->validate([
@@ -492,6 +553,99 @@ public function studentResult($attemptId)
     return response()->json([
         'success' => true,
         'data'    => $attempt,
+    ]);
+}
+
+
+public function reattempt(Request $request, $quizId)
+{
+    $user    = Auth::user();
+    $student = \App\Models\Student::where('email', $user->email)->first();
+    if (!$student) {
+        return response()->json(['success' => false, 'message' => 'Student not found.'], 404);
+    }
+
+    $quiz = \App\Models\Quiz::with('mcqs')->find($quizId);
+    if (!$quiz) {
+        return response()->json(['success' => false, 'message' => 'Quiz not found.'], 404);
+    }
+
+    // Purana attempt find karo
+    $oldAttempt = QuizAttempt::where('student_id', $student->id)
+        ->where('quiz_id', $quizId)
+        ->latest()
+        ->first();
+
+    if (!$oldAttempt) {
+        return response()->json(['success' => false, 'message' => 'No previous attempt found.'], 404);
+    }
+
+    // Grade check — sirf C ya usse neeche
+    $totalMarks    = (float)($quiz->marks ?? 0);
+    $obtainedMarks = (float)($oldAttempt->obtained_marks ?? 0);
+    $percent       = $totalMarks > 0 ? ($obtainedMarks / $totalMarks) * 100 : 0;
+
+    if ($percent > 79) {
+        return response()->json([
+            'success' => false,
+            'message' => 'Reattempt not available. Your grade is above C.',
+        ], 403);
+    }
+
+    // ✅ Purani answers delete karo
+    \App\Models\QuizAttemptAnswer::where('quiz_attempt_id', $oldAttempt->id)->delete();
+
+    // ✅ Attempt completely reset karo — timer bhi
+    $oldAttempt->update([
+        'status'         => 'pending',
+        'obtained_marks' => null,
+        'remarks'        => null,
+        'is_checked'     => false,
+        'is_reattempt'   => true,
+        'is_overdue'     => false,
+        'updated_at'     => now(),  // ✅ fresh timestamp
+    ]);
+
+    // ✅ Quiz duration fresh return karo
+    return response()->json([
+        'success' => true,
+        'message' => 'Reattempt started.',
+        'data'    => [
+            'attempt_id' => $oldAttempt->id,
+            'quiz_id'    => $quiz->id,
+            'duration'   => $quiz->duration,  // ✅ fresh duration
+            'quiz'       => $quiz,
+        ],
+    ]);
+}
+
+public function checkAttempt($quizId)
+{
+    $user    = Auth::user();
+    $student = \App\Models\Student::where('email', $user->email)->first();
+    if (!$student) {
+        return response()->json(['success' => false, 'attempted' => false]);
+    }
+
+    $attempt = QuizAttempt::where('student_id', $student->id)
+        ->where('quiz_id', $quizId)
+        ->latest()
+        ->first();
+
+    if (!$attempt) {
+        return response()->json(['success' => true, 'attempted' => false]);
+    }
+
+    return response()->json([
+        'success'   => true,
+        'attempted' => true,
+        'attempt'   => [
+            'id'           => $attempt->id,
+            'status'       => $attempt->status,
+            'is_reattempt' => $attempt->is_reattempt,
+            'obtained_marks'=> $attempt->obtained_marks,
+            'is_checked'   => $attempt->is_checked,
+        ],
     ]);
 }
 }
