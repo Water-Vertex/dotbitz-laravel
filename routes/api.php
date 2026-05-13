@@ -27,6 +27,7 @@ use App\Http\Controllers\Api\QuizController;
 use App\Http\Controllers\Api\AssessmentAttemptController;
 use App\Http\Controllers\User\HomeController;
 use App\Http\Controllers\Api\AssignmentAttemptController;
+use App\Http\Controllers\Api\EventController;
 use App\Http\Controllers\Api\ResultController;
 use App\Http\Controllers\Api\GradeController;
 use App\Http\Controllers\Api\GuardianDashboardController;
@@ -48,6 +49,9 @@ Route::middleware('auth:sanctum')->prefix('admin')->group(function () {
     Route::get('/dashboard', [AdminDashboardController::class, 'getStats']);
     Route::get('/bills', [OrderController::class, 'adminIndex']);
     Route::get('/bills/{orderId}', [OrderController::class, 'adminShow']);
+    Route::get('/events',          [EventController::class, 'index']);
+Route::apiResource('/events', EventController::class);
+
 // Settings
     Route::get('/settings', [SettingController::class, 'getSettings']);
     Route::post('/settings', [SettingController::class, 'saveSettings']);
@@ -141,6 +145,7 @@ Route::middleware('auth:sanctum')->prefix('guardian')->group(function () {
     // GET /api/guardian -> returns currently authenticated guardian's profile
     Route::get('/', [GuardianController::class, 'index']);
     Route::get('/dashboard', [GuardianDashboardController::class, 'getStats']);
+    Route::get('/events', [EventController::class, 'publicIndex']);
     Route::get('/my-bills', [OrderController::class, 'guardianIndex']);
      Route::get('/grade-history/courses', [GradeController::class, 'guardianCourses']);
     Route::put('profile/update', [GuardianController::class, 'update']);
@@ -169,6 +174,7 @@ Route::post('/student/logout', [AuthController::class, 'Studentlogout'])->middle
 
 Route::middleware('auth:sanctum')->prefix('student')->group(function () {
     Route::get('/dashboard', [StudentDashboardController::class, 'getStats']);
+    Route::get('/events', [EventController::class, 'publicIndex']);
 Route::post('/quiz/{quizId}/reattempt', [QuizAttemptController::class, 'reattempt']);
 Route::get('/my-bills', [OrderController::class, 'studentIndex']);
     // Profile
@@ -272,6 +278,7 @@ Route::middleware('auth:sanctum')->prefix('instructor')->group(function () {
     Route::get('/', [InstructorController::class, 'index']);
     Route::get('/dashboard', [InstructorDashboardController::class, 'getStats']);
 
+Route::get('/events', [EventController::class, 'publicIndex']);
 
     Route::get('/grade-history/courses', [GradeController::class, 'instructorCourses']);
 Route::get('/grade-history/courses/{courseId}/batches', [GradeController::class, 'batchesByCourse']);

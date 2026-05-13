@@ -9,7 +9,7 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('quiz_attempts', function (Blueprint $table) {
-            $table->boolean('is_reattempt')->default(false)->after('is_checked');
+            // $table->boolean('is_reattempt')->default(false)->after('is_checked');
         });
     }
 
