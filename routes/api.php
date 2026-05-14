@@ -35,6 +35,8 @@ use App\Http\Controllers\Api\InstructorDashboardController;
 use App\Http\Controllers\Api\StudentDashboardController;
 use App\Http\Controllers\Api\SettingController;
 use App\Http\Controllers\Api\SitemapController;
+use App\Http\Controllers\Api\SupportTicketController;
+
 
 use App\Models\Student;
 
@@ -50,7 +52,11 @@ Route::middleware('auth:sanctum')->prefix('admin')->group(function () {
     Route::get('/bills', [OrderController::class, 'adminIndex']);
     Route::get('/bills/{orderId}', [OrderController::class, 'adminShow']);
     Route::get('/events',          [EventController::class, 'index']);
-Route::apiResource('/events', EventController::class);
+    Route::apiResource('/events', EventController::class);
+Route::get('/support-tickets',                    [SupportTicketController::class, 'adminIndex']);
+Route::post('/support-tickets/{id}/reply',        [SupportTicketController::class, 'adminReply']);
+Route::patch('/support-tickets/{id}/status',      [SupportTicketController::class, 'adminUpdateStatus']);
+
 
 // Settings
     Route::get('/settings', [SettingController::class, 'getSettings']);
@@ -145,6 +151,11 @@ Route::middleware('auth:sanctum')->prefix('guardian')->group(function () {
     // GET /api/guardian -> returns currently authenticated guardian's profile
     Route::get('/', [GuardianController::class, 'index']);
     Route::get('/dashboard', [GuardianDashboardController::class, 'getStats']);
+    Route::get('/support-tickets',          [SupportTicketController::class, 'guardianIndex']);
+Route::post('/support-tickets',         [SupportTicketController::class, 'guardianStore']);
+Route::get('/support-tickets/{id}',     [SupportTicketController::class, 'guardianShow']);
+Route::put('/support-tickets/{id}',     [SupportTicketController::class, 'guardianUpdate']);
+Route::delete('/support-tickets/{id}',  [SupportTicketController::class, 'guardianDestroy']);
     Route::get('/events', [EventController::class, 'publicIndex']);
     Route::get('/my-bills', [OrderController::class, 'guardianIndex']);
      Route::get('/grade-history/courses', [GradeController::class, 'guardianCourses']);
@@ -174,6 +185,12 @@ Route::post('/student/logout', [AuthController::class, 'Studentlogout'])->middle
 
 Route::middleware('auth:sanctum')->prefix('student')->group(function () {
     Route::get('/dashboard', [StudentDashboardController::class, 'getStats']);
+    Route::get('/support-tickets',          [SupportTicketController::class, 'studentIndex']);
+Route::post('/support-tickets',         [SupportTicketController::class, 'studentStore']);
+Route::get('/support-tickets/{id}',     [SupportTicketController::class, 'studentShow']);
+Route::put('/support-tickets/{id}',     [SupportTicketController::class, 'studentUpdate']);
+Route::delete('/support-tickets/{id}',  [SupportTicketController::class, 'studentDestroy']);
+
     Route::get('/events', [EventController::class, 'publicIndex']);
 Route::post('/quiz/{quizId}/reattempt', [QuizAttemptController::class, 'reattempt']);
 Route::get('/my-bills', [OrderController::class, 'studentIndex']);
