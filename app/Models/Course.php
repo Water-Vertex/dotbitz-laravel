@@ -29,6 +29,10 @@ class Course extends Model
         'benefits',
 
         'short_description',
+
+         'classes_per_week',  
+    'total_classes',     
+    'course_hours', 
          'meta_title', 
          'meta_description', 
          'meta_keyword',
