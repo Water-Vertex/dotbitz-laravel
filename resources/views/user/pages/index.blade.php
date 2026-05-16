@@ -1,667 +1,946 @@
  @extends('user.layouts.app')
+@section('styles')
+<style>
+    .pre-reg-modal .modal-dialog {
+        max-width: 500px;
+        margin: 30px auto;
+    }
+    .pre-reg-modal .modal-content {
+        border-radius: 20px;
+        border: none;
+    }
+    .pre-reg-modal .modal-header {
+        border-bottom: none;
+        padding: 15px 20px 0 20px;
+    }
+    .pre-reg-modal .modal-body {
+        padding: 10px 30px 30px 30px;
+    }
+    .pre-reg-modal .modal-header .btn-close {
+        background-color: #f0f0f0;
+        border-radius: 50%;
+        padding: 8px;
+        opacity: 1;
+    }
+    .pre-reg-modal .modal-header .btn-close:hover {
+        background-color: #FF6500;
+        opacity: 1;
+    }
+    .pre-reg-popup-icon {
+        width: 70px;
+        height: 70px;
+        background: linear-gradient(135deg, #FF6500, #FECE09);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0 auto 15px;
+    }
+    .pre-reg-popup-icon i {
+        font-size: 30px;
+        color: white;
+    }
+    .pre-reg-modal h3 {
+        font-size: 24px;
+        font-weight: 700;
+        margin-bottom: 10px;
+        color: #063989;
+    }
+    .pre-reg-seat-info {
+        background: #f8f9fa;
+        border-radius: 15px;
+        padding: 12px;
+        margin: 15px 0;
+        text-align: center;
+    }
+    .pre-reg-seat-info .seat-number {
+        font-size: 28px;
+        font-weight: 800;
+        color: #FF6500;
+        display: block;
+    }
+    .pre-reg-seat-info .seat-text {
+        font-size: 14px;
+        color: #666;
+    }
+    .seat-progress {
+        height: 8px;
+        border-radius: 4px;
+        margin: 10px 0 0 0;
+    }
+    .seat-progress .progress-bar {
+        background: linear-gradient(90deg, #FF6500, #FECE09);
+        border-radius: 4px;
+    }
+    .pre-reg-button {
+        background: #FF6500 !important;
+        color: white !important;
+        padding: 12px 20px !important;
+        border-radius: 8px !important;
+        text-decoration: none !important;
+        display: block !important;
+        width: 100% !important;
+        text-align: center !important;
+        font-weight: bold !important;
+        font-size: 16px !important;
+        border: none !important;
+        margin: 15px 0 8px 0 !important;
+        cursor: pointer !important;
+    }
+    .pre-reg-button:hover {
+        background: #e05a00 !important;
+        color: white !important;
+    }
+    .pre-reg-later {
+        background: none !important;
+        border: none !important;
+        color: #999 !important;
+        cursor: pointer !important;
+        padding: 8px !important;
+        display: inline-block !important;
+    }
+    .pre-reg-later:hover {
+        color: #FF6500 !important;
+    }
+    #preRegistrationModal {
+    z-index: 1055 !important;
+}
+.modal-backdrop {
+    z-index: 1050 !important;
+}
+.pre-reg-modal .btn-close {
+    background: transparent url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='%23000'%3e%3cpath d='M.293.293a1 1 0 011.414 0L8 6.586 14.293.293a1 1 0 111.414 1.414L9.414 8l6.293 6.293a1 1 0 01-1.414 1.414L8 9.414l-6.293 6.293a1 1 0 01-1.414-1.414L6.586 8 .293 1.707a1 1 0 010-1.414z'/%3e%3c/svg%3e") center/1em no-repeat;
+}
+#preRegistrationModal .modal-content {
+    pointer-events: all !important;
+}
+#preRegistrationModal .btn-close {
+    z-index: 1060 !important;
+    position: relative !important;
+}
+.pre-reg-button {
+    pointer-events: all !important;
+    z-index: 1060 !important;
+    position: relative !important;
+}
+</style>
+@endsection
+
  @section('content')
- <!-- Hero Section -->
-      <section class="hero-section text-white min-h-screen flex items-center relative">
-         
-          <div class="container mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
-              <div class="max-w-5xl mx-auto">
-                  <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
-                      <!-- Left Column: Text Content -->
-                      <div>
-                          <!-- Sub Heading -->
-                          <div class="mb-6">
-                              <span class="inline-block px-4 py-2 rounded-full font-semibold text-sm tracking-wider uppercase"
-                                    style="background: rgba(255, 255, 255, 0.15); backdrop-filter: blur(10px); border: 1px solid rgba(255, 255, 255, 0.2);">
-                                  <i class="fas fa-code mr-2" style="color: #ffd500;"></i>
-                                  Learn to Code
-                              </span>
-                          </div>
-                          
-                          <!-- Main Heading -->
-                          <h1 class="text-4xl md:text-5xl lg:text-5xl font-bold mb-6 leading-tight">
-                              Empowering Future Innovators,
-                              <span class="block mt-2" style="color: #ffd500;">One Dot at a Time</span>
-                          </h1>
-                          
-                          <!-- Paragraph -->
-                          <p class="text-xl mb-8 opacity-90 max-w-2xl">
-                              Ages from 9 to above
-                          </p>
-                          
-                          
-                          <!-- CTA Buttons -->
-                          <div class="flex flex-wrap gap-4 mb-12">
-                              <button class="cta-button px-8 py-4 rounded-xl font-bold text-lg text-gray-900">
-                                  Enroll Now
-                                  <i class="fas fa-arrow-right ml-2"></i>
-                              </button>
-                              <button class="px-8 py-4 rounded-xl font-bold text-lg border-2 border-white hover:bg-white hover:text-[#073a89] transition-all duration-300">
-                                  Request a Demo
-                              </button>
-                          </div>
-                      </div>
-                      
-                      <!-- Right Column: Illustration/Image -->
-                      <div class="relative">
-                          <div class="relative">
-                              <!-- Main Illustration Container -->
-                              <div class="relative bg-gradient-to-br from-[#0091b9] to-[#073a89] rounded-3xl p-8 shadow-2xl">
-                                  <!-- Floating Code Elements -->
-                                  <div class="absolute -top-4 -left-4 w-20 h-20 bg-[#ff6500] rounded-2xl flex items-center justify-center transform -rotate-12">
-                                      <i class="fas fa-laptop-code text-3xl text-white"></i>
-                                  </div>
-                                  <div class="absolute -bottom-4 -right-4 w-16 h-16 bg-[#ffd500] rounded-2xl flex items-center justify-center transform rotate-12">
-                                      <i class="fas fa-robot text-2xl text-gray-900"></i>
-                                  </div>
-                                  
-                                  <!-- Hero Image Placeholder -->
-                                  <div class="bg-gradient-to-b from-transparent to-white/10 rounded-2xl overflow-hidden">
-                                      <div class="aspect-video bg-gradient-to-r from-[#bae4f0] to-[#0091b9] rounded-2xl flex items-center justify-center">
-                                          <!-- You can replace this with your actual image -->
-                                          <div class="text-center p-8">
-                                              <div class="text-6xl mb-4" style="color: #073a89;">
-                                                  { }
-                                              </div>
-                                              <h3 class="text-2xl font-bold mb-2">Interactive Learning</h3>
-                                              <p class="opacity-80">From beginner to advanced levels</p>
-                                          </div>
-                                      </div>
-                                  </div>
-                                  
-                                  <!-- Floating Badge -->
-                                  <div class="absolute -bottom-6 left-1/2 transform -translate-x-1/2 bg-white text-gray-900 px-6 py-3 rounded-full font-bold shadow-lg" style="font-size:12px">
-                                      <i class="fas fa-medal mr-2" style="color: #ff6500;"></i>
-                                      Recommended by Educators
-                                  </div>
-                              </div>
-                          </div>
-                          
-                          <!-- Floating Elements Around -->
-                          <div class="absolute -z-10 top-10 -right-10 w-40 h-40 bg-gradient-to-r from-[#ff6500] to-[#ffd500] rounded-full opacity-20 blur-3xl"></div>
-                          <div class="absolute -z-10 bottom-10 -left-10 w-60 h-60 bg-gradient-to-r from-[#0091b9] to-[#073a89] rounded-full opacity-10 blur-3xl"></div>
-                      </div>
-                  </div>
-              </div>
-          </div>
-      </section>
-      <!-- Career Focused Learning Section -->
-      <section class="py-16 md:py-24 bg-white">
-          <div class="container mx-auto px-4 sm:px-6 lg:px-8">
-              <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
-                  <!-- Left Column: Image -->
-                  <div class="order-2 lg:order-1">
-                      <div class="relative">
-                          <!-- Main Image Container -->
-                          <div class="rounded-3xl overflow-hidden shadow-2xl">
-                              <div class="aspect-[4/3] bg-gradient-to-br from-[#bae4f0] to-[#0091b9] flex items-center justify-center">
-                                  <!-- Replace with your actual image -->
-                                  <div class="text-center p-8">
-                                      <div class="text-5xl mb-4" style="color: #073a89;">
-                                          <i class="fas fa-graduation-cap"></i>
-                                      </div>
-                                      <h3 class="text-xl font-bold mb-2" style="color: #073a89;">Career Ready Skills</h3>
-                                      <p class="opacity-80" style="color: #073a89;">From Classroom to Career</p>
-                                  </div>
-                              </div>
-                          </div>
-                      </div>
-                  </div>
-                  
-                  <!-- Right Column: Content -->
-                  <div class="order-1 lg:order-2">
-                      <!-- Sub Title -->
-                      <div class="mb-4">
-                          <span class="inline-flex items-center px-4 py-2 rounded-full font-semibold text-sm tracking-wider uppercase"
-                                style="background-color: #bae4f0; color: #073a89;">
-                              <i class="fas fa-user-graduate mr-2"></i>
-                              AGES 9 TO ABOVE
-                          </span>
-                      </div>
-                      
-                      <!-- Title -->
-                      <h2 class="text-3xl md:text-4xl lg:text-5xl font-bold mb-6 leading-tight" style="color: #073a89;">
-                          Career Focused Learning,
-                          <span class="block" style="color: #ff6500;">Not Just Coding</span>
-                      </h2>
-                      
-                      <!-- Paragraph -->
-                      <div class="space-y-4 mb-8">
-                          <p class="text-lg" style="color: #1d1d1d;">
-                              We go beyond teaching code. Starting from age 9, our students follow a structured learning path designed to build real career readiness.
-                          </p>
-                          <p class="text-lg" style="color: #1d1d1d;">
-                              With long-term mentorship, hands-on projects, and a focus on teamwork, communication, and professionalism, we prepare young learners with the skills they need for real-world success.
-                          </p>
-                      </div>
-                      
-                      <!-- Key Points -->
-                      <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-10">
-                          <div class="flex items-start space-x-3">
-                              <div class="w-10 h-10 rounded-lg flex items-center justify-center flex-shrink-0" style="background-color: #bae4f0;">
-                                  <i class="fas fa-hands-helping" style="color: #0091b9;"></i>
-                              </div>
-                              <div>
-                                  <h4 class="font-bold mb-1" style="color: #073a89;">Mentorship</h4>
-                                  <p class="text-sm" style="color: #1d1d1d;">Long-term guidance</p>
-                              </div>
-                          </div>
-                          
-                          <div class="flex items-start space-x-3">
-                              <div class="w-10 h-10 rounded-lg flex items-center justify-center flex-shrink-0" style="background-color: #bae4f0;">
-                                  <i class="fas fa-project-diagram" style="color: #0091b9;"></i>
-                              </div>
-                              <div>
-                                  <h4 class="font-bold mb-1" style="color: #073a89;">Real Projects</h4>
-                                  <p class="text-sm" style="color: #1d1d1d;">Hands-on experience</p>
-                              </div>
-                          </div>
-                          
-                          <div class="flex items-start space-x-3">
-                              <div class="w-10 h-10 rounded-lg flex items-center justify-center flex-shrink-0" style="background-color: #bae4f0;">
-                                  <i class="fas fa-users" style="color: #0091b9;"></i>
-                              </div>
-                              <div>
-                                  <h4 class="font-bold mb-1" style="color: #073a89;">Teamwork</h4>
-                                  <p class="text-sm" style="color: #1d1d1d;">Collaborative learning</p>
-                              </div>
-                          </div>
-                          
-                          <div class="flex items-start space-x-3">
-                              <div class="w-10 h-10 rounded-lg flex items-center justify-center flex-shrink-0" style="background-color: #bae4f0;">
-                                  <i class="fas fa-comments" style="color: #0091b9;"></i>
-                              </div>
-                              <div>
-                                  <h4 class="font-bold mb-1" style="color: #073a89;">Communication</h4>
-                                  <p class="text-sm" style="color: #1d1d1d;">Professional skills</p>
-                              </div>
-                          </div>
-                      </div>
-                      
-                      <!-- Enroll Now Button -->
-                      <button class="px-8 py-4 rounded-xl font-bold text-lg text-white transition-all duration-300 hover:transform hover:-translate-y-1"
-                              style="background: #FF6500; box-shadow: 0 10px 25px rgba(255, 101, 0, 0.3);">
-                          <i class="fas fa-user-plus mr-2 text-white"></i>
-                          Enroll Now
-                      </button>
-                  </div>
-              </div>
-          </div>
-      </section>
-      <!-- Courses Slider Section -->
-      <section class="py-16 md:py-24 bg-gray-50">
-          <div class="container mx-auto px-4 sm:px-6 lg:px-8">
-              <!-- Section Header -->
-              <div class="text-center mb-12">
-                  <h2 class="text-3xl md:text-4xl font-bold mb-4" style="color: #073a89;">Learning Pathways</h2>
-                  <p class="text-lg max-w-2xl mx-auto" style="color: #1d1d1d;">Structured programs designed for different age groups and skill levels</p>
-              </div>
-              
-              <!-- Slider Container -->
-              <div class="relative">
-                  <!-- Slider Cards -->
-                  <div class="grid grid-cols-1 md:grid-cols-3 gap-8" id="sliderContainer">
-                      <!-- DotStart Card -->
-                      <div class="bg-white rounded-3xl shadow-xl overflow-hidden transition-all duration-300 hover:shadow-2xl hover:-translate-y-2">
-                          <!-- Course Image -->
-                          <div class="relative h-56 overflow-hidden">
-                              <img src="https://images.unsplash.com/photo-1523580494863-6f3031224c94?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80" 
-                                  alt="Kids learning coding" 
-                                  class="w-full h-full object-cover">
-                              <!-- Level Badge -->
-                              <div class="absolute top-4 left-4">
-                                  <span class="inline-block px-4 py-2 rounded-full text-sm font-semibold text-white" 
-                                        style="background: rgba(7, 58, 137, 0.9);">
-                                      <i class="fas fa-star mr-2"></i>
-                                      Beginner
-                                  </span>
-                              </div>
-                          </div>
-                          
-                          <!-- Card Content -->
-                          <div class="p-8">
-                              <!-- Course Name (Moved here from image section) -->
-                              <div class="mb-4">
-                                  <h3 class="text-2xl font-bold" style="color: #073a89;">DotStart</h3>
-                                  <h4 class="text-xl" style="color: #0091b9;">Code Foundations</h4>
-                              </div>
-                              
-                              <!-- Paragraph -->
-                              <p class="text-gray-700 mb-6">
-                                  Builds a strong foundation in computers and technology essential for today's education. 
-                                  Prepares students for advanced programming and future career pathways.
-                              </p>
-                              
-                              <!-- Age and Button in Same Row -->
-                              <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mt-8">
-                                  <!-- Age Section -->
-                                  <div class="flex-1">
-                                      <div class="flex items-center p-3 rounded-lg" style="background-color: #bae4f0; font-size:11px">
-                                          <div>
-                                              <p class="font-bold" style="color: #073a89;">Age: 9-12 Yrs</p>
-                                              
-                                          </div>
-                                      </div>
-                                  </div>
-                                  
-                                  <!-- Book Assessment Button -->
-                                  <button class="px-6 py-3 rounded-xl font-bold text-white whitespace-nowrap transition-all duration-300 hover:transform hover:-translate-y-1"
-                                          style="background: #FF6500">
-                                      <i class="fas fa-calendar-check mr-2"></i>
-                                      Book Assessment
-                                  </button>
-                              </div>
-                          </div>
-                      </div>
-                      
-                      <!-- DotGrow Card -->
-                      <div class="bg-white rounded-3xl shadow-xl overflow-hidden transition-all duration-300 hover:shadow-2xl hover:-translate-y-2">
-                          <!-- Course Image -->
-                          <div class="relative h-56 overflow-hidden">
-                              <img src="https://images.unsplash.com/photo-1529107386315-e1a2ed48a620?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80" 
-                                  alt="Web development" 
-                                  class="w-full h-full object-cover">
-                              <!-- Level Badge -->
-                              <div class="absolute top-4 left-4">
-                                  <span class="inline-block px-4 py-2 rounded-full text-sm font-semibold text-white" 
-                                        style="background: rgba(0, 145, 185, 0.9);">
-                                      <i class="fas fa-chart-line mr-2"></i>
-                                      Intermediate
-                                  </span>
-                              </div>
-                          </div>
-                          
-                          <!-- Card Content -->
-                          <div class="p-8">
-                              <!-- Course Name (Moved here from image section) -->
-                              <div class="mb-4">
-                                  <h3 class="text-2xl font-bold" style="color: #073a89;">DotGrow</h3>
-                                  <h4 class="text-xl" style="color: #0091b9;">Junior Developer Track</h4>
-                              </div>
-                              
-                              <!-- Paragraph -->
-                              <p class="text-gray-700 mb-6">
-                                  Advances web development skills with real-world coding practices. 
-                                  Builds confidence through teamwork and collaborative projects. 
-                                  Develops a growth mindset for future academic and professional success.
-                              </p>
-                              
-                               <!-- Age and Button in Same Row -->
-                              <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mt-8">
-                                  <!-- Age Section -->
-                                  <div class="flex-1">
-                                      <div class="flex items-center p-3 rounded-lg" style="background-color: #bae4f0; font-size:11px">
-                                          <div>
-                                              <p class="font-bold" style="color: #073a89;">Age: 11-24 Yrs</p>
-                                              
-                                          </div>
-                                      </div>
-                                  </div>
-                                  
-                                  <!-- Book Assessment Button -->
-                                  <button class="px-6 py-3 rounded-xl font-bold text-white whitespace-nowrap transition-all duration-300 hover:transform hover:-translate-y-1"
-                                          style="background: #FF6500">
-                                      <i class="fas fa-calendar-check mr-2"></i>
-                                      Book Assessment
-                                  </button>
-                              </div>
-                          </div>
-                      </div>
-                      
-                      <!-- DotBuild Card -->
-                      <div class="bg-white rounded-3xl shadow-xl overflow-hidden transition-all duration-300 hover:shadow-2xl hover:-translate-y-2">
-                          <!-- Course Image -->
-                          <div class="relative h-56 overflow-hidden">
-                              <img src="https://images.unsplash.com/photo-1555066931-4365d14bab8c?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80" 
-                                  alt="Software development" 
-                                  class="w-full h-full object-cover">
-                              <!-- Level Badge -->
-                              <div class="absolute top-4 left-4">
-                                  <span class="inline-block px-4 py-2 rounded-full text-sm font-semibold text-white" 
-                                        style="background: rgba(7, 58, 137, 0.9);">
-                                      <i class="fas fa-rocket mr-2"></i>
-                                      Advanced
-                                  </span>
-                              </div>
-                          </div>
-                          
-                          <!-- Card Content -->
-                          <div class="p-8">
-                              <!-- Course Name (Moved here from image section) -->
-                              <div class="mb-4">
-                                  <h3 class="text-2xl font-bold" style="color: #073a89;">DotBuild</h3>
-                                  <h4 class="text-xl" style="color: #0091b9;">Software Builder Level</h4>
-                              </div>
-                              
-                              <!-- Paragraph -->
-                              <p class="text-gray-700 mb-6">
-                                  Teaches object-oriented programming for real-world application. 
-                                  Prepares students for advanced software development and professional opportunities.
-                              </p>
-                              
-                               <!-- Age and Button in Same Row -->
-                              <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mt-8">
-                                  <!-- Age Section -->
-                                  <div class="flex-1">
-                                      <div class="flex items-center p-3 rounded-lg" style="background-color: #bae4f0; font-size:11px">
-                                          <div>
-                                              <p class="font-bold" style="color: #073a89;">Age: 13-35 Yrs</p>
-                                              
-                                          </div>
-                                      </div>
-                                  </div>
-                                  
-                                  <!-- Book Assessment Button -->
-                                  <button class="px-6 py-3 rounded-xl font-bold text-white whitespace-nowrap transition-all duration-300 hover:transform hover:-translate-y-1"
-                                          style="background: #FF6500">
-                                      <i class="fas fa-calendar-check mr-2"></i>
-                                      Book Assessment
-                                  </button>
-                              </div>
-                          </div>
-                      </div>
-                  </div>
-                  
-                  <!-- Slider Navigation (for mobile) -->
-                  <div class="flex justify-center mt-8 md:hidden">
-                      <div class="flex space-x-3">
-                          <button class="slider-dot w-3 h-3 rounded-full" style="background-color: #0091b9;"></button>
-                          <button class="slider-dot w-3 h-3 rounded-full" style="background-color: #bae4f0;"></button>
-                          <button class="slider-dot w-3 h-3 rounded-full" style="background-color: #0091b9;"></button>
-                      </div>
-                  </div>
-                  
-                  <!-- Slider Arrows (for desktop) -->
-                  <div class="hidden md:block">
-                      <button class="absolute top-1/2 left-0 transform -translate-y-1/2 -translate-x-4 bg-[#0091B9] w-12 h-12 rounded-full shadow-lg flex items-center justify-center hover:shadow-xl transition-all duration-300 hover:-translate-x-5"
-                              onclick="scrollSlider(-1)" style="color: white;">
-                          <i class="fas fa-chevron-left"></i>
-                      </button>
-                      <button class="absolute top-1/2 right-0 transform -translate-y-1/2 translate-x-4 bg-[#0091B9] w-12 h-12 rounded-full shadow-lg flex items-center justify-center hover:shadow-xl transition-all duration-300 hover:translate-x-5"
-                              onclick="scrollSlider(1)" style="color: white;">
-                          <i class="fas fa-chevron-right"></i>
-                      </button>
-                  </div>
-              </div>
-          </div>
-      </section>
-
-      <script>
-          let currentSlide = 0;
-          const slides = document.querySelectorAll('#sliderContainer > div');
-          const totalSlides = slides.length;
-          
-          function scrollSlider(direction) {
-              currentSlide += direction;
-              
-              if (currentSlide < 0) {
-                  currentSlide = totalSlides - 1;
-              } else if (currentSlide >= totalSlides) {
-                  currentSlide = 0;
-              }
-              
-              // For mobile: Scroll to slide
-              if (window.innerWidth < 768) {
-                  slides[currentSlide].scrollIntoView({
-                      behavior: 'smooth',
-                      block: 'nearest',
-                      inline: 'center'
-                  });
-              }
-              
-              updateSliderDots();
-          }
-          
-          function updateSliderDots() {
-              const dots = document.querySelectorAll('.slider-dot');
-              dots.forEach((dot, index) => {
-                  if (index === currentSlide) {
-                      dot.style.backgroundColor = '#0091b9';
-                      dot.style.transform = 'scale(1.2)';
-                  } else {
-                      dot.style.backgroundColor = '#bae4f0';
-                      dot.style.transform = 'scale(1)';
-                  }
-              });
-          }
-          
-          // Auto-slide for mobile
-          if (window.innerWidth < 768) {
-              setInterval(() => {
-                  scrollSlider(1);
-              }, 5000);
-          }
-          
-          // Initialize dots
-          updateSliderDots();
-          
-          // Update on window resize
-          window.addEventListener('resize', () => {
-              if (window.innerWidth >= 768) {
-                  currentSlide = 0;
-                  updateSliderDots();
-              }
-          });
-      </script>
-      <!-- Core Values Section - Exact Image Design -->
-      <section class="py-16 md:py-24 bg-white">
-          <div class="container mx-auto px-4 sm:px-6 lg:px-8">
-              <!-- Top Content Section -->
-              <div class=" mb-12">
-                  <!-- Small Subheading -->
-                  <p class="text-lg font-bold tracking-wider uppercase text-[#FF6500]" style="">
-                      Our Core Value
+ 
+<!-- Pre Registration Modal - Only show if seats are available -->
+@if($remainingSeats > 0)
+<div class="modal fade pre-reg-modal" id="preRegistrationModal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body text-center">
+                <!-- <div class="pre-reg-popup-icon">
+                  <i class="fas fa-graduation-cap"></i>
+                </div> -->
+                
+                <h3>Limited Seats Available!</h3>
+                
+                <p>Secure your spot before it's too late. Pre-register now to get early access and exclusive benefits.</p>
+                
+                <div class="pre-reg-seat-info">
+                    <span class="seat-number">Only {{ $remainingSeats }} Seats Remaining</span>
+                    <span class="seat-text">out of {{ $totalSeats }} total seats</span>
+                    <div class="progress seat-progress">
+                        @php
+                            $percentage = (($totalSeats - $remainingSeats) / $totalSeats) * 100;
+                        @endphp
+                        <div class="progress-bar" style="width: {{ $percentage }}%"></div>
+                    </div>
+                </div>
+                
+                <p>⭐ Limited seats available for our upcoming session!<br>Pre-register now to get early bird benefits and guaranteed admission.</p>
+                
+                <!-- ✅ SIMPLE BUTTON - Direct link -->
+                <a href="{{ route('user.pre-registration') }}" class="pre-reg-button">
+                    Pre-Register Now
+                    <!-- <i class="fas fa-arrow-right"></i> -->
+                </a>
+                
+                <button type="button" class="pre-reg-later" data-bs-dismiss="modal">
+                    Maybe Later
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+@endif
+ <!-- hero area -->
+      <div class="hero-section hs-1">
+        <div class="hero-single" style="background-image: url({{asset('assets/images/01.png')}})">
+          <div class="container">
+            <div class="row">
+              <div class="col-md-12 col-lg-6">
+                <div class="hero-content">
+                  <h6 class="hero-sub-title wow fadeInUp" data-delay=".25s" style="color:#FF6500"><i class="far fa-lightbulb-on"></i> Learn to Code</h6>
+                  <h1 class="hero-title wow fadeInRight" data-delay=".50s">Empowering Future <span class="" style="color:#FF6500">Innovators,</span> One Dot at a Time</h1>
+                  <p class="wow fadeInLeft" data-delay=".75s">
+                    Project-based coding courses — from game design to AI.
                   </p>
-                  
-                  <!-- Main Large Heading -->
-                  <h2 class="text-4xl md:text-5xl font-bold mb-3" style="color: #073a89;">
-                      LEARN, BUILD, GROW
+                  <div class="hero-btn wow fadeInUp" data-delay="1s">
+                    <a href="{{route('user.about')}}" class="theme-btn" style="background: #FECE09 !important;color:#063989">About More<i class="fas fa-arrow-right"></i></a>
+                    <a href="https://portal.dotbitz.com/student/registration" target="_blank" class="theme-btn2" style="background: #FECE09 !important;color:#063989">Register Now<i class="fas fa-arrow-right"></i></a>
+                  </div>
+                </div>
+              </div>
+              <div class="col-md-12 col-lg-6">
+                <div class="hero-info-wrap">
+                  <div class="hero-avatar-group">
+                    <!--<h6><span>250k +</span> Students</h6>-->
+                    <!--<span class="avatar"><img src="{{asset('assets/images/01.jpg')}}" alt="" /></span>-->
+                    <!--<span class="avatar"><img src="{{asset('assets/images/02.jpg')}}" alt="" /></span>-->
+                    <!--<span class="avatar"><img src="{{asset('assets/images/03.jpg')}}" alt="" /></span>-->
+                    <!--<span class="avatar"><img src="{{asset('assets/images/04.jpg')}}" alt="" /></span>-->
+                    <!--<span class="avatar"><img src="{{asset('assets/images/05.jpg')}}" alt="" /></span>-->
+                  </div>
+                  <!--<div class="hero-course-info">-->
+                  <!--  <div class="icon">-->
+                  <!--    <img src="{{asset('assets/images/course.svg')}}" alt="" />-->
+                  <!--  </div>-->
+                    <!--<h6 class="title"><span>160+</span> Courses</h6>-->
+                  <!--</div>-->
+                </div>
+                <div class="hero-img">
+                  <img class="img-1" src="{{asset('assets/images/hero.png')}}" alt="" />
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <!-- hero area end -->
+      <!-- partner area -->
+      <!--<div class="partner-area2 negative">-->
+      <!--  <div class="col-lg-10 col-xl-9 ms-auto">-->
+      <!--    <div class="partner-wrapper">-->
+      <!--      <div class="row g-4 align-items-center">-->
+      <!--        <div class="col-lg-2">-->
+      <!--          <div class="partner-title">-->
+      <!--            <h5>Let's check our <span>350+</span> partners</h5>-->
+      <!--          </div>-->
+      <!--        </div>-->
+      <!--        <div class="col-lg-10">-->
+      <!--          <div class="partner-slider owl-carousel owl-theme">-->
+      <!--            <img src="{{asset('assets/images/partner/01.png')}}" alt="thumb" />-->
+      <!--            <img src="{{asset('assets/images/partner/02.png')}}" alt="thumb" />-->
+      <!--            <img src="{{asset('assets/images/partner/03.png')}}" alt="thumb" />-->
+      <!--            <img src="{{asset('assets/images/partner/04.png')}}" alt="thumb" />-->
+      <!--            <img src="{{asset('assets/images/partner/05.png')}}" alt="thumb" />-->
+      <!--            <img src="{{asset('assets/images/partner/06.png')}}" alt="thumb" />-->
+      <!--            <img src="{{asset('assets/images/partner/07.png')}}" alt="thumb" />-->
+      <!--          </div>-->
+      <!--        </div>-->
+      <!--      </div>-->
+      <!--    </div>-->
+      <!--  </div>-->
+      <!--</div>-->
+       <!-- partner area end -->
+       <!-- about area -->
+      <div class="about-area padding">
+        <div class="container">
+          <div class="row">
+            <div class="col-lg-6">
+              <div class="about-left wow fadeInLeft" data-wow-delay=".25s">
+                <div class="about-img">
+                  <div class="row g-0">
+                    <div class="col-6">
+                      <img class="img-1" src="{{asset('assets/images/kids1.png')}}" alt="" />
+                    </div>
+                    <div class="col-6">
+                      <img class="img-2" src="{{asset('assets/images/about2.jpg')}}" alt="" />
+                    </div>
+                  </div>
+                </div>
+                <div class="about-experience" >
+                  <h5 style="color:#063989">10<span>+</span></h5>
+                  <p style="color:#063989">Years Of Experience</p>
+                </div>
+              </div>
+            </div>
+            <div class="col-lg-6">
+              <div class="about-right wow fadeInUp" data-wow-delay=".25s">
+                <div class="site-heading mb-3">
+                  <span class="site-title-tagline"><i class="far fa-lightbulb-on"></i> About Us</span>
+                  <h2 class="site-title">Career Focused Learning, <span class="text-gradient">Not Just Coding</span></h2>
+                </div>
+                <p class="about-text">
+                  We go beyond teaching code. Starting from age 9, our students follow a structured learning path designed to build real career readiness. <br>
+                  With long-term mentorship, hands-on projects, and a focus on teamwork, communication, and professionalism, we prepare young learners with the skills they need for real-world success.
+                </p>
+                <div class="about-content">
+                  <div class="row g-3">
+                    <div class="col-md-6">
+                      <div class="about-item">
+                        <div class="icon">
+                          <img src="{{asset('assets/images/learn.svg')}}" alt="" />
+                        </div>
+                        <div class="content">
+                          <h6>Mentorship</h6>
+                          <p>Take a look at our up of the round shows</p>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="col-md-6">
+                      <div class="about-item">
+                        <div class="icon">
+                          <img src="{{asset('assets/images/support.svg')}}" alt="" />
+                        </div>
+                        <div class="content">
+                          <h6>Real Projects</h6>
+                          <p>Take a look at our up of the round shows</p>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <a href="{{ route('user.about') }}" class="theme-btn" style="background: #FF6500 !important">Discover More<i class="fas fa-arrow-right"></i></a>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <!-- about area end -->
+      <!-- category area -->
+      <div class="category-area padding">
+        <div class="container">
+          <div class="row">
+            <div class="col-lg-7 mx-auto">
+              <div class="site-heading text-center wow fadeInDown" data-wow-delay=".25s">
+                <span class="site-title-tagline"><i class="far fa-lightbulb-on"></i> Our Category</span>
+                <h2 class="site-title">Let's check our <span class="text-gradient">category</span></h2>
+              </div>
+            </div>
+          </div>
+          <div class="row g-4 justify-content-center wow fadeInUp" data-wow-delay=".25s">
+            <div class="col-6 col-md-4 col-lg-3 col-xl-2">
+              <a href="course-category-single.html" class="category-item">
+                <div class="content">
+                  <div class="icon">
+                    <img src="{{asset('assets/images/icons/development.svg')}}" alt="" />
+                  </div>
+                  <div class="info">
+                    <h6>Development</h6>
+                    <p>150 Courses</p>
+                  </div>
+                </div>
+              </a>
+            </div>
+            <div class="col-6 col-md-4 col-lg-3 col-xl-2">
+              <a href="course-category-single.html" class="category-item">
+                <div class="content">
+                  <div class="icon">
+                    <img src="{{asset('assets/images/icons/marketing.svg')}}" alt="" />
+                  </div>
+                  <div class="info">
+                    <h6>Digital Marketing</h6>
+                    <p>45 Courses</p>
+                  </div>
+                </div>
+              </a>
+            </div>
+            <div class="col-6 col-md-4 col-lg-3 col-xl-2">
+              <a href="course-category-single.html" class="category-item">
+                <div class="content">
+                  <div class="icon">
+                    <img src="{{asset('assets/images/icons/design.svg')}}" alt="" />
+                  </div>
+                  <div class="info">
+                    <h6>Design</h6>
+                    <p>60 Courses</p>
+                  </div>
+                </div>
+              </a>
+            </div>
+            <div class="col-6 col-md-4 col-lg-3 col-xl-2">
+              <a href="course-category-single.html" class="category-item">
+                <div class="content">
+                  <div class="icon">
+                    <img src="{{asset('assets/images/icons/office.svg')}}" alt="" />
+                  </div>
+                  <div class="info">
+                    <h6>Artificial Intelligence</h6>
+                    <p>36 Courses</p>
+                  </div>
+                </div>
+              </a>
+            </div>
+            <div class="col-6 col-md-4 col-lg-3 col-xl-2">
+              <a href="course-category-single.html" class="category-item">
+                <div class="content">
+                  <div class="icon">
+                    <img src="{{asset('assets/images/icons/health.svg')}}" alt="" />
+                  </div>
+                  <div class="info">
+                    <h6>Mobile App Development</h6>
+                    <p>59 Courses</p>
+                  </div>
+                </div>
+              </a>
+            </div>
+            <div class="col-6 col-md-4 col-lg-3 col-xl-2">
+              <a href="course-category-single.html" class="category-item">
+                <div class="content">
+                  <div class="icon">
+                    <img src="{{asset('assets/images/icons/lifestyle.svg')}}" alt="" />
+                  </div>
+                  <div class="info">
+                    <h6>Machine Learning</h6>
+                    <p>65 Courses</p>
+                  </div>
+                </div>
+              </a>
+            </div>
+          </div>
+          <div class="col-12 text-center">
+            <a href="course-category.html" class="theme-btn mt-5"><span class="fad fa-rotate"></span> All Category</a>
+          </div>
+        </div>
+      </div>
+      <!-- category area end -->
+       <!-- course area -->
+      <div class="course-area bg-img padding">
+        <div class="container">
+          <div class="row">
+            <div class="col-lg-7 mx-auto">
+              <div class="site-heading text-center wow fadeInDown" data-wow-delay=".25s">
+                <span class="site-title-tagline"><i class="far fa-lightbulb-on"></i> Our Courses</span>
+                <h2 class="site-title">Our Most Popular <span class="text-gradient">Courses</span></h2>
+              </div>
+            </div>
+          </div>
+          <div class="course-slider owl-carousel owl-theme wow fadeInUp" data-wow-delay=".25s">
+            @foreach($courses as $index => $course)
+            <div class="course-item">
+              <span class="course-tag c1">{{$course->course_level}}</span>
+              <div class="course-img">
+                <a href="{{ route('user.course.details', $course->slug) }}"><img src="{{asset('assets/images/courses/' . $course->thumbnail_image)}}" alt="" /></a>
+              </div>
+              <div class="course-content">
+                {{-- <div class="course-meta">
+                  <span class="category c1">Development</span>
+                  <div class="rating">
+                    <i class="fas fa-star"></i>
+                    <span>3.5k</span>
+                  </div>
+                </div> --}}
+                <h4 class="course-title" style="height:45px"><a href="{{ route('user.course.details', $course->slug) }}">{{$course->course_name}}</a></h4>
+                <div class="course-info">
+                  <p style="
+  overflow: hidden;
+  text-overflow: ellipsis;display: -webkit-box;
+   -webkit-line-clamp: 5;
+   -webkit-box-orient: vertical;">{{$course->short_description}}</p>
+                </div>
+                <div class="course-bottom">
+                  <!--<a href="{{route('user.book-assessment',$course->id)}}" class="" data-course-id="{{ $course->id }}"-->
+                  <!--                      data-course-name="{{ $course->course_name }}">-->
+                  <!--  <div class="course-instructor">-->
+
+                  <!--    <h6>Book Free Assessment</h6>-->
+                  <!--  </div>-->
+                  <!--</a>-->
+                  <a href="{{route('user.book-assessment',$course->id)}}" class="theme-btn" style="background: #FECE09 !important;color:#063989;padding: 5px 10px;font-size: 14px;">Book Free Assessment</a>
+                  <div class="course-price">
+
+                    <span style="font-size: 14px;">Age: {{$course->age_limit}}</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+            @endforeach
+          </div>
+        </div>
+      </div>
+      <!-- course area end -->
+      <!-- choose area -->
+      <div class="choose-area padding">
+        <div class="container">
+          <div class="row g-4">
+            <div class="col-lg-5">
+              <div class="choose-content wow fadeInLeft" data-wow-delay=".25s">
+                <div class="site-heading mb-0">
+                  <span class="site-title-tagline"><i class="far fa-lightbulb-on"></i> Why Choose Us</span>
+                  <h2 class="site-title">Learn. <span class="text-gradient">Build. </span> Grow</h2>
+                  <p>
+                    We make learning to code creative, practical, and career-ready. Here's how we bring it to life
+                  </p>
+                  <div class="choose-img">
+                    <img src="{{asset('assets/images/kids3.jpg')}}" alt="" />
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="col-lg-7">
+              <div class="row g-4 wow fadeInRight" data-wow-delay=".25s">
+                <div class="col-lg-6">
+                  <div class="choose-item">
+
+                    <div class="info">
+                      <h5>01- Personalized Learning</h5>
+                      <p>We assess each student's age, interests, and skill level to create a customized, age-appropriate learning path.</p>
+                    </div>
+                  </div>
+                </div>
+                <div class="col-lg-6">
+                  <div class="choose-item">
+
+                    <div class="info">
+                      <h5>02- Skill Growth & Career Readiness</h5>
+                      <p>We focus on building both technical and professional skills, preparing students for future education and tech careers.</p>
+                    </div>
+                  </div>
+                </div>
+                <div class="col-lg-6">
+                  <div class="choose-item">
+
+                    <div class="info">
+                      <h5>03- Active, Hands-on Experience</h5>
+                      <p>Students learn through interactive live sessions, hands-on projects, and real-world challenges, making coding fun and practical.</p>
+                    </div>
+                  </div>
+                </div>
+                <div class="col-lg-6">
+                  <div class="choose-item">
+
+                    <div class="info">
+                      <h5>04- Safe and Supportive Environment</h5>
+                      <p>Our programs provide a mentorship-driven, structured, and supportive space where students can explore, ask questions, and grow confidently.</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <!-- choose area end -->
+      <!-- feature-area -->
+      <div class="feature-area padding">
+        <div class="container">
+          <div class="feature-wrap">
+            <div class="row g-4">
+              <div class="col-md-6 col-lg-4">
+                <div class="feature-item wow fadeInUp" data-wow-delay=".25s">
+                  <div class="feature-content">
+                    <span class="count">01</span>
+                    <div class="feature-icon">
+                      <img src="{{asset('assets/images/course-3.svg')}}" alt="" />
+                    </div>
+                    <div class="feature-info">
+                      <h4>25k Online Course</h4>
+                      <p>It is a long established fact that a reader will be distracted by the readable content layout.</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="col-md-6 col-lg-4">
+                <div class="feature-item wow fadeInUp" data-wow-delay=".35s">
+                  <div class="feature-content">
+                    <span class="count">02</span>
+                    <div class="feature-icon">
+                      <img src="{{asset('assets/images/instructor-3.svg')}}" alt="" />
+                    </div>
+                    <div class="feature-info">
+                      <h4>Expert Instructors</h4>
+                      <p>It is a long established fact that a reader will be distracted by the readable content layout.</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="col-md-6 col-lg-4">
+                <div class="feature-item wow fadeInUp" data-wow-delay=".45s">
+                  <div class="feature-content">
+                    <span class="count">03</span>
+                    <div class="feature-icon">
+                      <img src="{{asset('assets/images/lifetime-course.svg')}}" alt="" />
+                    </div>
+                    <div class="feature-info">
+                      <h4>Lifetime Access</h4>
+                      <p>It is a long established fact that a reader will be distracted by the readable content layout.</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <!-- feature-area end -->
+      <!-- process area -->
+      <div class="process-area padding">
+        <div class="container">
+          <div class="row">
+            <div class="col-lg-7 mx-auto">
+              <div class="site-heading text-center wow fadeInDown" data-wow-delay=".25s">
+                <span class="site-title-tagline"><i class="far fa-lightbulb-on"></i>Learning Progression</span>
+                <h2 class="site-title">What Makes <span class="text-gradient">DotBitz </span>Different</h2>
+              </div>
+            </div>
+          </div>
+          <div class="process-wrap wow fadeInUp" data-wow-delay=".25s">
+            <div class="row g-4">
+              <div class="col-md-6 col-xl-4">
+                <div class="process-item">
+                  <span class="count">01</span>
+
+                  <div class="content" style="height:330px">
+                    <h4>Our Junior Level</h4>
+                    <p>Our junior teams craft interactive and web-based projects like games, apps, and websites, using HTML, CSS, JavaScript and design. </p>
+                  </div>
+                </div>
+              </div>
+              <div class="col-md-6 col-xl-4">
+                <div class="process-item">
+                  <span class="count">02</span>
+
+                  <div class="content" style="height:330px">
+                    <h4>Our Mid Level</h4>
+                    <p>At the mid-level, students create complete applications with frontend and backend functionality, incorporating Python, Java, Git, REST APIs, and debugging techniques. They learn online collaboration, teamwork, and real-world development practices, preparing them for more complex projects.</p>
+                  </div>
+                </div>
+              </div>
+              <div class="col-md-6 col-xl-4">
+                <div class="process-item">
+                  <span class="count">03</span>
+
+                  <div class="content" style="height:330px">
+                    <h4>Our Senior Level</h4>
+                    <p>Senior learners tackle real-world and portfolio projects within professional teams. They master advanced programming languages, database integration, mobile-app development, game development, and agile workflows, while building portfolio projects that meet industry standards, making them fully prepared for internships, freelance work, or high-tech careers..</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <!-- process area end -->
+      <!-- faq area -->
+      <div class="faq-area padding">
+        <div class="container">
+          <div class="row">
+            <div class="col-lg-12">
+              <div class="faq-content wow fadeInUp" data-wow-delay=".25s">
+                <div class="site-heading mb-3">
+                  <span class="site-title-tagline"><i class="far fa-lightbulb-on"></i> Faq's</span>
+                  <h2 class="site-title my-3">General <span class="text-gradient">frequently</span> asked questions</h2>
+                </div>
+                <p class="mb-3">
+                 Got Questions? We’ve Got Answers
+                </p>
+
+              </div>
+            </div>
+            @foreach($faqs as $index => $faq)
+            <div class="col-lg-6">
+              <div class="accordion wow fadeInRight" data-wow-delay=".25s" id="accordionExample">
+
+                <div class="accordion-item">
+                  <h2 class="accordion-header" id="heading{{ $index + 1 }}">
+                    <button
+                      class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapse{{ $index + 1 }}" aria-expanded="false" aria-controls="collapse{{ $index + 1 }}"
+                    >
+                      <span><i class="far fa-question"></i></span> {{ $faq->question }}
+                    </button>
                   </h2>
-                  
-                  <!-- Subheading -->
-                  <p class="text-xl font-medium mb-3" style="color: #1d1d1d;">
-                      Coding Fun, Future Ready Tomorrow
-                  </p>
-                  
-                  <!-- Description -->
-                  <p class="text-lg" style="color: #1d1d1d;">
-                      We make learning to code creative, practical, and career-ready. Here's how we bring it to life:
-                  </p>
-              </div>
+                  <div
+                    id="collapse{{ $index + 1 }}"
+                    class="accordion-collapse collapse"
+                    aria-labelledby="heading{{ $index + 1 }}"
+                    data-bs-parent="#accordionExample"
+                  >
+                    <div class="accordion-body">
+                     {!! nl2br(e($faq->answer)) !!}
+                    </div>
+                  </div>
+                </div>
 
-              <!-- Values Grid -->
-              <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
-                  
-                  <!-- Value 1 -->
-                  <div class="flex items-start space-x-6 p-6 bg-white rounded-2xl border" style="border-color: #e5e7eb;">
-                      <!-- Number -->
-                      <div class="flex-shrink-0">
-                          <div class="w-16 h-16 rounded-2xl flex items-center justify-center text-2xl font-bold text-white bg-[#FF6500]"
-                              >
-                              01
-                          </div>
-                      </div>
-                      
-                      <!-- Content -->
-                      <div>
-                          <h3 class="text-xl font-bold mb-3" style="color: #073a89;">
-                              PERSONALIZED LEARNING
-                          </h3>
-                          <p class="text-gray-700" style="color: #1d1d1d;">
-                              We assess each student's age, interests, and skill level to create a customized, 
-                              age-appropriate learning path.
-                          </p>
-                      </div>
-                  </div>
-                  
-                  <!-- Value 2 -->
-                  <div class="flex items-start space-x-6 p-6 bg-white rounded-2xl border" style="border-color: #e5e7eb;">
-                      <!-- Number -->
-                      <div class="flex-shrink-0">
-                          <div class="w-16 h-16 rounded-2xl flex items-center justify-center text-2xl font-bold text-white bg-[#FF6500]">
-                              02
-                          </div>
-                      </div>
-                      
-                      <!-- Content -->
-                      <div>
-                          <h3 class="text-xl font-bold mb-3" style="color: #073a89;">
-                              SKILL GROWTH & CAREER READINESS
-                          </h3>
-                          <p class="text-gray-700" style="color: #1d1d1d;">
-                              We focus on building both technical and professional skills, preparing students 
-                              for future education and tech careers.
-                          </p>
-                      </div>
-                  </div>
-                  
-                  <!-- Value 3 -->
-                  <div class="flex items-start space-x-6 p-6 bg-white rounded-2xl border" style="border-color: #e5e7eb;">
-                      <!-- Number -->
-                      <div class="flex-shrink-0">
-                          <div class="w-16 h-16 rounded-2xl flex items-center justify-center text-2xl font-bold text-white bg-[#FF6500]">
-                              03
-                          </div>
-                      </div>
-                      
-                      <!-- Content -->
-                      <div>
-                          <h3 class="text-xl font-bold mb-3" style="color: #073a89;">
-                              ACTIVE, HANDS-ON EXPERIENCE
-                          </h3>
-                          <p class="text-gray-700" style="color: #1d1d1d;">
-                              Students learn through interactive live sessions, hands-on projects, and real-world 
-                              challenges, making coding fun and practical.
-                          </p>
-                      </div>
-                  </div>
-                  
-                  <!-- Value 4 -->
-                  <div class="flex items-start space-x-6 p-6 bg-white rounded-2xl border" style="border-color: #e5e7eb;">
-                      <!-- Number -->
-                      <div class="flex-shrink-0">
-                          <div class="w-16 h-16 rounded-2xl flex items-center justify-center text-2xl font-bold text-white bg-[#FF6500]">
-                              04
-                          </div>
-                      </div>
-                      
-                      <!-- Content -->
-                      <div>
-                          <h3 class="text-xl font-bold mb-3" style="color: #073a89;">
-                              SAFE & SUPPORTIVE ENVIRONMENT
-                          </h3>
-                          <p class="text-gray-700" style="color: #1d1d1d;">
-                              Our programs provide a mentorship-driven, structured, and supportive space where 
-                              students can explore, ask questions, and grow confidently.
-                          </p>
-                      </div>
-                  </div>
               </div>
+            </div>
+             @endforeach
+          </div>
+        </div>
+      </div>
+      <!-- faq area end -->
+      <!-- testimonial-area -->
+      <div class="testimonial-area ts-bg padding">
+        <div class="container">
+          <div class="row">
+            <div class="col-lg-7 mx-auto">
+              <div class="site-heading text-center wow fadeInDown" data-wow-delay=".25s">
+                <span class="site-title-tagline"><i class="far fa-lightbulb-on"></i> Testimonials</span>
+                <h2 class="site-title">What Our Client <span class="text-gradient">Say's About Us</span></h2>
+              </div>
+            </div>
+          </div>
+          <div class="testimonial-slider owl-carousel owl-theme wow fadeInUp" data-wow-delay=".25s">
+            <div class="testimonial-item">
+              <div class="content">
+                <div class="icon">
+                  <img src="assets/img/icon/quote.svg" alt="" />
+                </div>
+                <div class="rating">
+                  <i class="fas fa-star"></i>
+                  <i class="fas fa-star"></i>
+                  <i class="fas fa-star"></i>
+                  <i class="fas fa-star"></i>
+                  <i class="fas fa-star"></i>
+                </div>
+                <div class="quote">
+                  <p>
+                    There are many variations of passage available the majority have suffered of alteration of the some humour words look
+                    even slightly form by the injected to default model believable.
+                  </p>
+                </div>
+                <div class="author">
+                  <div class="author-img">
+                    <img src="assets/img/testimonial/01.jpg" alt="" />
+                  </div>
+                  <div class="author-info">
+                    <h5>Niesha Phips</h5>
+                    <p>Student</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="testimonial-item">
+              <div class="content">
+                <div class="icon">
+                  <img src="assets/img/icon/quote.svg" alt="" />
+                </div>
+                <div class="rating">
+                  <i class="fas fa-star"></i>
+                  <i class="fas fa-star"></i>
+                  <i class="fas fa-star"></i>
+                  <i class="fas fa-star"></i>
+                  <i class="fas fa-star"></i>
+                </div>
+                <div class="quote">
+                  <p>
+                    There are many variations of passage available the majority have suffered of alteration of the some humour words look
+                    even slightly form by the injected to default model believable.
+                  </p>
+                </div>
+                <div class="author">
+                  <div class="author-img">
+                    <img src="assets/img/testimonial/02.jpg" alt="" />
+                  </div>
+                  <div class="author-info">
+                    <h5>Eugene Ivan</h5>
+                    <p>Student</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="testimonial-item">
+              <div class="content">
+                <div class="icon">
+                  <img src="assets/img/icon/quote.svg" alt="" />
+                </div>
+                <div class="rating">
+                  <i class="fas fa-star"></i>
+                  <i class="fas fa-star"></i>
+                  <i class="fas fa-star"></i>
+                  <i class="fas fa-star"></i>
+                  <i class="fas fa-star"></i>
+                </div>
+                <div class="quote">
+                  <p>
+                    There are many variations of passage available the majority have suffered of alteration of the some humour words look
+                    even slightly form by the injected to default model believable.
+                  </p>
+                </div>
+                <div class="author">
+                  <div class="author-img">
+                    <img src="assets/img/testimonial/03.jpg" alt="" />
+                  </div>
+                  <div class="author-info">
+                    <h5>Martha Brown</h5>
+                    <p>Student</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="testimonial-item">
+              <div class="content">
+                <div class="icon">
+                  <img src="assets/img/icon/quote.svg" alt="" />
+                </div>
+                <div class="rating">
+                  <i class="fas fa-star"></i>
+                  <i class="fas fa-star"></i>
+                  <i class="fas fa-star"></i>
+                  <i class="fas fa-star"></i>
+                  <i class="fas fa-star"></i>
+                </div>
+                <div class="quote">
+                  <p>
+                    There are many variations of passage available the majority have suffered of alteration of the some humour words look
+                    even slightly form by the injected to default model believable.
+                  </p>
+                </div>
+                <div class="author">
+                  <div class="author-img">
+                    <img src="assets/img/testimonial/04.jpg" alt="" />
+                  </div>
+                  <div class="author-info">
+                    <h5>Robert Dese</h5>
+                    <p>Student</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="testimonial-item">
+              <div class="content">
+                <div class="icon">
+                  <img src="assets/img/icon/quote.svg" alt="" />
+                </div>
+                <div class="rating">
+                  <i class="fas fa-star"></i>
+                  <i class="fas fa-star"></i>
+                  <i class="fas fa-star"></i>
+                  <i class="fas fa-star"></i>
+                  <i class="fas fa-star"></i>
+                </div>
+                <div class="quote">
+                  <p>
+                    There are many variations of passage available the majority have suffered of alteration of the some humour words look
+                    even slightly form by the injected to default model believable.
+                  </p>
+                </div>
+                <div class="author">
+                  <div class="author-img">
+                    <img src="assets/img/testimonial/05.jpg" alt="" />
+                  </div>
+                  <div class="author-info">
+                    <h5>Buchan Conie</h5>
+                    <p>Student</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <!-- testimonial-area end -->
+
+
+ @endsection
+ @section('scripts')
+    <!-- Swiper JS -->
+<script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
+
+<!-- ⭐⭐⭐ IMPORTANT: Bootstrap JS (Modal ke liye REQUIRED) ⭐⭐⭐ -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+<script>
+    // Wait for everything to load
+  // window.addEventListener('load', function() {
+  //       @if($remainingSeats > 0)
+  //           var modalElement = document.getElementById('preRegistrationModal');
+  //           if (modalElement) {
+  //               var myModal = new bootstrap.Modal(modalElement, {
+  //                   // backdrop: true,  
+  //                   keyboard: false
+  //               });
+  //               myModal.show();
+  //           }
+  //       @endif
+  //   });
+    window.addEventListener('load', function() {
+    @if($remainingSeats > 0)
+        var modalElement = document.getElementById('preRegistrationModal');
+        if (modalElement) {
+            var myModal = new bootstrap.Modal(modalElement, {
+                backdrop: true,
+                keyboard: true
+            });
+            myModal.show();
             
-          </div>
-      </section>
-      <!-- What Makes DotBitz Different Section -->
-      <section class="py-16 md:py-24 bg-gray-50">
-          <div class="container mx-auto px-4 sm:px-6 lg:px-8">
-              <!-- Top Content -->
-              <div class=" text-center max-w-3xl mx-auto mb-16">
-                  <!-- Main Heading -->
-                  <h1 class="text-lg font-bold mb-2 text-[#ff6500]">
-                      What Makes DotBitz Different
-                  </h1>
-                  
-                  <!-- Sub Heading -->
-                  <h2 class="text-5xl md:text-5xl font-bold mb-4 text-[#073a89]">
-                      LEARNING PROGRESSION
-                  </h2>
-                  
-                  <!-- Sub Sub Heading -->
-                  <h3 class="text-xl font-medium mb-8" style="color: #0091b9;">
-                      From Beginner to Career-Ready
-                  </h3>
-              </div>
+            // ✅ Force z-index fix
+            setTimeout(function() {
+                var backdrop = document.querySelector('.modal-backdrop');
+                if (backdrop) {
+                    backdrop.style.zIndex = '1040';
+                }
+                modalElement.style.zIndex = '1050';
+            }, 300);
+        }
+    @endif
+});
+    // Initialize Swiper (only once)
+    if (document.querySelector('.course-slider')) {
+        new Swiper('.course-slider', {
+            slidesPerView: 1,
+            spaceBetween: 20,
+            loop: true,
+            autoplay: {
+                delay: 5000,
+                disableOnInteraction: false,
+            },
+            breakpoints: {
+                640: { slidesPerView: 1, spaceBetween: 20 },
+                768: { slidesPerView: 2, spaceBetween: 30 },
+                1024: { slidesPerView: 3, spaceBetween: 30 }
+            },
+            pagination: {
+                el: '.swiper-pagination',
+                clickable: true,
+            },
+            navigation: {
+                nextEl: '.swiper-button-next',
+                prevEl: '.swiper-button-prev',
+            },
+        });
+    }
 
-              <!-- Levels Grid -->
-              <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
-                  
-                  <!-- Junior Level Card -->
-                  <div class="bg-white rounded-2xl p-8 border" style="border-color: #e5e7eb;">
-                      <!-- Level Header -->
-                      <div class="mb-6">
-                          <div class="flex items-center mb-4">
-                              <div class="w-12 h-12 rounded-xl flex items-center justify-center mr-4" 
-                                  style="background-color: #bae4f0;">
-                                  <span class="text-xl font-bold" style="color: #073a89;">1</span>
-                              </div>
-                              <div>
-                                  <h3 class="text-xl font-bold" style="color: #073a89;">Our Junior Level</h3>
-                                  <p class="font-medium" style="color: #ff6500;">Build Your First Web Projects</p>
-                              </div>
-                          </div>
-                      </div>
-                      
-                      <!-- Content -->
-                      <div class="space-y-4">
-                          <p class="text-gray-700" style="color: #1d1d1d;">
-                              Our junior teams craft interactive and web-based projects like games, apps, and websites, 
-                              using HTML, CSS, JavaScript and design. They gain hands-on experience in basic coding, 
-                              problem-solving, and project presentation, building confidence in their first steps in programming.
-                          </p>
-                      </div>
-                  </div>
-                  
-                  <!-- Mid Level Card -->
-                  <div class="bg-white rounded-2xl p-8 border" style="border-color: #e5e7eb;">
-                      <!-- Level Header -->
-                      <div class="mb-6">
-                          <div class="flex items-center mb-4">
-                              <div class="w-12 h-12 rounded-xl flex items-center justify-center mr-4" 
-                                  style="background-color: #bae4f0;">
-                                  <span class="text-xl font-bold" style="color: #073a89;">2</span>
-                              </div>
-                              <div>
-                                  <h3 class="text-xl font-bold" style="color: #073a89;">Our Mid Level</h3>
-                                  <p class="font-medium" style="color: #ff6500;">End-to-End Applications</p>
-                              </div>
-                          </div>
-                      </div>
-                      
-                      <!-- Content -->
-                      <div class="space-y-4">
-                          <p class="text-gray-700" style="color: #1d1d1d;">
-                              At the mid-level, students create complete applications with frontend and backend functionality, 
-                              incorporating Python, Java, Git, REST APIs, and debugging techniques. They learn online 
-                              collaboration, teamwork, and real-world development practices, preparing them for more complex projects.
-                          </p>
-                      </div>
-                  </div>
-                  
-                  <!-- Senior Level Card -->
-                  <div class="bg-white rounded-2xl p-8 border" style="border-color: #e5e7eb;">
-                      <!-- Level Header -->
-                      <div class="mb-6">
-                          <div class="flex items-center mb-4">
-                              <div class="w-12 h-12 rounded-xl flex items-center justify-center mr-4" 
-                                  style="background-color: #bae4f0;">
-                                  <span class="text-xl font-bold" style="color: #073a89;">3</span>
-                              </div>
-                              <div>
-                                  <h3 class="text-xl font-bold" style="color: #073a89;">Our Senior Level</h3>
-                                  <p class="font-medium" style="color: #ff6500;">Career Ready Developers</p>
-                              </div>
-                          </div>
-                      </div>
-                      
-                      <!-- Content -->
-                      <div class="space-y-4">
-                          <p class="text-gray-700" style="color: #1d1d1d;">
-                              Senior learners tackle real-world and portfolio projects within professional teams. 
-                              They master advanced programming languages, database integration, mobile-app development, 
-                              game development, and agile workflows, while building portfolio projects that meet industry 
-                              standards, making them fully prepared for internships, freelance work, or high-tech careers.
-                          </p>
-                      </div>
-                  </div>
-              </div>
-          </div>
-      </section>
- @endsection     
+     document.addEventListener('DOMContentLoaded', function() {
+        // Initialize Swiper
+        const coursesSwiper = new Swiper('.coursesSwiper', {
+            // Optional parameters
+            slidesPerView: 1,
+            spaceBetween: 20,
+            loop: true,
+            autoplay: {
+                delay: 5000,
+                disableOnInteraction: false,
+            },
+
+            // Responsive breakpoints
+            breakpoints: {
+                640: {
+                    slidesPerView: 1,
+                    spaceBetween: 20
+                },
+                768: {
+                    slidesPerView: 2,
+                    spaceBetween: 30
+                },
+                1024: {
+                    slidesPerView: 3,
+                    spaceBetween: 30
+                }
+            },
+
+            // If we need pagination
+            pagination: {
+                el: '.swiper-pagination',
+                clickable: true,
+                dynamicBullets: true,
+            },
+
+            // Navigation arrows
+            navigation: {
+                nextEl: '.swiper-button-next',
+                prevEl: '.swiper-button-prev',
+            },
+        });
+    });
+</script>
+ @endsection

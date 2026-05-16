@@ -7,4 +7,20 @@ use Illuminate\Database\Eloquent\Model;
 class Appointment extends Model
 {
     //
+    protected $fillable = [
+        'name',
+        'email',
+        'phone',
+        'course_id',
+        'appointment_date',
+        'appointment_time',
+        'message',
+    ];
+
+    public function course()
+    {
+        return $this->belongsTo(Course::class, 'course_id', 'id');
+    }
+
+    
 }
