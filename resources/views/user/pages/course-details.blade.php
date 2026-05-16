@@ -282,145 +282,160 @@ ul.custom-list li::before {
                 </div>
               </div>
 
-              <!-- tab 4 — Review -->
-              <div class="tab-pane fade" id="course-tab4">
-                <div class="course-review">
-                  <div class="review-wrap mt-4">
+      <!-- tab 4 — Review -->
+<div class="tab-pane fade" id="course-tab4">
+    <div class="course-review">
+        <div class="review-wrap mt-4">
 
-                    <!-- review-rating -->
-                    <div class="review-rating">
-                      <div class="rating-count">
-                        <h2>4.5</h2>
-                        <div class="rating-star">
-                          <i class="fas fa-star"></i>
-                          <i class="fas fa-star"></i>
-                          <i class="fas fa-star"></i>
-                          <i class="fas fa-star"></i>
-                          <i class="far fa-star"></i>
-                        </div>
-                        <p>15.5k Students Review</p>
-                      </div>
-                      <div class="rating-range">
-                        <div class="rating-range-item">
-                          <div class="rating-range-star">
-                            <i class="fas fa-star"></i><i class="fas fa-star"></i>
-                            <i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i>
-                          </div>
-                          <div class="rating-range-bar">
-                            <div class="progress"><div class="progress-width" style="width: 90%"></div></div>
-                          </div>
-                          <div class="rating-range-percentage"><span>90%</span></div>
-                        </div>
-                        <div class="rating-range-item">
-                          <div class="rating-range-star">
-                            <i class="fas fa-star"></i><i class="fas fa-star"></i>
-                            <i class="fas fa-star"></i><i class="fas fa-star"></i><i class="far fa-star"></i>
-                          </div>
-                          <div class="rating-range-bar">
-                            <div class="progress"><div class="progress-width" style="width: 80%"></div></div>
-                          </div>
-                          <div class="rating-range-percentage"><span>80%</span></div>
-                        </div>
-                        <div class="rating-range-item">
-                          <div class="rating-range-star">
-                            <i class="fas fa-star"></i><i class="fas fa-star"></i>
-                            <i class="fas fa-star"></i><i class="far fa-star"></i><i class="far fa-star"></i>
-                          </div>
-                          <div class="rating-range-bar">
-                            <div class="progress"><div class="progress-width" style="width: 59%"></div></div>
-                          </div>
-                          <div class="rating-range-percentage"><span>59%</span></div>
-                        </div>
-                        <div class="rating-range-item">
-                          <div class="rating-range-star">
-                            <i class="fas fa-star"></i><i class="fas fa-star"></i>
-                            <i class="far fa-star"></i><i class="far fa-star"></i><i class="far fa-star"></i>
-                          </div>
-                          <div class="rating-range-bar">
-                            <div class="progress"><div class="progress-width" style="width: 70%"></div></div>
-                          </div>
-                          <div class="rating-range-percentage"><span>70%</span></div>
-                        </div>
-                        <div class="rating-range-item">
-                          <div class="rating-range-star">
-                            <i class="fas fa-star"></i><i class="far fa-star"></i>
-                            <i class="far fa-star"></i><i class="far fa-star"></i><i class="far fa-star"></i>
-                          </div>
-                          <div class="rating-range-bar">
-                            <div class="progress"><div class="progress-width" style="width: 49%"></div></div>
-                          </div>
-                          <div class="rating-range-percentage"><span>49%</span></div>
-                        </div>
-                      </div>
+            <!-- review-rating -->
+            <div class="review-rating">
+
+                <!-- rating-count -->
+                <div class="rating-count">
+                    <h2>{{ number_format($averageRating, 1) }}</h2>
+
+                    <div class="rating-star">
+                        @for($i = 1; $i <= 5; $i++)
+                            @if($i <= floor($averageRating))
+                                <i class="fas fa-star"></i>
+                            @elseif($i - $averageRating < 1)
+                                <i class="fas fa-star-half-alt"></i>
+                            @else
+                                <i class="far fa-star"></i>
+                            @endif
+                        @endfor
                     </div>
 
-                    <!-- review-content -->
-                    <div class="review-content">
-                      <h5 class="title">Reviews (1,500)</h5>
-                      <div class="review-item">
-                        <div class="review-author">
-                          <img src="assets/img/instructor/rev-1.png" alt="" />
-                          <div class="info">
-                            <div>
-                              <h6>Erich T. Genao</h6>
-                              <span><i class="far fa-clock"></i> 1 day ago</span>
-                            </div>
-                            <div class="rating">
-                              <i class="fas fa-star"></i><i class="fas fa-star"></i>
-                              <i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i>
-                            </div>
-                          </div>
-                        </div>
-                        <p>There are many variations of passages available but the majority have suffered alteration in some form by injected humour randomised words.</p>
-                      </div>
-                      <div class="review-item">
-                        <div class="review-author">
-                          <img src="assets/img/instructor/rev-2.png" alt="" />
-                          <div class="info">
-                            <div>
-                              <h6>Eugene Ivan</h6>
-                              <span><i class="far fa-clock"></i> 2 days ago</span>
-                            </div>
-                            <div class="rating">
-                              <i class="fas fa-star"></i><i class="fas fa-star"></i>
-                              <i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i>
-                            </div>
-                          </div>
-                        </div>
-                        <p>There are many variations of passages available but the majority have suffered alteration in some form by injected humour randomised words.</p>
-                      </div>
-                      <div class="text-center mt-4">
-                        <a href="#" class="theme-btn"><span class="fas fa-sync-alt"></span> Load More</a>
-                      </div>
-                    </div>
-
-                    <!-- review-form -->
-                    <div class="review-form">
-                      <h5>Leave A Review</h5>
-                      <form action="#">
-                        <div class="form-group">
-                          <label class="form-label">Your Rating</label>
-                          <select class="form-select">
-                            <option value="">Choose Your Rating</option>
-                            <option value="5">5 Stars</option>
-                            <option value="4">4 Stars</option>
-                            <option value="3">3 Stars</option>
-                            <option value="2">2 Stars</option>
-                            <option value="1">1 Star</option>
-                          </select>
-                        </div>
-                        <div class="form-group">
-                          <label class="form-label">Your Review</label>
-                          <textarea class="form-control" cols="30" rows="5" placeholder="Write your review"></textarea>
-                        </div>
-                        <button class="theme-btn" type="button">Post Your Review<i class="far fa-arrow-right"></i></button>
-                      </form>
-                    </div>
-
-                  </div>
+                    <p>
+                        {{ $totalReviews }}
+                        Student{{ $totalReviews != 1 ? 's' : '' }} Review
+                    </p>
                 </div>
-              </div>
 
+                <!-- rating-range -->
+                <div class="rating-range">
+                    @foreach($ratingDistribution as $star => $data)
+                    <div class="rating-range-item">
+
+                        <div class="rating-range-star">
+                            @for($i = 1; $i <= 5; $i++)
+                                @if($i <= $star)
+                                    <i class="fas fa-star"></i>
+                                @else
+                                    <i class="far fa-star"></i>
+                                @endif
+                            @endfor
+                        </div>
+
+                        <div class="rating-range-bar">
+                            <div class="progress">
+                                <div class="progress-width"
+                                     style="width: {{ $data['percent'] }}%">
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="rating-range-percentage">
+                            <span>{{ $data['percent'] }}%</span>
+                        </div>
+
+                    </div>
+                    @endforeach
+                </div>
+            </div>
+
+            <!-- review-content -->
+            <div class="review-content">
+                <h5 class="title">
+                    Reviews ({{ $totalReviews }})
+                </h5>
+
+                @forelse($reviews as $review)
+
+                <div class="review-item">
+
+                    <div class="review-author">
+
+                        <!-- avatar -->
+                        <div style="
+                            width:50px;
+                            height:50px;
+                            border-radius:50%;
+                            background:linear-gradient(135deg,#063989,#0e5de0);
+                            display:flex;
+                            align-items:center;
+                            justify-content:center;
+                            color:#fff;
+                            font-weight:700;
+                            font-size:18px;
+                            flex-shrink:0;
+                        ">
+                            {{ strtoupper(substr($review->reviewer_name, 0, 1)) }}
+                        </div>
+
+                        <div class="info">
+
+                            <div>
+                                <h6>{{ $review->reviewer_name }}</h6>
+
+                                <span>
+                                    <i class="far fa-clock"></i>
+                                    {{ $review->created_at->diffForHumans() }}
+                                </span>
+                            </div>
+
+                            <div class="rating">
+                                @for($i = 1; $i <= 5; $i++)
+                                    @if($i <= $review->rating)
+                                        <i class="fas fa-star"></i>
+                                    @else
+                                        <i class="far fa-star"></i>
+                                    @endif
+                                @endfor
+                            </div>
+
+                        </div>
+                    </div>
+
+                    @if($review->review)
+                        <p>{{ $review->review }}</p>
+                    @endif
+
+                </div>
+
+                @empty
+
+                <div class="text-center py-5">
+                    <i class="fas fa-star fa-3x text-muted mb-3 d-block"
+                       style="opacity:0.3;"></i>
+
+                    <p class="text-muted">
+                        No reviews yet.
+                    </p>
+                </div>
+
+                @endforelse
+            </div>
+
+            <!-- review-form -->
+            <div class="review-form">
+                <h5>Leave A Review</h5>
+
+                <p style="color:#888; font-size:14px; margin-bottom:16px;">
+                    To leave a review, please login to your student portal.
+                </p>
+
+                <a href="https://portal.dotbitz.com/student/registration"
+                   class="theme-btn"
+                   target="_blank">
+                    Go to Portal
+                    <i class="fas fa-arrow-right"></i>
+                </a>
+            </div>
+
+        </div>
+    </div>
+</div>
             </div>
           </div>
           <!-- course single tab end -->
