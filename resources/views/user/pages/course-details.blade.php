@@ -542,7 +542,7 @@ ul.custom-list li::before {
       <span>{{ $course->total_classes ? $course->total_classes . ' Classes' : '—' }}</span>
     </li>
     <li>
-      <i class="fad fa-clock"></i> Course Hours:
+      <i class="fad fa-clock"></i>Total Class Hours:
       <span>{{ $course->course_hours ? $course->course_hours . ' Hours' : '—' }}</span>
     </li>
                     
