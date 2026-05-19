@@ -129,6 +129,8 @@ Route::post('/assignment-attempts/{attemptId}/grade', [AssignmentAttemptControll
     Route::get('assessment-attempts/{id}', [AssessmentAttemptController::class, 'show']);
     Route::put('assessment-attempts/{id}/grade', [AssessmentAttemptController::class, 'grade']);
 
+Route::post('/exemptions', [AssessmentAttemptController::class, 'storeExemption']);
+
     Route::get('/guardians', [GuardianController::class, 'Adminindex']);
 
 
@@ -177,6 +179,7 @@ Route::middleware('auth:sanctum')->prefix('guardian')->group(function () {
 Route::get('student/{studentId}/schedules', [ClassScheduleController::class, 'getSchedulesByStudentId']);
 Route::post('/reset-password', [GuardianController::class, 'resetPassword']);
 Route::get('check-assessment/{studentId}/{courseId}', [CourseController::class, 'checkAssessmentCompletion']);
+Route::get('check-exemption/{studentId}/{courseId}', [AssessmentAttemptController::class, 'checkExemption']);
 });
 
 // Student routes ----------------- //
@@ -230,7 +233,7 @@ Route::get('/results/assignment/{courseId}', [ResultController::class, 'assignme
   Route::post('assessment-save-progress/{attemptId}', [AssessmentAttemptController::class, 'saveProgress']);
    Route::get('/assessment-my-results', [AssessmentAttemptController::class, 'myResults']);
 
-
+Route::get('check-exemption/{studentId}/{courseId}', [AssessmentAttemptController::class, 'checkExemption']);
 
 
 
