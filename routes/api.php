@@ -36,6 +36,7 @@ use App\Http\Controllers\Api\RolePermissionController;
 use App\Http\Controllers\Api\RoleController;
 use App\Http\Controllers\Api\SettingController;
 use App\Http\Controllers\Api\ProgramaticSeoController;
+use App\Http\Controllers\Api\AppointmentController;
 use App\Models\Student;
 
 
@@ -90,6 +91,9 @@ Route::put('/reset-password', [AdminDashboardController::class, 'resetPassword']
 
     Route::apiResource('students', StudentController::class);
 
+// appointment
+Route::get('/appointments', [AppointmentController::class, 'index']);
+Route::delete('/appointments/{id}', [AppointmentController::class, 'destroy']);
 
 
     Route::post('assign-assessments', [AssignAssessmentController::class, 'store']);
