@@ -2,9 +2,51 @@
 
 namespace App\Models;
 
+use Illuminate\Container\Attributes\Auth;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Foundation\Auth\User as Authenticatable;
+use Illuminate\Notifications\Notifiable;
+use Illuminate\Testing\Fluent\Concerns\Has;
+use Laravel\Sanctum\HasApiTokens;
 
-class Instructor extends Model
+class Instructor extends Authenticatable
 {
     //
+    use HasFactory, Notifiable, HasApiTokens;
+    protected $fillable = [
+        'instructor_uid',
+        'first_name',
+        'last_name',
+        'user_name',
+        'email',
+        'phone',
+        'gender',
+        'address',
+        'state',
+        'city',
+        'zipcode',
+        'work_experience',
+        'salary',
+        'status',
+        'password'
+    ];
+
+    public function details()
+    {
+        return $this->hasMany(InstructorDetail::class);
+    }
+    // public function courses()
+    // {
+    //     return $this->hasMany(Course::class);
+    // }
+
+    public function classSchedules()
+    {
+        return $this->hasMany(ClassSchedule::class);
+    }
+    public function courses()
+{
+    return $this->belongsToMany(Course::class, 'course_instructor', 'instructor_id', 'course_id');
+}
 }

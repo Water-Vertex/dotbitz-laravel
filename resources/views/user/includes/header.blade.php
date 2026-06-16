@@ -1,108 +1,73 @@
-<header class="sticky-header">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="flex items-center justify-between h-16">
-                <!-- Logo -->
-                <div class="flex items-center logo-container">
-                    <div class="flex items-center space-x-2">
-                        <img src="img/dotbitz-logo.png" alt="DotBitz Logo" width="150">
-                    </div>
-                </div>
-
-                <!-- Desktop Navigation (Center) -->
-                <nav class="hidden md:flex items-center space-x-8">
-                    <a href="{{route('user.home')}}" class="nav-link font-medium" style="color: #1d1d1d;">Home</a>
-                    <a href="#" class="nav-link font-medium" style="color: #1d1d1d;">Courses</a>
-                    <a href="#" class="nav-link font-medium" style="color: #1d1d1d;">About</a>
-                    <a href="{{route('user.faq')}}" class="nav-link font-medium" style="color: #1d1d1d;">FAQ</a>
-                    <a href="" class="nav-link font-medium" style="color: #1d1d1d;">Contact</a>
-                </nav>
-
-                <!-- Right Side Buttons -->
-                <div class="flex items-center space-x-4 header-buttons">
-                    <button class="hidden md:block font-medium px-4 py-2" style="color: #073a89;">
-                        Login
-                    </button>
-                    <button class="hidden md:block font-medium px-4 py-2 rounded-lg text-white bg-[#FF6500]">
-                        Book Free Consultation
-                    </button>
-                    
-                    <!-- Mobile Menu Button -->
-                    <button class="md:hidden p-2" id="mobileMenuButton">
-                        <svg class="w-6 h-6" style="color: #073a89;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
-                        </svg>
-                    </button>
-                </div>
-            </div>
-        </div>
-    </header>
-    <div class="mobile-menu" id="mobileMenu">
-        <div class="p-6 h-full flex flex-col">
-            <!-- Mobile Menu Header -->
-            <div class="flex justify-between items-center mb-8">
-                <img src="img/dotbitz-logo.png" alt="DotBitz Logo" width="120">
-                <button class="p-2" id="closeMobileMenu">
-                    <svg class="w-6 h-6" style="color: #073a89;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
-                    </svg>
-                </button>
-            </div>
-            
-            <!-- Mobile Navigation -->
-            <nav class="flex-1">
-                <div class="space-y-4">
-                    <a href="#" class="block py-3 px-4 rounded-lg font-medium text-lg hover:bg-gray-100 transition-colors" style="color: #1d1d1d;">
-                        <i class="fas fa-home mr-3" style="color: #0091B9;"></i>
-                        Home
-                    </a>
-                    <a href="#" class="block py-3 px-4 rounded-lg font-medium text-lg hover:bg-gray-100 transition-colors" style="color: #1d1d1d;">
-                        <i class="fas fa-book-open mr-3" style="color: #0091B9;"></i>
-                        Courses
-                    </a>
-                    <a href="#" class="block py-3 px-4 rounded-lg font-medium text-lg hover:bg-gray-100 transition-colors" style="color: #1d1d1d;">
-                        <i class="fas fa-info-circle mr-3" style="color: #0091B9;"></i>
-                        About
-                    </a>
-                    <a href="#" class="block py-3 px-4 rounded-lg font-medium text-lg hover:bg-gray-100 transition-colors" style="color: #1d1d1d;">
-                        <i class="fas fa-envelope mr-3" style="color: #0091B9;"></i>
-                        Contact
-                    </a>
-                </div>
-                
-                <!-- Mobile Buttons -->
-                <div class="mt-8 space-y-4">
-                    <button class="w-full py-3 px-4 rounded-lg font-medium" style="color: #073a89; border: 2px solid #073a89;">
-                        Login
-                    </button>
-                    <button class="w-full py-3 px-4 rounded-lg font-medium text-white" style="background-color: #FF6500;">
-                        Book Free Consultation
-                    </button>
-                </div>
-            </nav>
-            
-            <!-- Mobile Footer -->
-            <div class="pt-6 mt-auto border-t" style="border-color: #e5e7eb;">
-                <div class="flex justify-center space-x-4 mb-4">
-                    <a href="#" class="social-icon w-10 h-10 rounded-full flex items-center justify-center" 
-                       style="background-color: #bae4f0; color: #073a89;">
-                        <i class="fab fa-facebook-f"></i>
-                    </a>
-                    <a href="#" class="social-icon w-10 h-10 rounded-full flex items-center justify-center" 
-                       style="background-color: #bae4f0; color: #073a89;">
-                        <i class="fab fa-instagram"></i>
-                    </a>
-                    <a href="#" class="social-icon w-10 h-10 rounded-full flex items-center justify-center" 
-                       style="background-color: #bae4f0; color: #073a89;">
-                        <i class="fab fa-linkedin-in"></i>
-                    </a>
-                    <a href="#" class="social-icon w-10 h-10 rounded-full flex items-center justify-center" 
-                       style="background-color: #bae4f0; color: #073a89;">
-                        <i class="fab fa-youtube"></i>
-                    </a>
-                </div>
-                <p class="text-center text-sm" style="color: #1d1d1d;">
-                    © 2024 DotBitz
-                </p>
-            </div>
-        </div>
+<header class="header">
+  <div class="header-top">
+  <div class="container">
+    <div class="header-top-wrap text-center">
+      <p>
+        <b>🎉 Special Offer: Get an exclusive discount for the first 10 students! Hurry up and enroll now!</b>
+      </p>
     </div>
+  </div>
+</div>
+      <!-- navbar -->
+      <div class="main-navigation">
+        <nav class="navbar navbar-expand-lg">
+          <div class="container position-relative">
+            <a class="navbar-brand" href="/">
+              <img src="{{asset('assets/images/logo/dotbitz-logo.png')}}" alt="logo" />
+            </a>
+            <div class="mobile-menu-right">
+              <div class="mobile-menu-btn">
+                <button type="button" class="nav-right-link search-box-outer"><i class="far fa-search"></i></button>
+              </div>
+
+              <button
+                class="navbar-toggler"
+                type="button"
+                data-bs-toggle="offcanvas"
+                data-bs-target="#offcanvasNavbar"
+                aria-controls="offcanvasNavbar"
+                aria-label="Toggle navigation"
+              >
+                <span></span>
+                <span></span>
+                <span></span>
+              </button>
+            </div>
+            <div class="offcanvas offcanvas-start" tabindex="-1" id="offcanvasNavbar" aria-labelledby="offcanvasNavbarLabel">
+              <div class="offcanvas-header">
+                <a href="index.html" class="offcanvas-brand" id="offcanvasNavbarLabel">
+                  <img src="assets/img/logo/logo.png" alt="" />
+                </a>
+                <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close">
+                  <i class="far fa-xmark"></i>
+                </button>
+              </div>
+              <div class="offcanvas-body gap-xl-4">
+                <ul class="navbar-nav justify-content-end flex-grow-1">
+
+                  <li class="nav-item"><a class="nav-link" href="{{route('user.home')}}">Home</a></li>
+                  <li class="nav-item"><a class="nav-link" href="{{route('user.courses')}}">Courses</a></li>
+                  <li class="nav-item"><a class="nav-link" href="{{route('user.about')}}">About</a></li>
+                  <li class="nav-item"><a class="nav-link" href="{{route('user.faq')}}">FAQs</a></li>
+                  <li class="nav-item"><a class="nav-link" href="{{route('user.contact')}}">Contact</a></li>
+                </ul>
+                <!-- nav-right -->
+                <div class="nav-right">
+                  <div class="search-btn">
+                    <button type="button" class="nav-right-link search-box-outer"><i class="far fa-search"></i></button>
+                  </div>
+                  <div class="nav-btn">
+                    <a href="https://portal.dotbitz.com/student/login" target="_blank" class="nav-link"><span class="far fa-sign-in"></span> Sign In</a>
+                  </div>
+                  <div class="nav-btn">
+                    <a href="{{route('user.book-free-appointment')}}" class="theme-btn" style="background: #FF6500 !important">Book Free Consultation</a>
+                  </div>
+
+                </div>
+              </div>
+            </div>
+          </div>
+        </nav>
+      </div>
+      <!-- navbar end-->
+    </header>

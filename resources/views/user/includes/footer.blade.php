@@ -1,123 +1,133 @@
-<footer class="bg-white border-t pt-10 pb-6" style="border-color: #e5e7eb;">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
-                
-                <!-- Left Column: Logo + Description + Social Icons -->
-                <div class="space-y-6">
-                    <!-- Logo -->
-                    <div class="flex items-center space-x-3">
-                        <img src="img/dotbitz-logo.png" alt="DotBitz Logo" width="150" class="w-32 md:w-auto">
-                    </div>
-                    
-                    <!-- Description -->
-                    <p class="text-gray-600 md:max-w-xs" style="color: #1d1d1d;">
-                       DotBitz is an online learning institute dedicated to teaching programming and career-ready skills to students aged 9 and above. We believe that early exposure to technology, combined with the right guidance, can shape confident learners and future professionals.
-                    </p>
-                    
-                    <!-- Social Icons -->
-                    <div class="flex space-x-4 pt-2">
-                        <a href="#" class="social-icon w-10 h-10 rounded-full flex items-center justify-center" 
-                           style="background-color: #bae4f0; color: #073a89;">
-                            <i class="fab fa-facebook-f"></i>
-                        </a>
-                        <a href="#" class="social-icon w-10 h-10 rounded-full flex items-center justify-center" 
-                           style="background-color: #bae4f0; color: #073a89;">
-                            <i class="fab fa-twitter"></i>
-                        </a>
-                        <a href="#" class="social-icon w-10 h-10 rounded-full flex items-center justify-center" 
-                           style="background-color: #bae4f0; color: #073a89;">
-                            <i class="fab fa-instagram"></i>
-                        </a>
-                        <a href="#" class="social-icon w-10 h-10 rounded-full flex items-center justify-center" 
-                           style="background-color: #bae4f0; color: #073a89;">
-                            <i class="fab fa-linkedin-in"></i>
-                        </a>
-                        <a href="#" class="social-icon w-10 h-10 rounded-full flex items-center justify-center" 
-                           style="background-color: #bae4f0; color: #073a89;">
-                            <i class="fab fa-youtube"></i>
-                        </a>
-                    </div>
-                </div>
-                
-                <!-- Center Column: Custom Links -->
-                <div>
-                    <h3 class="text-lg font-semibold mb-4" style="color: #073a89;">Quick Links</h3>
-                    <div class="grid grid-cols-2 gap-4">
-                        <div class="space-y-3">
-                            <a href="#" class="footer-link block" style="color: #1d1d1d;">
-                                <i class="fas fa-chevron-right mr-2 text-xs" style="color: #ff6500;"></i>
-                                All Courses
-                            </a>
-                            <a href="#" class="footer-link block" style="color: #1d1d1d;">
-                                <i class="fas fa-chevron-right mr-2 text-xs" style="color: #ff6500;"></i>
-                                New Arrivals
-                            </a>
-                            <a href="#" class="footer-link block" style="color: #1d1d1d;">
-                                <i class="fas fa-chevron-right mr-2 text-xs" style="color: #ff6500;"></i>
-                                Popular Courses
-                            </a>
-                            <a href="#" class="footer-link block" style="color: #1d1d1d;">
-                                <i class="fas fa-chevron-right mr-2 text-xs" style="color: #ff6500;"></i>
-                                Community Forum
-                            </a>
+<footer class="footer-area light">
+      
+      <div class="footer-widget">
+        <div class="container">
+          <div class="footer-widget-wrap pt-100 pb-50">
+            <div class="row g-4">
+              <div class="col-lg-5">
+                <div class="footer-widget-box about-us">
+                  <a href="{{route('user.home')}}" class="footer-logo">
+                    <img src="{{asset('assets/images/logo/dotbitz-logo.png')}}" alt="" />
+                  </a>
+                  <p class="mb-3">
+                     DotBitz is an online learning institute dedicated to teaching programming and career-ready skills to students aged 9 and above. We believe that early exposure to technology, combined with the right guidance, can shape confident learners and future professionals.
+                  </p>
+
+                  <div class="footer-newsletter">
+                    <h6>Subscribe Our Newsletter</h6>
+                    <div class="newsletter-form">
+                      <form action="#">
+                        <div class="form-group">
+                          <div class="form-icon">
+                            <i class="far fa-envelopes"></i>
+                            <input type="email" class="form-control" placeholder="Your Email" />
+                            <button class="theme-btn" type="submit">Subscribe <span class="far fa-paper-plane"></span></button>
+                          </div>
                         </div>
-                        <div class="space-y-3">
-                            <a href="#" class="footer-link block" style="color: #1d1d1d;">
-                                <i class="fas fa-chevron-right mr-2 text-xs" style="color: #ff6500;"></i>
-                                About Us
-                            </a>
-                            <a href="#" class="footer-link block" style="color: #1d1d1d;">
-                                <i class="fas fa-chevron-right mr-2 text-xs" style="color: #ff6500;"></i>
-                                Instructors
-                            </a>
-                            <a href="#" class="footer-link block" style="color: #1d1d1d;">
-                                <i class="fas fa-chevron-right mr-2 text-xs" style="color: #ff6500;"></i>
-                                Blog
-                            </a>
-                            <a href="#" class="footer-link block" style="color: #1d1d1d;">
-                                <i class="fas fa-chevron-right mr-2 text-xs" style="color: #ff6500;"></i>
-                                Careers
-                            </a>
-                        </div>
+                      </form>
                     </div>
+                  </div>
                 </div>
-                
-                <!-- Right Column: Newsletter + Contact -->
-                <div class="space-y-6">
-                    <!-- Newsletter -->
-                    <div>
-                        <h3 class="text-lg font-semibold mb-4" style="color: #073a89;">Stay Updated</h3>
-                        <p class="text-sm mb-3" style="color: #1d1d1d;">
-                            Subscribe to our newsletter for course updates and community news.
-                        </p>
-                        <div class="flex">
-                            <input type="email" 
-                                   placeholder="Your email address" 
-                                   class="flex-1 px-4 py-3 border rounded-l-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                                   style="border-color: #bae4f0;">
-                            <button class="newsletter-btn text-white font-medium px-5 rounded-r-lg">
-                                <i class="fas fa-paper-plane text-[#FFD500]"></i>
-                            </button>
-                        </div>
-                    </div>
-                    
-                    <!-- Contact Information (Optional - You can add back if needed) -->
+              </div>
+              <div class="col-6 col-lg-2">
+                <div class="footer-widget-box list">
+                  <h4 class="footer-widget-title">Company</h4>
+                  <ul class="footer-list">
+                    <li>
+                      <a href="{{route('user.about')}}"><i class="far fa-angle-double-right"></i>About Us</a>
+                    </li>
+                    <li>
+                      <a href="{{route('user.faq')}}"><i class="far fa-angle-double-right"></i>FAQs</a>
+                    </li>
+                    <li>
+                      <a href="{{route('user.contact')}}"><i class="far fa-angle-double-right"></i>Contact Us</a>
+                    </li>
+                  </ul>
                 </div>
+              </div>
+              <div class="col-6 col-lg-2">
+                <div class="footer-widget-box list">
+                  <h4 class="footer-widget-title">Informations</h4>
+                  <ul class="footer-list">
+                    @php
+                        $policies = \App\Models\Policy::all();
+                    @endphp
+                    @foreach($policies as $policy)
+                    <li>
+                      <a href="{{route('user.policy', $policy->slug)}}"><i class="far fa-angle-double-right"></i>{{$policy->title}}</a>
+                    </li>
+                    @endforeach
+                  </ul>
+                </div>
+              </div>
+              <div class="col-lg-3">
+                <div class="footer-widget-box">
+                  <h4 class="footer-widget-title">Get In Touch</h4>
+                  <ul class="footer-contact">
+                    <li>
+                      <div class="icon">
+                        <i class="far fa-location-dot"></i>
+                      </div>
+                      <div class="content">
+                        <h6>Our Address</h6>
+                        <p>Dublin, OH 43016</p>
+                      </div>
+                    </li>
+                    <li>
+                      <div class="icon">
+                        <i class="far fa-phone"></i>
+                      </div>
+                      <div class="content">
+                        <h6>Call Us</h6>
+                        <a href="tel:+1 (380) 257-7761">+1 (380) 257-7761</a>
+                      </div>
+                    </li>
+                    <li>
+                      <div class="icon">
+                        <i class="far fa-envelope"></i>
+                      </div>
+                      <div class="content">
+                        <h6>Mail Us</h6>
+                        <a href="mailto:info@dotbitz.com"><span class="" >info@dotbitz.com</span></a>
+                      </div>
+                    </li>
+                    <li>
+                        <a href="https://www.trustpilot.com/review/dotbitz.com" target="_blank"><img src="{{asset('assets/images/trustpilot-copy.jpg')}}" /></a>
+                    </li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="container">
+        <div class="copyright">
+          <div class="row">
+            <div class="col-md-6 align-self-center">
+              <p class="copyright-text">&copy; Copyright <span id="date"></span> <a href="#"> Dotbitz </a> All Rights Reserved.</p>
+              
             </div>
             
-            <!-- Bottom Copyright Bar -->
-            <div class="mt-10 pt-6 border-t text-center" style="border-color: #e5e7eb;">
-                <div class="flex flex-col md:flex-row justify-between items-center">
-                    <p class="text-sm mb-2 md:mb-0" style="color: #1d1d1d;">
-                        © 2024 DotBitz. All rights reserved.
-                    </p>
-                    <div class="flex flex-wrap justify-center gap-4 md:gap-6">
-                        <a href="#" class="text-sm hover:text-orange-500 transition-colors" style="color: #073a89;">Privacy Policy</a>
-                        <a href="#" class="text-sm hover:text-orange-500 transition-colors" style="color: #073a89;">Terms of Service</a>
-                        <a href="#" class="text-sm hover:text-orange-500 transition-colors" style="color: #073a89;">Cookie Policy</a>
-                        <a href="#" class="text-sm hover:text-orange-500 transition-colors" style="color: #073a89;">Sitemap</a>
-                    </div>
-                </div>
+            
+            <div class="col-md-6 align-self-center">
+                
+              <ul class="footer-social">
+                <li>
+                  <a href="#"><i class="fab fa-facebook-f"></i></a>
+                </li>
+                <li>
+                  <a href="#"><i class="fab fa-x-twitter"></i></a>
+                </li>
+                <li>
+                  <a href="#"><i class="fab fa-linkedin-in"></i></a>
+                </li>
+                <li>
+                  <a href="#"><i class="fab fa-youtube"></i></a>
+                </li>
+              </ul>
             </div>
+          </div>
         </div>
+      </div>
     </footer>
