@@ -12,6 +12,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Mail;
+use App\Models\CourseExemption;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Log;
 
@@ -22,38 +23,52 @@ class AssessmentAttemptController extends Controller
     // ==========================================
 
     /** List all assessment attempts */
-    public function index()
-    {
-        $attempts = AssessmentAttempt::with([
-            'student:id,first_name,last_name',
-            'guest:email,full_name',
-            'assignAssessment.assessment.course'
-        ])->get();
+ public function index()
+{
+    $attempts = AssessmentAttempt::with([
+        'student:id,first_name,last_name',
+        'guest:email,full_name',
+        'assignAssessment.assessment.course'
+    ])->get();
 
-        $data = $attempts->map(function ($attempt) {
-            $assign = $attempt->assignAssessment;
-            $assessment = $assign ? $assign->assessment : null;
-            $course = $assessment ? $assessment->course : null;
+    $data = $attempts->map(function ($attempt) {
+        $assign = $attempt->assignAssessment;
+        $assessment = $assign ? $assign->assessment : null;
+        $course = $assessment ? $assessment->course : null;
 
-            if ($attempt->student) {
-                $name = trim($attempt->student->first_name . ' ' . $attempt->student->last_name);
-            } elseif ($attempt->guest) {
-                $name = $attempt->guest->full_name;
-            } else {
-                $name = $attempt->guest_id ?? 'Guest User';
-            }
+        $studentId = null;
+        if ($attempt->student) {
+            $name = trim($attempt->student->first_name . ' ' . $attempt->student->last_name);
+            $studentId = $attempt->student->id;
+        } elseif ($attempt->guest) {
+            $name = $attempt->guest->full_name;
+        } else {
+            $name = $attempt->guest_id ?? 'Guest User';
+        }
 
-            return [
-                'id'               => $attempt->id,
-                'student_name'     => $name,
-                'course_name'      => $course->course_name ?? 'N/A',
-                'assessment_title' => $assessment->assessment_title ?? 'N/A',
-                'assign_status'    => $assign->status ?? 'pending',
-            ];
-        });
+        // Check if already exempted
+        $isExempted = false;
+        if ($studentId && $course) {
+            $isExempted = CourseExemption::where('student_id', $studentId)
+                                         ->where('course_id', $course->id)
+                                         ->exists();
+        }
 
-        return response()->json($data);
-    }
+        return [
+            'id'               => $attempt->id,
+            'student_name'     => $name,
+            'student_id'       => $studentId,
+            'course_id'        => $course ? $course->id : null,
+            'course_name'      => $course ? $course->course_name : 'N/A',
+            'assessment_title' => $assessment ? $assessment->assessment_title : 'N/A',
+            'assign_status'    => $assign ? $assign->status : 'pending',
+            'is_exempted'      => $isExempted,   
+        ];
+    });
+
+    return response()->json($data);
+}
+
 
     /** Show detailed information for a specific attempt */
     public function show($id)
@@ -102,126 +117,36 @@ class AssessmentAttemptController extends Controller
         ]);
     }
 
-    /** Grade an attempt and send result email */
-//     public function grade(Request $request, $id)
-// {
-//     $request->validate([
-//         'obtain_marks'          => 'required|numeric',
-//         'remarks'               => 'nullable|string',
-//         'answers'               => 'required|array',
-//         'answers.*.question_id' => 'required|exists:assessment_questions,id',
-//        'answers.*.is_correct' => 'required|numeric',
-//     ]);
+    public function storeExemption(Request $request)
+{
+    $request->validate([
+        'student_id' => 'required|exists:students,id',
+        'course_id'  => 'required|exists:courses,id',
+    ]);
 
-//     $attempt = AssessmentAttempt::with([
-//         'guest',
-//         'student',
-//         'assignAssessment.assessment.course',
-//         'assignAssessment.assessment'
-//     ])->findOrFail($id);
+    $exemption = CourseExemption::updateOrCreate(
+        [
+            'student_id' => $request->student_id,
+            'course_id'  => $request->course_id,
+        ],
+        ['is_exempted' => true]
+    );
 
-//     DB::beginTransaction();
-//     try {
-//         // Update answers
-//      foreach ($request->answers as $ans) {
-//     $question = \App\Models\AssessmentQuestion::find($ans['question_id']);
-    
-//     if ($question && $question->assessment_type === 'mcqs') {
-//         AssessmentAttemptAnswer::where('assessment_attempt_id', $id)
-//             ->where('question_id', $ans['question_id'])
-//             ->update([
-//                 'is_correct' => (int) $ans['is_correct'],
-//                 'obtained_marks' => null
-//             ]);
-//     } else {
-//         AssessmentAttemptAnswer::where('assessment_attempt_id', $id)
-//             ->where('question_id', $ans['question_id'])
-//             ->update([
-//                  'is_correct' => 0,
-//                 'obtained_marks' => round((float) $ans['is_correct'], 2)
-//             ]);
-//     }
-// }
+    return response()->json([
+        'success' => true,
+        'message' => 'Exemption added successfully.',
+        'data'    => $exemption
+    ]);
+}
 
-//         // Update attempt marks
-//         $attempt->update(['obtained_marks' => $request->obtain_marks]);
-
-//         // Update assign assessment
-//         $assignAssessment = AssignAssessment::find($attempt->assign_assessment_id);
-//         if ($assignAssessment) {
-//             $assignAssessment->update([
-//                 'obtain_marks' => $request->obtain_marks,
-//                 'remarks'      => $request->remarks,
-//                 'status'       => 'marked',
-//             ]);
-//         }
-
-//         // Prepare email data
-//         $emailData = [
-//             'course' => $attempt->assignAssessment->assessment->course->course_name ?? 'Course',
-//             'title'  => $assignAssessment->assessment->assessment_title ?? 'Assessment',
-//             'total'  => $assignAssessment->total_marks ?? 0,
-//         ];
-
-//         // ========== EMAIL LOGIC (from first version) ==========
-//         $email = null;
-//         $name = 'User';
-
-//         if ($attempt->student_id && $attempt->student) {
-//             $email = $attempt->student->email;
-//             $name = trim($attempt->student->first_name . ' ' . $attempt->student->last_name);
-//             if (empty($name)) {
-//                 $name = 'Student';
-//             }
-//         } elseif ($attempt->guest_id) {
-//             if ($attempt->guest && $attempt->guest->email) {
-//                 $email = $attempt->guest->email;
-//                 $name = $attempt->guest->full_name ?? 'Guest User';
-//             } else {
-//                 // Guest might be using email as identifier
-//                 $email = $attempt->guest_id;
-//                 $name = 'Guest User';
-//             }
-//         }
-
-//         // Send email only if valid email exists
-//         if ($email && filter_var($email, FILTER_VALIDATE_EMAIL)) {
-//             try {
-//                 Mail::to($email)->send(new AssessmentResultMail(
-//                     $name,
-//                     $emailData['course'],
-//                     $emailData['title'],
-//                     $request->obtain_marks,
-//                     $emailData['total'],
-//                     $request->remarks,
-//                     $email
-//                 ));
-//             } catch (\Exception $mailError) {
-//                 Log::error('Email sending failed: ' . $mailError->getMessage());
-//                 // Continue execution - grading is still successful
-//             }
-//         } else {
-//             Log::warning('No valid email found for attempt ID: ' . $id . ', Email: ' . ($email ?? 'null'));
-//         }
-//         // =======================================================
-
-//         DB::commit();
-
-//         return response()->json([
-//             'success' => true,
-//             'message' => "Grading completed successfully." . ($email ? " Result email sent." : "")
-//         ]);
-
-//     } catch (\Exception $e) {
-//         DB::rollBack();
-//         Log::error('Grading failed for attempt ID ' . $id . ': ' . $e->getMessage());
-
-//         return response()->json([
-//             'success' => false,
-//             'message' => 'Failed to grade assessment: ' . $e->getMessage()
-//         ], 500);
-//     }
-// }
+public function checkExemption($studentId, $courseId)
+{
+    $exempted = CourseExemption::where('student_id', $studentId)
+                               ->where('course_id', $courseId)
+                               ->where('is_exempted', true)
+                               ->exists();
+    return response()->json(['exempted' => $exempted]);
+}
 
 
 /** Grade an attempt and send result email */

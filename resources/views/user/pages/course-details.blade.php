@@ -523,8 +523,9 @@ ul.custom-list li::before {
                   <div class="price-amount"><span>${{$course->course_fee}}</span></div>
                   {{-- <span class="price-off">35% Off</span> --}}
                 </div>
-                @php
-                  $curriculum = \App\Models\CourseCurriculum::where('course_id',$course->id)->get();
+              @php
+    $curriculum = \App\Models\CourseCurriculum::where('course_id', $course->id)->get();
+    $firstCurriculum = $curriculum->first();
                 @endphp
                 @if($curriculum->isEmpty())
                 <a href="javascript:;" class="theme-btn"> <span class="far fa-shopping-bag"></span> Coming Soon...</a>
@@ -535,8 +536,16 @@ ul.custom-list li::before {
                   <ul>
                     <!--<li><i class="fad fa-user"></i> Instructor: <span>{{$course->instructor->first_name}} {{$course->instructor->last_name}}</span></li>-->
                     <li><i class="fad fa-layer-group"></i> Level : <span>{{$course->course_level}}</span></li>
-                    <li><i class="fad fa-book"></i> Classes : <span>35 Lectures</span></li>
                     <li><i class="fad fa-clock"></i> Duration: <span>03 Months</span></li>
+                     <li>
+      <i class="fad fa-book"></i> Total Classes:
+      <span>{{ $course->total_classes ? $course->total_classes . ' Classes' : '—' }}</span>
+    </li>
+    <li>
+      <i class="fad fa-clock"></i>Total Class Hours:
+      <span>{{ $course->course_hours ? $course->course_hours . ' Hours' : '—' }}</span>
+    </li>
+                    
                     <li><i class="fad fa-user-friends"></i> Enrolled: <span>{{$student_count}} Students</span></li>
                     <li><i class="fad fa-globe"></i> Language: <span>English</span></li>
                   </ul>

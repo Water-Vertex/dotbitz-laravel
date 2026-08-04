@@ -22,7 +22,8 @@ class RolesAndPermissionsSeeder extends Seeder
             'assignments', 'assessments', 'quizzes', 'mcqs',
             'announcements', 'faqs', 'policies', 'contacts', 'appointments',
             'class_schedules', 'orders', 'coupons',  'assessment_queries',
-             'course_instructors', 'course_curricula','assessment_attempts' ,'reports','roles'
+             'course_instructors', 'course_curricula','assessment_attempts' ,'reports','roles',
+              'settings', 'seo_settings','sitemap',
         ];
 
         // Create all permissions
@@ -69,13 +70,13 @@ class RolesAndPermissionsSeeder extends Seeder
             'guard_name' => $guard
         ]);
         
-        // 💰 ACCOUNTS - NO PERMISSIONS
+        //  ACCOUNTS - NO PERMISSIONS
         Role::firstOrCreate([
             'name' => 'accounts', 
             'guard_name' => $guard
         ]);
         
-        // 👔 EXECUTIVE - NO PERMISSIONS
+        //  EXECUTIVE - NO PERMISSIONS
         Role::firstOrCreate([
             'name' => 'executive', 
             'guard_name' => $guard
@@ -108,7 +109,7 @@ class RolesAndPermissionsSeeder extends Seeder
         $executiveUser->assignRole('executive');
 
         $admin->syncPermissions(Permission::all());
-        $this->command->info('✅ Admin ko saari ' . Permission::count() . ' permissions mil gayi');
+        $this->command->info('✅ Admin got  ' . Permission::count() . ' permissions');
     }
 
     

@@ -63,7 +63,17 @@ public function index(Request $request)
             'is_featured' => 'boolean',
             'thumbnail_image' => 'required|image|mimes:jpeg,png,jpg|max:2048',
             'benefits'         => 'nullable|string',
-            'short_description' => 'nullable|string'
+            'short_description' => 'nullable|string',
+            'classes_per_week' => 'nullable|integer|min:1',
+'total_classes'    => 'nullable|integer',
+'course_hours'     => 'nullable|string|max:50',
+            'meta_title'       => 'nullable|string|max:255',
+'meta_description' => 'nullable|string',
+'meta_keyword'     => 'nullable|string|max:255',
+'meta_tags'        => 'nullable|string|max:255',
+'focus_keyword'    => 'nullable|string|max:255',
+'page_schema'      => 'nullable|string',
+
         ]);
 
         // Generate slug automatically
@@ -157,7 +167,17 @@ public function index(Request $request)
             'is_featured' => 'boolean',
             'thumbnail_image' => 'nullable|image|mimes:jpeg,png,jpg|max:2048',
             'benefits'         => 'nullable|string',
-            'short_description' => 'nullable|string'
+            'short_description' => 'nullable|string',
+            'classes_per_week' => 'nullable|integer|min:1',
+'total_classes'    => 'nullable|integer',
+'course_hours'     => 'nullable|string|max:50',
+
+            'meta_title'       => 'nullable|string|max:255',
+'meta_description' => 'nullable|string',
+'meta_keyword'     => 'nullable|string|max:255',
+'meta_tags'        => 'nullable|string|max:255',
+'focus_keyword'    => 'nullable|string|max:255',
+'page_schema'      => 'nullable|string',
         ]);
 
         // Update slug if course_name changes
@@ -328,13 +348,12 @@ public function index(Request $request)
             ->where('course_id', $courseId)
             ->first();
 
-            if(!$query) {
-                return response()->json([
-                    'success' => false,
-                    'message' => 'No query found for this course'
-                ], 404);
-            }
-
+          if(!$query) {
+    return response()->json([
+        'success' => true,
+        'completed' => false,
+    ]);
+}
         $assessmentIds = Assessment::where('course_id', $courseId)->get();
         $assigned_assessmentIds = AssignAssessment::whereIn('assessment_id', $assessmentIds->pluck('id'))
             ->where('appointment_id', $query->id)

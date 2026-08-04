@@ -35,6 +35,8 @@ use App\Http\Controllers\Api\StudentDashboardController;
 use App\Http\Controllers\Api\RolePermissionController;
 use App\Http\Controllers\Api\RoleController;
 use App\Http\Controllers\Api\SettingController;
+use App\Http\Controllers\Api\ProgramaticSeoController;
+use App\Http\Controllers\Api\AppointmentController;
 use App\Models\Student;
 
 
@@ -46,6 +48,9 @@ Route::post('/logout', [AuthController::class, 'logout'])->middleware('auth:sanc
 Route::middleware('auth:sanctum')->prefix('admin')->group(function () {
 
     Route::get('/dashboard', [AdminDashboardController::class, 'getStats']);
+
+Route::put('/reset-password', [AdminDashboardController::class, 'resetPassword']);
+
 
     Route::get('/bills', [OrderController::class, 'adminIndex']);
     Route::get('/bills/{orderId}', [OrderController::class, 'adminShow']);
@@ -86,6 +91,9 @@ Route::middleware('auth:sanctum')->prefix('admin')->group(function () {
 
     Route::apiResource('students', StudentController::class);
 
+// appointment
+Route::get('/appointments', [AppointmentController::class, 'index']);
+Route::delete('/appointments/{id}', [AppointmentController::class, 'destroy']);
 
 
     Route::post('assign-assessments', [AssignAssessmentController::class, 'store']);
@@ -125,6 +133,8 @@ Route::post('/assignment-attempts/{attemptId}/grade', [AssignmentAttemptControll
     Route::get('assessment-attempts/{id}', [AssessmentAttemptController::class, 'show']);
     Route::put('assessment-attempts/{id}/grade', [AssessmentAttemptController::class, 'grade']);
 
+Route::post('/exemptions', [AssessmentAttemptController::class, 'storeExemption']);
+
     Route::get('/guardians', [GuardianController::class, 'Adminindex']);
 
 
@@ -136,7 +146,12 @@ Route::post('/assignment-attempts/{attemptId}/grade', [AssignmentAttemptControll
     Route::post('/users/{user}/assign-role', [RolePermissionController::class, 'assignRole']);
     Route::post('/users/create', [RolePermissionController::class, 'createUser']);
      Route::apiResource('roles-manage', RoleController::class);
-
+     Route::get('/programatic-seo', [ProgramaticSeoController::class, 'index']);
+    Route::get('/programatic-seo/{id}', [ProgramaticSeoController::class, 'show']);
+    Route::put('/programatic-seo/{id}', [ProgramaticSeoController::class, 'update']);
+    Route::delete('/programatic-seo/{id}', [ProgramaticSeoController::class, 'destroy']);
+    Route::post('/programatic-seo/import', [ProgramaticSeoController::class, 'import']);
+ 
 });
 
 // Guardian routes ----------------- //
@@ -166,6 +181,9 @@ Route::middleware('auth:sanctum')->prefix('guardian')->group(function () {
     Route::get('results/quiz/{studentId}/{courseId}',    [ResultController::class, 'guardianQuizResults']);
     Route::get('results/assignment/{studentId}/{courseId}', [ResultController::class, 'guardianAssignmentResults']);
 Route::get('student/{studentId}/schedules', [ClassScheduleController::class, 'getSchedulesByStudentId']);
+Route::post('/reset-password', [GuardianController::class, 'resetPassword']);
+Route::get('check-assessment/{studentId}/{courseId}', [CourseController::class, 'checkAssessmentCompletion']);
+Route::get('check-exemption/{studentId}/{courseId}', [AssessmentAttemptController::class, 'checkExemption']);
 });
 
 // Student routes ----------------- //
@@ -179,6 +197,9 @@ Route::get('/my-bills', [OrderController::class, 'studentIndex']);
     // Profile
     Route::get('/profile', [StudentController::class, 'profile']);
     Route::put('/profile', [StudentController::class, 'updateProfile']);
+
+    Route::post('/reset-password', [StudentController::class, 'resetPassword']);
+
     Route::get('check-assessment/{studentId}/{courseId}', [CourseController::class, 'checkAssessmentCompletion']);
     Route::post('enroll-course', [CourseController::class, 'enrollStudent']);
  Route::get('/assignments/course/{id}', [AssignmentController::class, 'getAssignmentsByCourseId']);
@@ -216,7 +237,7 @@ Route::get('/results/assignment/{courseId}', [ResultController::class, 'assignme
   Route::post('assessment-save-progress/{attemptId}', [AssessmentAttemptController::class, 'saveProgress']);
    Route::get('/assessment-my-results', [AssessmentAttemptController::class, 'myResults']);
 
-
+Route::get('check-exemption/{studentId}/{courseId}', [AssessmentAttemptController::class, 'checkExemption']);
 
 
 
@@ -277,7 +298,7 @@ Route::middleware('auth:sanctum')->prefix('instructor')->group(function () {
     Route::get('/', [InstructorController::class, 'index']);
     Route::get('/dashboard', [InstructorDashboardController::class, 'getStats']);
 
-
+Route::put('/reset-password', [InstructorController::class, 'resetPassword']);
     Route::get('/grade-history/courses', [GradeController::class, 'instructorCourses']);
 Route::get('/grade-history/courses/{courseId}/batches', [GradeController::class, 'batchesByCourse']);
 Route::get('/grade-history/courses/{courseId}/batches/{batchId}/students', [GradeController::class, 'batchStudents']);

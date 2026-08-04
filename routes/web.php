@@ -26,3 +26,4 @@ Route::get('/thank-you-for-requesting-free-appointment', [HomeController::class,
 Route::get('/thank-you-for-contact', [HomeController::class, 'ContactThankyou'])->name('user.contact-thankyou');
 Route::get('/thank-you-for-requesting-pre-registration', [HomeController::class, 'PreRegisThankyou'])->name('user.pre-regis-thankyou');
 
+Route::get('/seo/{slug}', [HomeController::class, 'seoPage'])->name('user.seo.page');

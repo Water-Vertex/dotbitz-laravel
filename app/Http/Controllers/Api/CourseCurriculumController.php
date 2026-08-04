@@ -8,6 +8,7 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use App\Models\CourseCurriculum;
 use Illuminate\Http\Request;
+use App\Models\Course; 
 
 class CourseCurriculumController extends Controller
 {
@@ -64,6 +65,7 @@ class CourseCurriculumController extends Controller
                     'sorting_order' => $item['sorting_order'] ?? null,
                 ]);
             }
+              $this->recalculateCourse($courseId);
 
             return response()->json([
                 'success' => true,
@@ -80,6 +82,7 @@ class CourseCurriculumController extends Controller
             'description'   => $request->description,
             'sorting_order' => $request->sorting_order,
         ]);
+           $this->recalculateCourse($courseId);
 
         return response()->json([
             'success' => true,
@@ -124,6 +127,7 @@ class CourseCurriculumController extends Controller
         ]);
 
         $curriculum->update($request->only(['title', 'duration', 'description', 'sorting_order']));
+         $this->recalculateCourse($curriculum->course_id);
 
         return response()->json([
             'success' => true,
@@ -143,11 +147,62 @@ class CourseCurriculumController extends Controller
             ], 404);
         }
 
-        $curriculum->delete();
+       $courseId = $curriculum->course_id; // ← NEW LINE
+
+    $curriculum->delete();
+
+    $this->recalculateCourse($courseId); // ← NEW LINE
+
 
         return response()->json([
             'success' => true,
             'message' => 'Curriculum deleted successfully',
         ]);
     }
+
+
+
+
+    private function parseWeeks(?string $duration): int
+{
+    if (!$duration || trim($duration) === '') {
+        return 0;
+    }
+
+    $d = trim($duration);
+
+    if (preg_match('/^(\d+)\s*-\s*(\d+)$/', $d, $m)) {
+        $start = (int) $m[1];
+        $end   = (int) $m[2];
+        return max(0, $end - $start + 1);
+    }
+
+    if (preg_match('/^\d+$/', $d)) {
+        return 1;
+    }
+
+    return 0;
+}
+
+private function recalculateCourse(int $courseId): void
+{
+    $course = Course::with('curriculums')->find($courseId);
+    if (!$course) return;
+
+    $classesPerWeek = (int) ($course->classes_per_week ?? 0);
+    $courseDuration = (int) ($course->course_duration  ?? 0);
+
+    $totalWeeks = 0;
+    foreach ($course->curriculums as $curriculum) {
+        $totalWeeks += $this->parseWeeks($curriculum->duration);
+    }
+
+    $totalClasses = ($classesPerWeek > 0) ? $totalWeeks * $classesPerWeek : 0;
+    $totalHours   = ($courseDuration  > 0) ? $totalClasses * $courseDuration : 0;
+
+    $course->update([
+        'total_classes' => $totalClasses,
+        'course_hours'  => (string) $totalHours,
+    ]);
+}
 }

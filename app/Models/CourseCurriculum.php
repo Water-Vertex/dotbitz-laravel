@@ -10,8 +10,6 @@ class CourseCurriculum extends Model
     'course_id',
     'title',
     'description',
-    // 'type',
-    // 'documents',
     'duration',
     'sorting_order',
 ];

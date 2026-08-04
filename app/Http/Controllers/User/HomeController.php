@@ -283,7 +283,19 @@ public function Assessmentindex()
             return redirect()->back()->with('error', 'Something went wrong!');
         }
     }
-
-
-
+public function seoPage($slug)
+{
+   
+    $keyword = ucwords(str_replace('-', ' ', $slug));
+    
+    $record = \App\Models\ProgramaticSeo::where('focus_keyword', $keyword)
+        ->orWhereRaw('LOWER(focus_keyword) = ?', [strtolower($keyword)])
+        ->first();
+    
+    if (!$record) {
+        abort(404, 'Page not found for slug: ' . $slug);
+    }
+    
+    return view('user.pages.seo-page', compact('record'));
+}
 }

@@ -68,17 +68,23 @@ class SettingController extends Controller
     public function saveSeoSettings(Request $request)
     {
         $data = $request->only([
-            'home_meta_title', 'home_meta_description', 'home_meta_keywords',
-            'home_meta_tags', 'home_title', 'home_page_schema',
-            'about_meta_title', 'about_meta_description', 'about_meta_keywords',
-            'about_meta_tags', 'about_title', 'about_page_schema',
-            'contact_meta_title', 'contact_meta_description', 'contact_meta_keywords',
-            'contact_meta_tags', 'contact_title', 'contact_page_schema',
-            'service_meta_title', 'service_meta_description', 'service_meta_keywords',
-            'service_meta_tags', 'service_title', 'service_page_schema',
-            'course_meta_title', 'course_meta_description', 'course_meta_keywords',
-            'course_meta_tags', 'course_page_schema',
-            'faq_meta_title', 'faq_meta_description', 'faq_meta_keywords', 'faq_meta_tags',
+               'home_meta_title', 'home_meta_description', 'home_meta_keywords',
+        'home_meta_tags', 'home_title', 'home_page_schema',
+        'home_focus_keyword', 
+        'about_meta_title', 'about_meta_description', 'about_meta_keywords',
+        'about_meta_tags', 'about_title', 'about_page_schema',
+        'about_focus_keyword', 
+        'contact_meta_title', 'contact_meta_description', 'contact_meta_keywords',
+        'contact_meta_tags', 'contact_title', 'contact_page_schema',
+        'contact_focus_keyword', 
+        'service_meta_title', 'service_meta_description', 'service_meta_keywords',
+        'service_meta_tags', 'service_title', 'service_page_schema',
+        'service_focus_keyword',
+        'course_meta_title', 'course_meta_description', 'course_meta_keywords',
+        'course_meta_tags', 'course_page_schema',
+        'course_focus_keyword', 
+        'faq_meta_title', 'faq_meta_description', 'faq_meta_keywords', 'faq_meta_tags',
+        'faq_focus_keyword', 
         ]);
 
         $seo = SeoSetting::first();
